@@ -1,0 +1,8 @@
+app:
+  store:
+    url: http://localhost:8090/fhir
+    page-size: 50
+logging:
+  level:
+    de:
+      samply: DEBUG
