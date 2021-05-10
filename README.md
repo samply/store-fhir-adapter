@@ -4,12 +4,48 @@ This service provides a classic Samply.Store API in front of a FHIR server.
 
 ## Usage
 
-### Start Blaze
+Check out this repo and run:
 
 ```sh
-docker run -p 8080:8080 -v blaze-data:/app/data samply/blaze:0.11.0-beta.1
+mvn clean package
+docker-compose up
 ```
 
+Import data into Blaze:
+
+```sh
+blazectl --server http://localhost:8090/fhir upload <dir>
+```
+
+Create a request:
+
+```sh
+curl 'http://localhost:8080/requests' -H 'Content-Type: application/xml' -d '<foo></foo>' -vs 2>&1 | grep Location
+```
+
+The Location header contains the request identifier (an UUID).
+
+Fetch statistics:
+
+```sh
+curl 'http://localhost:8080/requests/3115a0a9-1e32-47ce-867d-1f4f4924990a/stats' -H 'Accept: application/xml'
+```
+
+which should output:
+
+```xml
+<ns2:queryResultStatistic xmlns:ns2="http://schema.samply.de/osse/QueryResultStatistic">
+  <requestId>3115a0a9-1e32-47ce-867d-1f4f4924990a</requestId>
+  <numberOfPages>2</numberOfPages>
+  <totalSize>80</totalSize>
+</ns2:queryResultStatistic>
+```
+
+Fetch the first result page:
+
+```sh
+curl 'http://localhost:8080/requests/3115a0a9-1e32-47ce-867d-1f4f4924990a/result?page=0' -H 'Accept: application/xml'
+```
 
 ## License
 

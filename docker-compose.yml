@@ -1,0 +1,21 @@
+version: '3.2'
+services:
+  blaze:
+    image: "samply/blaze:0.11.0-beta.1"
+    environment:
+      BASE_URL: "http://blaze:8090"
+      SERVER_PORT: "8090"
+      JAVA_TOOL_OPTIONS: "-Xmx2g"
+      LOG_LEVEL: "debug"
+    ports:
+      - "8090:8090"
+    volumes:
+      - "blaze-data:/app/data"
+  store-fhir-adapter:
+    build: .
+    environment:
+      APP_STORE_URL: "http://blaze:8090/fhir"
+    ports:
+      - "8080:8080"
+volumes:
+  blaze-data:
