@@ -1,5 +1,6 @@
 package de.samply.store.adapter.fhir.service;
 
+import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import de.samply.store.adapter.fhir.model.Result;
 import java.util.Objects;
@@ -56,7 +57,10 @@ public class FhirDownloadService {
 
   private Bundle internRunQuery() {
     logger.debug("Run query");
-    return (Bundle) client.search().forResource(Patient.class).count(pageSize).execute();
+    return (Bundle) client.search().forResource(Patient.class)
+        .revInclude(new Include("Observation:patient"))
+        .count(pageSize)
+        .execute();
   }
 
   /**

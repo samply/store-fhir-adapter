@@ -11,11 +11,39 @@ services:
       - "8090:8090"
     volumes:
       - "blaze-data:/app/data"
+
   store-fhir-adapter:
     build: .
     environment:
       APP_STORE_URL: "http://blaze:8090/fhir"
+      JAVA_TOOL_OPTIONS: "-Xmx1g"
     ports:
       - "8080:8080"
+
+  connector:
+    image: "samply/share-client:dktk-develop"
+    environment:
+      POSTGRES_HOST: "connector-db"
+      POSTGRES_DB: "samply.connector"
+      POSTGRES_USER: "samply"
+      POSTGRES_PASS: "samply"
+      STORE_URL: "http://store-fhir-adapter:8080/"
+      MDR_URL: "https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
+      ID_MANAGER_URL: "http://foo/"
+      PATIENTLIST_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
+      PROJECTPSEUDONYMISATION_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
+    ports:
+      - "8070:8080"
+
+  connector-db:
+    image: "postgres:9.6"
+    environment:
+      POSTGRES_USER: "samply"
+      POSTGRES_PASSWORD: "samply"
+      POSTGRES_DB: "samply.connector"
+    volumes:
+      - "connector-db-data:/var/lib/postgresql/data"
+
 volumes:
   blaze-data:
+  connector-db-data:

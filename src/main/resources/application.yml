@@ -1,4 +1,5 @@
 app:
+  version: '@project.version@'
   store:
     url: http://localhost:8090/fhir
     page-size: 50

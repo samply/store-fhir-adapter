@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Alexander Kiel
  */
 @RestController
+@RequestMapping("/rest")
 public class StoreRestController {
 
   private static final Logger logger = LoggerFactory.getLogger(FhirDownloadService.class);
@@ -34,21 +36,37 @@ public class StoreRestController {
   private final MappingService mappingService;
   private final ResultStore resultStore;
   private final int pageSize;
+  private final String version;
 
   /**
    * Creates a new {@code StoreRestController}.
    *
    * @param downloadService the FHIR backend
-   * @param mappingService the mapping service between FHIR and {@link QueryResult}
-   * @param resultStore the result store
-   * @param pageSize the number of patients per page
+   * @param mappingService  the mapping service between FHIR and {@link QueryResult}
+   * @param resultStore     the result store
+   * @param pageSize        the number of patients per page
+   * @param version         the application version
    */
   public StoreRestController(FhirDownloadService downloadService, MappingService mappingService,
-      ResultStore resultStore, @Value("${app.store.page-size}") int pageSize) {
+      ResultStore resultStore, @Value("${app.store.page-size}") int pageSize,
+      @Value("${app.version}") String version) {
     this.downloadService = Objects.requireNonNull(downloadService);
     this.mappingService = Objects.requireNonNull(mappingService);
     this.resultStore = Objects.requireNonNull(resultStore);
     this.pageSize = pageSize;
+    this.version = version;
+  }
+
+  /**
+   * Returns application information like the version.
+   *
+   * @return application information
+   */
+  @GetMapping("/info")
+  public ResponseEntity<String> getInfo() {
+    return ResponseEntity.ok()
+        .header("version", version)
+        .body("OK");
   }
 
   /**
@@ -98,7 +116,7 @@ public class StoreRestController {
    * @param id the identifier of the result
    * @return the {@code QueryResult} according of the found result
    * @throws RequestNotFoundException if the result was not found
-   * @throws MissingPageUrlException page with {@code pageNum} was not found
+   * @throws MissingPageUrlException  page with {@code pageNum} was not found
    */
   @GetMapping("/requests/{id}/result")
   public QueryResult getResult(@PathVariable("id") String id,

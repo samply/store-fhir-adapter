@@ -1,9 +1,9 @@
 FROM gcr.io/distroless/java-debian10:11
 
-WORKDIR /app
 
-COPY --chown=nonroot:nonroot target/store-fhir-adapter.jar ./
+COPY --chown=nonroot:nonroot target/store-fhir-adapter.jar /app/
 
 USER nonroot
+WORKDIR /app
 
 CMD ["store-fhir-adapter.jar"]
