@@ -12,6 +12,8 @@ import java.util.Optional;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
@@ -42,7 +44,7 @@ public class MappingService {
       var patient = objectFactory.createPatient();
 
       var patientResource = (Patient) resources.get(0);
-      patient.setDktkId(patientResource.getId());
+      patient.setId(patientResource.getIdElement().getIdPart());
 
       // gender
       var gender = patientResource.getGender();
@@ -73,6 +75,13 @@ public class MappingService {
                 }
               }
             }
+            break;
+          }
+          case Condition: {
+            var condition = (Condition) resource;
+            var code = findFirstCode(condition.getCode(), "http://fhir.de/CodeSystem/dimdi/icd-10-gm");
+            code.ifPresent(value -> patient.getAttribute().add(mapConditionCode(value)));
+            patient.getAttribute().add(mapConditionDate(condition.getOnsetDateTimeType()));
             break;
           }
           default: {
@@ -136,12 +145,12 @@ public class MappingService {
   private Attribute mapBirthDate(Date birthDate) {
     var attribute = objectFactory.createAttribute();
     attribute.setMdrKey("urn:dktk:dataelement:26:4");
-    attribute.setValue(objectFactory.createValue(mapBirthDateValue(birthDate)));
+    attribute.setValue(objectFactory.createValue(mapDateValue(birthDate)));
     return attribute;
   }
 
-  private String mapBirthDateValue(Date birthDate) {
-    return new SimpleDateFormat("dd.MM.yyyy").format(birthDate);
+  private String mapDateValue(Date date) {
+    return new SimpleDateFormat("dd.MM.yyyy").format(date);
   }
 
   private Optional<Attribute> mapVitalStatus(CodeableConcept value) {
@@ -152,5 +161,19 @@ public class MappingService {
           attribute.setValue(objectFactory.createValue(code));
           return attribute;
         });
+  }
+
+  private Attribute mapConditionCode(String code) {
+    var attribute = objectFactory.createAttribute();
+    attribute.setMdrKey("urn:dktk:dataelement:29:2");
+    attribute.setValue(objectFactory.createValue(code));
+    return attribute;
+  }
+
+  private Attribute mapConditionDate(DateTimeType dateTimeType) {
+    var attribute = objectFactory.createAttribute();
+    attribute.setMdrKey("urn:dktk:dataelement:83:3");
+    attribute.setValue(objectFactory.createValue(mapDateValue(dateTimeType.getValue())));
+    return attribute;
   }
 }

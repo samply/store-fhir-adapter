@@ -26,39 +26,28 @@ public class FhirDownloadService {
 
   private final IGenericClient client;
   private final int pageSize;
-  private final Supplier<String> resultIdSupplier;
 
   /**
    * Creates a new {@code FhirDownloadService}.
    *
    * @param client the HAPI FHIR client
    * @param pageSize the number of patients per page
-   * @param resultIdSupplier the supplier of result identifiers
    */
-  public FhirDownloadService(IGenericClient client, @Value("${app.store.page-size}") int pageSize,
-      Supplier<String> resultIdSupplier) {
+  public FhirDownloadService(IGenericClient client, @Value("${app.store.page-size}") int pageSize) {
     this.client = Objects.requireNonNull(client);
     this.pageSize = pageSize;
-    this.resultIdSupplier = Objects.requireNonNull(resultIdSupplier);
   }
 
   /**
-   * Runs a query that selects all patients and returns a result with the first page URL and the
-   * total number of found patients.
+   * Runs a query that selects all patients and returns the corresponding {@link Bundle}.
    *
-   * <p>Please use {@link #fetchPage(String)} in order to fetch the contents of the first page.
-   *
-   * @return the result
+   * @return the bundle
    */
-  public Result runQuery() {
-    var bundle = internRunQuery();
-    return Result.of(resultIdSupplier.get(), bundle.getLink("self").getUrl(), bundle.getTotal());
-  }
-
-  private Bundle internRunQuery() {
+  public Bundle runQuery() {
     logger.debug("Run query");
     return (Bundle) client.search().forResource(Patient.class)
         .revInclude(new Include("Observation:patient"))
+        .revInclude(new Include("Condition:patient"))
         .count(pageSize)
         .execute();
   }

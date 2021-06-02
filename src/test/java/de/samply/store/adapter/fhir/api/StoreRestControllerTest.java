@@ -1,7 +1,9 @@
 package de.samply.store.adapter.fhir.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.verification.VerificationMode;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -30,8 +33,10 @@ class StoreRestControllerTest {
   public static final int TOTAL = 143513;
   public static final int PAGE_SIZE = 50;
   public static final String VERSION = "0.1.0";
-  public static final String PAGE_URL = "url-143738";
-  public static final String NEXT_PAGE_URL = "url-181450";
+  public static final String BASE_URL = "http://localhost:8080";
+  public static final String PAGE_0_URL = "url-143738";
+  public static final String PAGE_1_URL = "url-181450";
+  public static final String PAGE_2_URL = "url-085531";
 
   @Mock
   private FhirDownloadService downloadService;
@@ -47,7 +52,7 @@ class StoreRestControllerTest {
   @BeforeEach
   void setUp() {
     controller = new StoreRestController(downloadService, mappingService, resultStore, PAGE_SIZE,
-        VERSION);
+        VERSION, BASE_URL);
   }
 
   @Test
@@ -58,18 +63,20 @@ class StoreRestControllerTest {
   }
 
   @Test
-  void createRequest() {
-    when(downloadService.runQuery()).thenReturn(Result.of(RESULT_ID, "url-foo", 0));
+  void createRequest() throws Exception {
+    var page0 = new Bundle();
+    when(downloadService.runQuery()).thenReturn(page0);
+    when(resultStore.create(page0)).thenReturn(Result.of(RESULT_ID, TOTAL));
 
-    var responseEntity = controller.createRequest("<foo></foo>");
+    var responseEntity = controller.createRequest(true, "<foo></foo>");
 
-    assertEquals("/requests/" + RESULT_ID, responseEntity.getHeaders().getFirst("location"));
+    assertEquals(BASE_URL + "/rest/teiler/requests/" + RESULT_ID,
+        responseEntity.getHeaders().getFirst("location"));
   }
 
   @Test
   void getStats() {
-    when(resultStore.get(RESULT_ID))
-        .thenReturn(Optional.of(Result.of(RESULT_ID, "url-foo", TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
 
     var stats = controller.getStats(RESULT_ID);
 
@@ -88,29 +95,65 @@ class StoreRestControllerTest {
   }
 
   @Test
-  void getResult() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, PAGE_URL, TOTAL)));
-    var bundle = new Bundle();
-    when(downloadService.fetchPage(PAGE_URL)).thenReturn(bundle);
+  void getResult_Page0IsReturned() {
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
+    var page0 = new Bundle();
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(page0);
     var expectedResult = new QueryResult();
-    when(mappingService.map(bundle)).thenReturn(expectedResult);
+    when(mappingService.map(page0)).thenReturn(expectedResult);
 
     var result = controller.getResult(RESULT_ID, 0);
 
-    assertEquals(expectedResult, result);
+    assertSame(expectedResult, result);
   }
 
   @Test
-  void getResult_NextPageUrlIsSaved() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, PAGE_URL, TOTAL)));
-    var bundle = new Bundle();
-    bundle.getLinkOrCreate("next").setUrl(NEXT_PAGE_URL);
-    when(downloadService.fetchPage(PAGE_URL)).thenReturn(bundle);
-    when(mappingService.map(bundle)).thenReturn(new QueryResult());
+  void getResult_Page1UrlIsSaved() {
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
+    var page0 = new Bundle();
+    page0.getLinkOrCreate("next").setUrl(PAGE_1_URL);
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(page0);
+    when(mappingService.map(page0)).thenReturn(new QueryResult());
 
     controller.getResult(RESULT_ID, 0);
 
-    verify(resultStore).save(Result.of(RESULT_ID, PAGE_URL, TOTAL).withPageUrl(1, NEXT_PAGE_URL));
+    verify(resultStore).savePageUrl(RESULT_ID, 1, PAGE_1_URL);
+  }
+
+  @Test
+  void getResult_Page1IsReturned() {
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
+    var page1 = new Bundle();
+    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(page1);
+    var expectedResult = new QueryResult();
+    when(mappingService.map(page1)).thenReturn(expectedResult);
+
+    var result = controller.getResult(RESULT_ID, 1);
+
+    assertSame(expectedResult, result);
+  }
+
+  @Test
+  void getResult_Page2IsReturned() {
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    //noinspection unchecked
+    when(resultStore.getPageUrl(RESULT_ID, 2)).thenReturn(Optional.empty(), Optional.of(PAGE_2_URL));
+    when(resultStore.getMaxPageNum(RESULT_ID)).thenReturn(Optional.of(1));
+    when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
+    var page1 = new Bundle();
+    page1.getLinkOrCreate("next").setUrl(PAGE_2_URL);
+    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(page1);
+    var page2 = new Bundle();
+    when(downloadService.fetchPage(PAGE_2_URL)).thenReturn(page2);
+    var expectedResult = new QueryResult();
+    when(mappingService.map(page2)).thenReturn(expectedResult);
+
+    var result = controller.getResult(RESULT_ID, 2);
+
+    assertSame(expectedResult, result);
   }
 
   @Test
@@ -125,7 +168,11 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_MissingPageUrl() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, PAGE_URL, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.empty());
+    when(resultStore.getMaxPageNum(RESULT_ID)).thenReturn(Optional.of(0));
+    when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(new Bundle());
 
     var exception = assertThrows(MissingPageUrlException.class,
         () -> controller.getResult(RESULT_ID, 1));
