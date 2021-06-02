@@ -1,7 +1,6 @@
 package de.samply.store.adapter.fhir.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.model.api.Include;
@@ -23,9 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FhirDownloadServiceTest {
 
-  public static final String RESULT_ID = "id-142731";
   public static final int PAGE_SIZE = 50;
-  public static final int TOTAL = 183953;
   public static final String PAGE_URL = "url-185540";
 
   @Mock
@@ -43,11 +40,14 @@ class FhirDownloadServiceTest {
   private IQuery<IBaseBundle> query2;
 
   @Mock
+  private IQuery<IBaseBundle> query3;
+
+  @Mock
   private IQuery<IBaseBundle> countQuery;
 
   @BeforeEach
   void setUp() {
-    service = new FhirDownloadService(client, PAGE_SIZE, () -> RESULT_ID);
+    service = new FhirDownloadService(client, PAGE_SIZE);
   }
 
   @Test
@@ -55,18 +55,14 @@ class FhirDownloadServiceTest {
     when(client.search()).thenReturn(untypedQuery);
     when(untypedQuery.forResource(Patient.class)).thenReturn(query1);
     when(query1.revInclude(new Include("Observation:patient"))).thenReturn(query2);
-    when(query2.count(PAGE_SIZE)).thenReturn(countQuery);
-    var bundle = new Bundle();
-    bundle.getLinkOrCreate("self").setUrl(PAGE_URL);
-    bundle.setTotal(TOTAL);
-    when(countQuery.execute()).thenReturn(bundle);
+    when(query2.revInclude(new Include("Condition:patient"))).thenReturn(query3);
+    when(query3.count(PAGE_SIZE)).thenReturn(countQuery);
+    var expectedBundle = new Bundle();
+    when(countQuery.execute()).thenReturn(expectedBundle);
 
-    var result = service.runQuery();
+    var bundle = service.runQuery();
 
-    assertEquals(RESULT_ID, result.getId());
-    assertTrue(result.getPageUrl(0).isPresent());
-    assertEquals(PAGE_URL, result.getPageUrl(0).get());
-    assertEquals(TOTAL, result.getTotal());
+    assertSame(expectedBundle, bundle);
   }
 
   @Test
@@ -76,6 +72,6 @@ class FhirDownloadServiceTest {
 
     var bundle = service.fetchPage(PAGE_URL);
 
-    assertEquals(expectedBundle, bundle);
+    assertSame(expectedBundle, bundle);
   }
 }

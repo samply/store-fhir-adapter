@@ -40,7 +40,7 @@ class MappingServiceTest {
 
     var result = service.map(bundle);
 
-    assertEquals(PATIENT_ID, result.getPatient().get(0).getDktkId());
+    assertEquals(PATIENT_ID, result.getPatient().get(0).getId());
   }
 
   @Test
