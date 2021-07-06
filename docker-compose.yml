@@ -25,7 +25,7 @@ services:
       - blaze
 
   connector:
-    image: "samply/share-client:dktk-id-manager-apikey"
+    image: "samply/share-client:dktk-develop"
     environment:
       POSTGRES_HOST: "connector-db"
       POSTGRES_DB: "samply.connector"

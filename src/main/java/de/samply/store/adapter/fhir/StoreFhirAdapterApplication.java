@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import java.util.UUID;
 import java.util.function.Supplier;
+import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,6 +23,11 @@ public class StoreFhirAdapterApplication {
   @Bean
   public FhirContext fhirContext() {
     return FhirContext.forR4();
+  }
+
+  @Bean
+  public FhirPathR4 fhirPath(FhirContext context) {
+    return new FhirPathR4(context);
   }
 
   @Bean

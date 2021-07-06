@@ -1,18 +1,26 @@
 package de.samply.store.adapter.fhir.service;
 
+import static de.samply.store.adapter.fhir.service.MappingService.ICD_10_GM;
 import static org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
+import de.samply.share.model.ccp.Container;
+import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
 import java.util.function.Consumer;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -22,6 +30,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MappingServiceTest {
 
   public static final String PATIENT_ID = "id-193956";
+
+  @Mock
+  private DiagnosisMapping diagnosisMapping;
 
   @InjectMocks
   private MappingService service;
@@ -88,6 +99,40 @@ class MappingServiceTest {
     assertEquals("lebend", firstAttribute.getValue().getValue());
   }
 
+  @Test
+  void map_ageAtFirstCondition() {
+    var bundle = new Bundle();
+    var entry = bundle.getEntry();
+    entry.add(createPatientEntry(p -> p.setBirthDateElement(new DateType("2000-01-01"))));
+    entry.add(createConditionEntry(
+        c -> {
+          c.getCode().getCodingFirstRep().setSystem(ICD_10_GM).setCode("G24.1");
+          c.setOnset(new DateTimeType("2020-01-01"));
+        }));
+
+    var result = service.map(bundle);
+
+    var attribute = result.getPatient().get(0).getAttribute().get(1);
+    assertEquals("urn:dktk:dataelement:28:1", attribute.getMdrKey());
+    assertEquals("20", attribute.getValue().getValue());
+  }
+
+  @Test
+  void map_diagnosis() {
+    var bundle = new Bundle();
+    var entry = bundle.getEntry();
+    entry.add(createPatientEntry());
+    var condition = new Condition();
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    entry.add(new BundleEntryComponent().setResource(condition));
+    var expectedContainer = new Container();
+    when(diagnosisMapping.map(condition)).thenReturn(expectedContainer);
+
+    var result = service.map(bundle);
+
+    assertEquals(expectedContainer, result.getPatient().get(0).getContainer().get(0));
+  }
+
   private BundleEntryComponent createPatientEntry() {
     return createPatientEntry(p -> {
     });
@@ -105,5 +150,12 @@ class MappingServiceTest {
     observation.getSubject().setReference("Patient/" + PATIENT_ID);
     consumer.accept(observation);
     return new BundleEntryComponent().setResource(observation);
+  }
+
+  private BundleEntryComponent createConditionEntry(Consumer<Condition> consumer) {
+    var condition = new Condition();
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    consumer.accept(condition);
+    return new BundleEntryComponent().setResource(condition);
   }
 }
