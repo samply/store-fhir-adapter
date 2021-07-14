@@ -6,6 +6,7 @@ import de.samply.share.model.ccp.Attribute;
 import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
+import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Specimen;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,9 +38,11 @@ public class MappingService {
 
   private final ObjectFactory objectFactory = new ObjectFactory();
   private final DiagnosisMapping diagnosisMapping;
+  private final SampleMapping sampleMapping;
 
-  public MappingService(DiagnosisMapping diagnosisMapping) {
+  public MappingService(DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping) {
     this.diagnosisMapping = diagnosisMapping;
+    this.sampleMapping = sampleMapping;
   }
 
   /**
@@ -46,7 +50,7 @@ public class MappingService {
    *
    * @param bundle the bundle to partition
    * @return a list of lists of all resources of one patient. The patient is the first element in
-   *     each inner lists.
+   * each inner lists.
    */
   private static Collection<List<Resource>> partitionByPatient(Bundle bundle) {
     var result = new HashMap<String, List<Resource>>();
@@ -82,23 +86,23 @@ public class MappingService {
     var result = new QueryResult();
 
     for (List<Resource> resources : partitionByPatient(bundle)) {
-      var patient = objectFactory.createPatient();
+      var dktkPatient = objectFactory.createPatient();
 
-      var patientResource = (Patient) resources.get(0);
-      patient.setId(patientResource.getIdElement().getIdPart());
+      var patient = (Patient) resources.get(0);
+      dktkPatient.setId(patient.getIdElement().getIdPart());
 
       // gender
-      var gender = patientResource.getGender();
+      var gender = patient.getGender();
       if (gender != null) {
-        patient.getAttribute().add(
+        dktkPatient.getAttribute().add(
             createAttribute("urn:dktk:dataelement:1:3", mapGenderValue(gender)));
       }
 
       // birthDate
       LocalDate birthDate = null;
-      if (patientResource.hasBirthDate()) {
-        birthDate = LocalDate.parse(patientResource.getBirthDateElement().getValueAsString());
-        patient.getAttribute().add(
+      if (patient.hasBirthDate()) {
+        birthDate = LocalDate.parse(patient.getBirthDateElement().getValueAsString());
+        dktkPatient.getAttribute().add(
             createAttribute("urn:dktk:dataelement:26:4", mapDateValue(birthDate)));
       }
 
@@ -114,7 +118,7 @@ public class MappingService {
               switch (code.get()) {
                 case "75186-7": {
                   mapVitalStatus(observation.getValueCodeableConcept())
-                      .ifPresent(value -> patient.getAttribute().add(value));
+                      .ifPresent(value -> dktkPatient.getAttribute().add(value));
                   break;
                 }
                 default: {
@@ -126,33 +130,18 @@ public class MappingService {
           case Condition:
             var condition = (Condition) resource;
 
-            patient.getContainer().add(diagnosisMapping.map(condition));
+            dktkPatient.getContainer().add(diagnosisMapping.map(condition, patient));
+            break;
 
-            // calc first condition
-            var firstCondition = firstConditionRef.get();
-            onsetAsLocalDate(condition).ifPresent(onset -> {
-              //noinspection OptionalGetWithoutIsPresent
-              if (firstCondition == null
-                  || onset.isBefore(onsetAsLocalDate(firstCondition).get())) {
-                firstConditionRef.set(condition);
-              }
-            });
-
+          case Specimen:
+            dktkPatient.getContainer().add(sampleMapping.map((Specimen) resource));
             break;
 
           default:
         }
       });
 
-      // age at first condition
-      var firstCondition = firstConditionRef.get();
-      if (birthDate != null && firstCondition != null) {
-        //noinspection OptionalGetWithoutIsPresent
-        patient.getAttribute().add(createAttribute("urn:dktk:dataelement:28:1",
-            calcAgeValue(birthDate, onsetAsLocalDate(firstCondition).get())));
-      }
-
-      result.getPatient().add(patient);
+      result.getPatient().add(dktkPatient);
     }
     return result;
   }
@@ -189,10 +178,6 @@ public class MappingService {
 
   private String mapDateValue(LocalDate date) {
     return date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-  }
-
-  private String calcAgeValue(LocalDate birthDate, LocalDate firstConditionOnset) {
-    return Integer.toString(birthDate.until(firstConditionOnset).getYears());
   }
 
   private Optional<Attribute> mapVitalStatus(CodeableConcept value) {
