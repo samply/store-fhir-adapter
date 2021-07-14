@@ -1,0 +1,34 @@
+fhir_sample,kind_value,type_value,fixing_value
+whole-blood,Vollblut,Flüssigprobe,
+bone-marrow,Knochenmark,,
+buffy-coat,buffy-coat,,
+dried-whole-blood,dried-whole-blood,,
+peripheral-blood-cells-vital,peripheral-blood-cells-vital,,
+blood-plasma,Plasma,Flüssigprobe,
+plasma-edta,Plasma,Flüssigprobe,
+plasma-citrat,Plasma,Flüssigprobe,
+plasma-heparin,Plasma,Flüssigprobe,
+plasma-cell-free,Plasma,Flüssigprobe,
+plasma-other,Plasma,Flüssigprobe,
+blood-serum,Serum,Flüssigprobe,
+ascites,ascites,,
+csf-liquor,Liquor,Flüssigprobe,
+saliva,saliva,,
+stool-faeces,stool-faeces,,
+urine,Urin,Flüssigprobe,
+swab,swab,,
+liquid-other,Liquor,Flüssigprobe,
+tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
+tumor-tissue-ffpe,Tumorgewebe,Gewebeprobe,Paraffin (FFPE)
+normal-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
+other-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
+tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
+tumor-tissue-frozen,Tumorgewebe,Gewebeprobe,Kryo/Frisch (FF)
+normal-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
+other-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
+tissue-other,tissue-other,Gewebeprobe,
+dna,DNA,,
+cf-dna,DNA,,
+g-dna,DNA,,
+rna,RNA,,
+derivative-other,derivative-other,,

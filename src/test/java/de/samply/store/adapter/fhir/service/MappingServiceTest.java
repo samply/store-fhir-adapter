@@ -100,33 +100,15 @@ class MappingServiceTest {
   }
 
   @Test
-  void map_ageAtFirstCondition() {
-    var bundle = new Bundle();
-    var entry = bundle.getEntry();
-    entry.add(createPatientEntry(p -> p.setBirthDateElement(new DateType("2000-01-01"))));
-    entry.add(createConditionEntry(
-        c -> {
-          c.getCode().getCodingFirstRep().setSystem(ICD_10_GM).setCode("G24.1");
-          c.setOnset(new DateTimeType("2020-01-01"));
-        }));
-
-    var result = service.map(bundle);
-
-    var attribute = result.getPatient().get(0).getAttribute().get(1);
-    assertEquals("urn:dktk:dataelement:28:1", attribute.getMdrKey());
-    assertEquals("20", attribute.getValue().getValue());
-  }
-
-  @Test
   void map_diagnosis() {
     var bundle = new Bundle();
     var entry = bundle.getEntry();
-    entry.add(createPatientEntry());
+    entry.add(createPatientEntry(p -> p.setBirthDateElement(new DateType("2000-01-01"))));
     var condition = new Condition();
     condition.getSubject().setReference("Patient/" + PATIENT_ID);
     entry.add(new BundleEntryComponent().setResource(condition));
     var expectedContainer = new Container();
-    when(diagnosisMapping.map(condition)).thenReturn(expectedContainer);
+    when(diagnosisMapping.map(condition, (Patient) entry.get(0).getResource())).thenReturn(expectedContainer);
 
     var result = service.map(bundle);
 

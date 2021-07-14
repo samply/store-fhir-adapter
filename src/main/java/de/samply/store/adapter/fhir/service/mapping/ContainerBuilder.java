@@ -2,6 +2,7 @@ package de.samply.store.adapter.fhir.service.mapping;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.ObjectFactory;
+import java.util.Optional;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
 import org.hl7.fhir.r4.model.Resource;
@@ -22,9 +23,14 @@ class ContainerBuilder {
     }
 
     <T extends IBase> void addAttribute(String path, Class<T> type, String mdrKey,
-                                        Function<T, String> toString) {
+                                         Function<T, String> toString) {
+        addAttributeOptional(path,type,mdrKey, v -> Optional.of(toString.apply(v)));
+    }
+
+    <T extends IBase> void addAttributeOptional(String path, Class<T> type, String mdrKey,
+                                        Function<T, Optional<String>> toString) {
         fhirPathR4.evaluateFirst(resource, path, type)
-                .map(toString)
+                .flatMap(toString)
                 .map(v -> Util.createAttribute(mdrKey, v))
                 .ifPresent(a -> container.getAttribute().add(a));
     }
