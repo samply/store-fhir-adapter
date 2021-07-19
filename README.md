@@ -21,7 +21,7 @@ blazectl --server http://localhost:8090/fhir upload <dir>
 Create a request:
 
 ```sh
-curl 'http://localhost:8080/requests' -H 'Content-Type: application/xml' -d '<foo></foo>' -vs 2>&1 | grep Location
+curl 'http://localhost:8088/rest/teiler/requests' -H 'Content-Type: application/xml' -d '<foo></foo>' -vs 2>&1 | grep Location
 ```
 
 The Location header contains the request identifier (an UUID).

@@ -14,7 +14,4 @@ public class TestUtil {
         .map(a -> a.getValue().getValue());
   }
 
-  public static Optional<String> convertCsvValue(String value) {
-    return Objects.isNull(value) ? Optional.empty() : Optional.of(value);
-  }
 }

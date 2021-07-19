@@ -1,10 +1,7 @@
-FHIR_ICD10,FHIR_ICD_0_3,FHIR_ADT_Site,DKTK_ICD10,DKTK,DKTK_ICD_0_3,DKTK_site
-C18.2,4,U,C18.2	4,U
+FHIR_ICD10,FHIR_ICD_O_3,FHIR_ADT_Site,DKTK_ICD10,DKTK_ICD_O_3,DKTK_site
+C18.2,4,U,C18.2,4,U
 C22.01,4,R,C22.01,4,R
 C44.53,4,M,C44.53,4,M
 C34.0,4,L,C34.0,4,L
 C71.9,4,T,C71.9,4,T
 C56.9,4,B,C56.9,4,B
-
-
-urn:dktk:dataelement:4:2	urn:dktk:dataelement:5:2	urn:dktk:dataelement:6:2
