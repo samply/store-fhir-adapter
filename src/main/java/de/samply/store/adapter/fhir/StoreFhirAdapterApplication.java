@@ -2,9 +2,11 @@ package de.samply.store.adapter.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.UUID;
 import java.util.function.Supplier;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
+import org.hl7.fhir.r4.utils.FHIRPathEngine.IEvaluationContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,8 +28,13 @@ public class StoreFhirAdapterApplication {
   }
 
   @Bean
-  public FhirPathR4 fhirPath(FhirContext context) {
-    return new FhirPathR4(context);
+  public FhirPathR4 fhirPath(FhirContext context, IEvaluationContext evaluationContext) {
+    return new FhirPathR4(context, evaluationContext);
+  }
+
+  @Bean
+  public IEvaluationContext evaluationContext() {
+    return new MyIEvaluationContext();
   }
 
   @Bean

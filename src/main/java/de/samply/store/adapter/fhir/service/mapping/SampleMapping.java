@@ -7,7 +7,7 @@ import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.ObjectFactory;
 import java.util.Optional;
 import java.util.function.Function;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.PrimitiveType;

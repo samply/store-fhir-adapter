@@ -1,8 +1,9 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import ca.uhn.fhir.context.FhirContext;
+import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.Optional;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Specimen;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,7 @@ class SampleMappingTest {
 
   @BeforeEach
   void setUp() {
-    mapping = new SampleMapping(new FhirPathR4(FhirContext.forR4()));
+    mapping = new SampleMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
   }
 
   @ParameterizedTest

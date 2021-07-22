@@ -5,7 +5,8 @@ import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
+import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
@@ -23,7 +24,7 @@ class DiagnosisMappingTest {
 
   @BeforeEach
   void setUp() {
-    mapping = new DiagnosisMapping(new FhirPathR4(FhirContext.forR4()));
+    mapping = new DiagnosisMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
 
     pa = new Patient();
     pa.setBirthDateElement(new DateType("2000-01-01"));
