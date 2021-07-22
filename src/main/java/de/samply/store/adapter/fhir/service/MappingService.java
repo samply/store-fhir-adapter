@@ -2,10 +2,12 @@ package de.samply.store.adapter.fhir.service;
 
 import static de.samply.store.adapter.fhir.service.mapping.Util.createAttribute;
 
+import ca.uhn.fhir.context.FhirContext;
 import de.samply.share.model.ccp.Attribute;
 import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
+import de.samply.store.adapter.fhir.service.mapping.HistologyMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -39,10 +40,13 @@ public class MappingService {
   private final ObjectFactory objectFactory = new ObjectFactory();
   private final DiagnosisMapping diagnosisMapping;
   private final SampleMapping sampleMapping;
+  private final FhirContext fhirContext;
 
-  public MappingService(DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping) {
+  public MappingService(DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping,
+      FhirContext fhirContext) {
     this.diagnosisMapping = diagnosisMapping;
     this.sampleMapping = sampleMapping;
+    this.fhirContext = fhirContext;
   }
 
   /**
@@ -106,7 +110,7 @@ public class MappingService {
             createAttribute("urn:dktk:dataelement:26:4", mapDateValue(birthDate)));
       }
 
-      final AtomicReference<Condition> firstConditionRef = new AtomicReference<>();
+      HistologyMapping histologyMapping = new HistologyMapping(new FhirPathR4(fhirContext, new MyIEvaluationContext(resources)));
 
       // other resources (skip Patient resource)
       resources.stream().skip(1).forEach(resource -> {
@@ -120,6 +124,9 @@ public class MappingService {
                   mapVitalStatus(observation.getValueCodeableConcept())
                       .ifPresent(value -> dktkPatient.getAttribute().add(value));
                   break;
+                }
+                case "59847-4": {
+                  dktkPatient.getContainer().add(histologyMapping.map(observation));
                 }
                 default: {
                 }

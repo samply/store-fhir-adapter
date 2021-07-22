@@ -5,7 +5,7 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.LOCAL_DATE;
 import static de.samply.store.adapter.fhir.service.mapping.Util.lift2;
 
 import de.samply.share.model.ccp.Container;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;

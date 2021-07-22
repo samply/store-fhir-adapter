@@ -4,7 +4,7 @@ import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.ObjectFactory;
 import java.util.Optional;
 import org.hl7.fhir.instance.model.api.IBase;
-import org.hl7.fhir.r4.hapi.fluentpath.FhirPathR4;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.Resource;
 
 import java.util.function.Function;
