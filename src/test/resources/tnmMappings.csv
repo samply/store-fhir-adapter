@@ -1,0 +1,13 @@
+fhirTNMDate,fhirUICC,fhirTNMT,fhirTNMMS,fhirTNMN,fhirTNMM,fhirPreT,fhirPreN,fhirPreM,fhirTNMYS,fhirTNMRS,fhirTNMVersion,dktkTNMDate,dktkUICC,dktkTNMT,dktkTNMMS,dktkTNMN,dktkTNMM,dktkPreT,dktkPreN,dktkPreM,dktkTNMYS,dktkTNMRS,dktkTNMVersion
+2010-05-08T01:02:03+02:00,IVA,X,,1,1a,,c,c,,,7,08.05.2010,IVA,X,,1,1a,,c,c,,,7
+2010-05-08T01:02:03+02:00,IVA,3,,1b,1a,p,p,p,y,,7,08.05.2010,IVA,3,,1b,1a,p,p,p,y,,7
+2010-05-08T01:02:03+02:00,IIIA,3a,,1a,0,p,p,c,,,7,08.05.2010,IIIA,3a,,1a,0,p,p,c,,,7
+2010-05-08T01:02:03+02:00,III,3a,,2,0,p,p,c,,,7,08.05.2010,III,3a,,2,0,p,p,c,,,7
+2010-05-08T01:02:03+02:00,IIIC,3a,,3,0,p,p,c,,,7,08.05.2010,IIIC,3a,,3,0,p,p,c,,,7
+2010-05-08T01:02:03+02:00,IV,3a,,3,1a,p,p,p,,,7,08.05.2010,IV,3a,,3,1a,p,p,p,,,7
+2010-05-08T01:02:03+02:00,IV,3a,,3,1c,p,p,p,,,7,08.05.2010,IV,3a,,3,1c,p,p,p,,,7
+2010-05-08T01:02:03+02:00,IIIC,1c,,1,0,,,,,,7,08.05.2010,IIIC,1c,,1,0,,,,,,7
+2010-05-08T01:02:03+02:00,IV,3,,1,1b,,,,,,7,08.05.2010,IV,3,,1,1b,,,,,,7
+2010-05-08T01:02:03+02:00,IIIA,3a,m,0,0,c,c,c,,,7,08.05.2010,IIIA,3a,m,0,0,c,c,c,,,7
+
+
