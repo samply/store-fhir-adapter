@@ -25,7 +25,6 @@ public class SampleMapping {
 
   private static final String samplePath = "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
 
-  private final ObjectFactory objectFactory = new ObjectFactory();
   private final FhirPathR4 fhirPathR4;
 
   public SampleMapping(FhirPathR4 fhirPathR4) {
