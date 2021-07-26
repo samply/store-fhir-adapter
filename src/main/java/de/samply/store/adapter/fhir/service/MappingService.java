@@ -8,7 +8,12 @@ import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
 import de.samply.store.adapter.fhir.service.mapping.HistologyMapping;
+import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
+import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
+import de.samply.store.adapter.fhir.service.mapping.TNMMapping;
+import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -17,12 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.Specimen;
 import org.springframework.stereotype.Service;
@@ -41,12 +48,23 @@ public class MappingService {
   private final DiagnosisMapping diagnosisMapping;
   private final SampleMapping sampleMapping;
   private final FhirContext fhirContext;
+  private final MetastasisMapping metastasisMapping;
+  private final SurgeryMapping surgeryMapping;
+  private final TNMMapping tnmMapping;
+  private final TumorMapping tumorMapping;
 
   public MappingService(DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping,
-      FhirContext fhirContext) {
+      FhirContext fhirContext,
+      MetastasisMapping metastasisMapping,
+      SurgeryMapping surgeryMapping,
+      TNMMapping tnmMapping, TumorMapping tumorMapping) {
     this.diagnosisMapping = diagnosisMapping;
     this.sampleMapping = sampleMapping;
     this.fhirContext = fhirContext;
+    this.metastasisMapping = metastasisMapping;
+    this.surgeryMapping = surgeryMapping;
+    this.tnmMapping = tnmMapping;
+    this.tumorMapping = tumorMapping;
   }
 
   /**
@@ -111,6 +129,7 @@ public class MappingService {
       }
 
       HistologyMapping histologyMapping = new HistologyMapping(new FhirPathR4(fhirContext, new MyIEvaluationContext(resources)));
+      ProgressMapping progressMapping = new ProgressMapping(new FhirPathR4(fhirContext, new MyIEvaluationContext(resources)));
 
       // other resources (skip Patient resource)
       resources.stream().skip(1).forEach(resource -> {
@@ -125,9 +144,16 @@ public class MappingService {
                       .ifPresent(value -> dktkPatient.getAttribute().add(value));
                   break;
                 }
+                case "21907-1": {
+                    dktkPatient.getContainer().add(metastasisMapping.map(observation));
+                    break;
+                }
                 case "59847-4": {
                   dktkPatient.getContainer().add(histologyMapping.map(observation));
+                  break;
                 }
+                case "21908-9", "21902-2":
+                  dktkPatient.getContainer().add(tnmMapping.map(observation));
                 default: {
                 }
               }
@@ -136,9 +162,17 @@ public class MappingService {
 
           case Condition:
             var condition = (Condition) resource;
-
             dktkPatient.getContainer().add(diagnosisMapping.map(condition, patient));
+            dktkPatient.getContainer().add(tumorMapping.map(condition));
             break;
+
+          case ClinicalImpression:
+            var impression = (ClinicalImpression) resource;
+            dktkPatient.getContainer().add(progressMapping.map(impression));
+            break;
+          case Procedure:
+            var procedure = (Procedure) resource;
+            dktkPatient.getContainer().add(surgeryMapping.map(procedure));
 
           case Specimen:
             dktkPatient.getContainer().add(sampleMapping.map((Specimen) resource));
