@@ -5,8 +5,9 @@ import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Procedure;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class SurgeryMapping {
 
   private final FhirPathR4 fhirPathR4;

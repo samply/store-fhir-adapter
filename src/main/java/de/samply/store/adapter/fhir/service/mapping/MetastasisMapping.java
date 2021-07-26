@@ -9,7 +9,9 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MetastasisMapping {
 
   private final FhirPathR4 fhirPathR4;

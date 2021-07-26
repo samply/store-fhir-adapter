@@ -6,7 +6,9 @@ import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HistologyMapping {
 
   private final FhirPathR4 fhirPathR4;
