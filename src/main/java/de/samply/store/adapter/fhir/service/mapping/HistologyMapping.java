@@ -8,6 +8,10 @@ import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Patrick Skowronek
+ */
+
 @Component
 public class HistologyMapping {
 
