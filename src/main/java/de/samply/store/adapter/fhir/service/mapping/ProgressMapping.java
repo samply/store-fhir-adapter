@@ -8,7 +8,13 @@ import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.springframework.stereotype.Component;
 
+/**
+ * @author Patrick Skowronek
+ */
+
+@Component
 public class ProgressMapping {
   private final FhirPathR4 fhirPathR4;
 
