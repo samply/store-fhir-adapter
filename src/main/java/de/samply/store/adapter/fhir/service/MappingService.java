@@ -10,6 +10,7 @@ import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
 import de.samply.store.adapter.fhir.service.mapping.HistologyMapping;
 import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
 import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
+import de.samply.store.adapter.fhir.service.mapping.RadiationTherapyMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
 import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
 import de.samply.store.adapter.fhir.service.mapping.TNMMapping;
@@ -52,12 +53,14 @@ public class MappingService {
   private final SurgeryMapping surgeryMapping;
   private final TNMMapping tnmMapping;
   private final TumorMapping tumorMapping;
+  private final RadiationTherapyMapping radiationTherapyMapping;
 
   public MappingService(DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping,
       FhirContext fhirContext,
       MetastasisMapping metastasisMapping,
       SurgeryMapping surgeryMapping,
-      TNMMapping tnmMapping, TumorMapping tumorMapping) {
+      TNMMapping tnmMapping, TumorMapping tumorMapping,
+      RadiationTherapyMapping radiationTherapyMapping) {
     this.diagnosisMapping = diagnosisMapping;
     this.sampleMapping = sampleMapping;
     this.fhirContext = fhirContext;
@@ -65,6 +68,7 @@ public class MappingService {
     this.surgeryMapping = surgeryMapping;
     this.tnmMapping = tnmMapping;
     this.tumorMapping = tumorMapping;
+    this.radiationTherapyMapping = radiationTherapyMapping;
   }
 
   /**
@@ -172,7 +176,9 @@ public class MappingService {
             break;
           case Procedure:
             var procedure = (Procedure) resource;
+
             dktkPatient.getContainer().add(surgeryMapping.map(procedure));
+            dktkPatient.getContainer().add(radiationTherapyMapping.map(procedure));
 
           case Specimen:
             dktkPatient.getContainer().add(sampleMapping.map((Specimen) resource));
