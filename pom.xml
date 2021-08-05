@@ -27,6 +27,7 @@
 
   <properties>
     <java.version>15</java.version>
+    <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -118,8 +119,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>14</source>
-          <target>14</target>
+          <source>15</source>
+          <target>15</target>
         </configuration>
       </plugin>
 

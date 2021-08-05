@@ -4,7 +4,6 @@ package de.samply.store.adapter.fhir.service.mapping;
 import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 
 import de.samply.share.model.ccp.Container;
-import de.samply.share.model.ccp.ObjectFactory;
 import java.util.Optional;
 import java.util.function.Function;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
