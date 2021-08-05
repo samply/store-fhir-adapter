@@ -1,13 +1,20 @@
 package de.samply.store.adapter.fhir.service;
 
-import static de.samply.store.adapter.fhir.service.MappingService.ICD_10_GM;
 import static org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import ca.uhn.fhir.context.FhirContext;
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
+import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
+import de.samply.store.adapter.fhir.service.mapping.RadiationTherapyMapping;
+import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
+import de.samply.store.adapter.fhir.service.mapping.SystemTherapyMapping;
+import de.samply.store.adapter.fhir.service.mapping.TNMMapping;
+import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.function.Consumer;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -19,7 +26,6 @@ import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -33,9 +39,29 @@ class MappingServiceTest {
 
   @Mock
   private DiagnosisMapping diagnosisMapping;
+  @Mock
+  private SampleMapping sampleMapping;
+  @Mock
+  private MetastasisMapping metastasisMapping;
+  @Mock
+  private SurgeryMapping surgeryMapping;
+  @Mock
+  private TNMMapping tnmMapping;
+  @Mock
+  private TumorMapping tumorMapping;
+  @Mock
+  private RadiationTherapyMapping radiationTherapyMapping;
+  @Mock
+  private SystemTherapyMapping systemTherapyMapping;
 
-  @InjectMocks
   private MappingService service;
+
+  @BeforeEach
+  void setUp() {
+    service = new MappingService(FhirContext.forR4(), diagnosisMapping, sampleMapping,
+        metastasisMapping, surgeryMapping, tnmMapping, tumorMapping, radiationTherapyMapping,
+        systemTherapyMapping);
+  }
 
   @Test
   void map() {
@@ -100,6 +126,24 @@ class MappingServiceTest {
   }
 
   @Test
+  void map_vitalStatusDate() {
+    var bundle = new Bundle();
+    var entry = bundle.getEntry();
+    entry.add(createPatientEntry());
+    entry.add(createObservationEntry(
+        o -> {
+          o.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode("75186-7");
+          o.setEffective(new DateTimeType("2027-10-02"));
+        }));
+
+    var result = service.map(bundle);
+
+    var firstAttribute = result.getPatient().get(0).getAttribute().get(0);
+    assertEquals("urn:dktk:dataelement:48:3", firstAttribute.getMdrKey());
+    assertEquals("02.10.2027", firstAttribute.getValue().getValue());
+  }
+
+  @Test
   void map_diagnosis() {
     var bundle = new Bundle();
     var entry = bundle.getEntry();
@@ -108,8 +152,8 @@ class MappingServiceTest {
     condition.getSubject().setReference("Patient/" + PATIENT_ID);
     entry.add(new BundleEntryComponent().setResource(condition));
     var expectedContainer = new Container();
-    when(diagnosisMapping.map(condition, (Patient) entry.get(0).getResource())).thenReturn(expectedContainer);
-
+    when(diagnosisMapping.map(condition, (Patient) entry.get(0).getResource()))
+        .thenReturn(expectedContainer);
     var result = service.map(bundle);
 
     assertEquals(expectedContainer, result.getPatient().get(0).getContainer().get(0));

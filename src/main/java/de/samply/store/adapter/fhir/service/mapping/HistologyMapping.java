@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class HistologyMapping {
 
   private final FhirPathR4 fhirPathR4;
+  private final String urn = "urn:oid:2.16.840.1.113883.6.43.1";
 
   public HistologyMapping(FhirPathR4 fhirPathR4) {
     this.fhirPathR4 = fhirPathR4;
@@ -25,10 +26,10 @@ public class HistologyMapping {
 
     var builder = new ContainerBuilder(fhirPathR4, histology, "Histology");
 
-    builder.addAttribute("Observation.value.coding.where(system = '" + "urn:oid:2.16.840.1.113883.6.43.1" + "').code",
+    builder.addAttribute("Observation.value.coding.where(system = '" + urn + "').code",
         CodeType.class, "urn:dktk:dataelement:7:2", PrimitiveType::getValue);
 
-    builder.addAttribute("Observation.value.coding.where(system = '" + "urn:oid:2.16.840.1.113883.6.43.1" + "').version",
+    builder.addAttribute("Observation.value.coding.where(system = '" + urn + "').version",
         StringType.class, "urn:dktk:dataelement:8:2", PrimitiveType::getValue);
 
     builder.addAttribute("Observation.hasMember.resolve().value.coding.code",
