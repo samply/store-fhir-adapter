@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
@@ -26,7 +28,7 @@ public class HistologyMappingTest {
   void map_HistologyObservationCSVFile(String fhirMorphologie, String fhirICD_O, String fhirGrading,
       String dktkMorphologie, String dktkICD_O, String dktkGrading) {
 
-    List<Resource> gradings = fhirGrading == null ? List.of() : List.of(createGrading(fhirGrading));
+    Map<String, Resource> gradings = fhirGrading == null ? Map.of() : Map.of("Observation/Test123", createGrading(fhirGrading));
     var mapping = new HistologyMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext(
         gradings)));
     var histology = new Observation();
@@ -52,8 +54,8 @@ public class HistologyMappingTest {
   @NotNull
   private Observation createGrading(String fhirGrading) {
     var grading = new Observation();
-    grading.setId("Test123");
-    grading.getValueCodeableConcept().getCodingFirstRep().setCode(fhirGrading );
+    grading.setId(new IdType("Test123"));
+    grading.getValueCodeableConcept().getCodingFirstRep().setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GradingCS").setCode(fhirGrading);
     return grading;
   }
 }

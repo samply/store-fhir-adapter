@@ -48,6 +48,10 @@ public class FhirDownloadService {
     return (Bundle) client.search().forResource(Patient.class)
         .revInclude(new Include("Observation:patient"))
         .revInclude(new Include("Condition:patient"))
+        .revInclude(new Include("Specimen:patient"))
+        .revInclude(new Include("Procedure:patient"))
+        .revInclude(new Include("MedicationStatement:patient"))
+        .revInclude(new Include("ClinicalImpression:patient"))
         .count(pageSize)
         .execute();
   }

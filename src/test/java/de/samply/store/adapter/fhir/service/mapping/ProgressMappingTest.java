@@ -7,7 +7,9 @@ import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.ClinicalImpression.ClinicalImpressionFindingComponent;
@@ -25,8 +27,6 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class ProgressMappingTest {
 
-  private ProgressMapping mapping;
-
   @ParameterizedTest
   @CsvFileSource(resources = "/progressMappings.csv", numLinesToSkip = 1)
   void map_ProgressObservationCSVFile(String fhirDate, String fhirReaktion, String fhirRezidiv,
@@ -36,28 +36,28 @@ public class ProgressMappingTest {
     ClinicalImpression clinicalImpression = new ClinicalImpression();
 
     clinicalImpression.setEffective(new DateTimeType(fhirDate));
-    List<Resource> findings;
-    findings = new ArrayList<>();
+    Map<String, Resource> findings;
+    findings = new HashMap<>();
     List<ClinicalImpressionFindingComponent> refs;
     refs = new ArrayList<>();
 
     if(fhirRezidiv != null) {
-      findings.add(createObsevation("LA4583-6", "rez123", fhirRezidiv));
+      findings.put("Observation/rez123", createObsevation("LA4583-6", "rez123", fhirRezidiv));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/rez123")));
     }
 
     if(fhirReaktion != null) {
-      findings.add(createObsevation("21976-6", "r123", fhirReaktion));
+      findings.put("Observation/r123", createObsevation("21976-6", "r123", fhirReaktion));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/r123")));
     }
 
     if(fhirLymphnode != null) {
-      findings.add(createObsevation("LA4370-8", "lym123", fhirLymphnode));
+      findings.put("Observation/lym123", createObsevation("LA4370-8", "lym123", fhirLymphnode));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/lym123")));
     }
 
     if(fhirmetastasis != null) {
-      findings.add(createObsevation("21907-1", "meta123", fhirmetastasis));
+      findings.put("Observation/meta123", createObsevation("21907-1", "meta123", fhirmetastasis));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/meta123")));
     }
 

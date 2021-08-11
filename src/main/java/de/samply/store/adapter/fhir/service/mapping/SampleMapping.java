@@ -3,14 +3,17 @@ package de.samply.store.adapter.fhir.service.mapping;
 
 import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 
+import de.samply.share.model.ccp.Attribute;
 import de.samply.share.model.ccp.Container;
 import java.util.Optional;
 import java.util.function.Function;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,6 +40,9 @@ public class SampleMapping {
         "Specimen.type.coding.where(system = '" + samplePath + "').code",
         CodeType.class, "urn:dktk:dataelement:95:2",
         MAP_SPECIMEN_KIND_VALUE.compose(PrimitiveType::getValue));
+
+    builder.addAttribute("Specimen.type.coding.where(system = '" + samplePath + "').code.exists()",
+        BooleanType.class, "urn:dktk:dataelement:50:2", PrimitiveType::getValueAsString);
 
     builder.addAttributeOptional(
         "Specimen.type.coding.where(system = '" + samplePath + "').code",
@@ -86,7 +92,7 @@ public class SampleMapping {
   private static final Function<String, Optional<String>> MAP_SPECIMEN_FIRMING_TYPE_VALUE = typeValue -> {
     if (typeValue.contains("ffpe")) {
       return Optional.of("Paraffin (FFPE)");
-    } else if (typeValue.contains("frozen")) {
+    } else if (typeValue.contains("frozen") || typeValue.equals("blood-plasma")) {
       return Optional.of("Kryo/Frisch (FF)");
     } else {
       return Optional.empty();

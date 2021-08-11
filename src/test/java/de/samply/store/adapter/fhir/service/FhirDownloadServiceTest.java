@@ -43,6 +43,18 @@ class FhirDownloadServiceTest {
   private IQuery<IBaseBundle> query3;
 
   @Mock
+  private IQuery<IBaseBundle> query4;
+
+  @Mock
+  private IQuery<IBaseBundle> query5;
+
+  @Mock
+  private IQuery<IBaseBundle> query6;
+
+  @Mock
+  private IQuery<IBaseBundle> query7;
+
+  @Mock
   private IQuery<IBaseBundle> countQuery;
 
   @BeforeEach
@@ -56,7 +68,11 @@ class FhirDownloadServiceTest {
     when(untypedQuery.forResource(Patient.class)).thenReturn(query1);
     when(query1.revInclude(new Include("Observation:patient"))).thenReturn(query2);
     when(query2.revInclude(new Include("Condition:patient"))).thenReturn(query3);
-    when(query3.count(PAGE_SIZE)).thenReturn(countQuery);
+    when(query3.revInclude(new Include("Specimen:patient"))).thenReturn(query4);
+    when(query4.revInclude(new Include("Procedure:patient"))).thenReturn(query5);
+    when(query5.revInclude(new Include("MedicationStatement:patient"))).thenReturn(query6);
+    when(query6.revInclude(new Include("ClinicalImpression:patient"))).thenReturn(query7);
+    when(query7.count(PAGE_SIZE)).thenReturn(countQuery);
     var expectedBundle = new Bundle();
     when(countQuery.execute()).thenReturn(expectedBundle);
 

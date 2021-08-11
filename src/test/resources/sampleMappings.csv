@@ -1,34 +1,35 @@
-fhirSample,kindValue,typeValue,fixingValue
-whole-blood,Vollblut,Flüssigprobe,
-bone-marrow,Knochenmark,,
-buffy-coat,buffy-coat,,
-dried-whole-blood,dried-whole-blood,,
-peripheral-blood-cells-vital,peripheral-blood-cells-vital,,
-blood-plasma,Plasma,Flüssigprobe,
-plasma-edta,Plasma,Flüssigprobe,
-plasma-citrat,Plasma,Flüssigprobe,
-plasma-heparin,Plasma,Flüssigprobe,
-plasma-cell-free,Plasma,Flüssigprobe,
-plasma-other,Plasma,Flüssigprobe,
-blood-serum,Serum,Flüssigprobe,
-ascites,ascites,,
-csf-liquor,Liquor,Flüssigprobe,
-saliva,saliva,,
-stool-faeces,stool-faeces,,
-urine,Urin,Flüssigprobe,
-swab,swab,,
-liquid-other,Liquor,Flüssigprobe,
-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
-tumor-tissue-ffpe,Tumorgewebe,Gewebeprobe,Paraffin (FFPE)
-normal-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
-other-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE)
-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
-tumor-tissue-frozen,Tumorgewebe,Gewebeprobe,Kryo/Frisch (FF)
-normal-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
-other-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF)
-tissue-other,tissue-other,Gewebeprobe,
-dna,DNA,,
-cf-dna,DNA,,
-g-dna,DNA,,
-rna,RNA,,
-derivative-other,derivative-other,,
+fhirSample,kindValue,typeValue,fixingValue,preserved
+,,,,false
+whole-blood,Vollblut,Flüssigprobe,,true
+bone-marrow,Knochenmark,,,true
+buffy-coat,buffy-coat,,,true
+dried-whole-blood,dried-whole-blood,,,true
+peripheral-blood-cells-vital,peripheral-blood-cells-vital,,,true
+blood-plasma,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-edta,Plasma,Flüssigprobe,,true
+plasma-citrat,Plasma,Flüssigprobe,,true
+plasma-heparin,Plasma,Flüssigprobe,,true
+plasma-cell-free,Plasma,Flüssigprobe,,true
+plasma-other,Plasma,Flüssigprobe,,true
+blood-serum,Serum,Flüssigprobe,,true
+ascites,ascites,,,true
+csf-liquor,Liquor,Flüssigprobe,,true
+saliva,saliva,,,true
+stool-faeces,stool-faeces,,,true
+urine,Urin,Flüssigprobe,,true
+swab,swab,,,true
+liquid-other,Liquor,Flüssigprobe,,true
+tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
+tumor-tissue-ffpe,Tumorgewebe,Gewebeprobe,Paraffin (FFPE),true
+normal-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
+other-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
+tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+tumor-tissue-frozen,Tumorgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+normal-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+other-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+tissue-other,tissue-other,Gewebeprobe,,true
+dna,DNA,,,true
+cf-dna,DNA,,,true
+g-dna,DNA,,,true
+rna,RNA,,,true
+derivative-other,derivative-other,,,true

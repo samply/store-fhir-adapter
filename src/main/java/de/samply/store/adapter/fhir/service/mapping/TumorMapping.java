@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class TumorMapping {
 
   public static final String ICD_0_3 = "urn:oid:2.16.840.1.113883.6.43.1";
-  public static final String ADT_Site = "urn:oid:2.16.840.1.113883.2.6.60.7.1.1";
+  public static final String ADT_Site = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
 
   private final FhirPathR4 fhirPathR4;
 
