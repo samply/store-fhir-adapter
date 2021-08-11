@@ -29,7 +29,7 @@ class SampleMappingTest {
   @ParameterizedTest
   @CsvFileSource(resources = "/sampleMappings.csv", numLinesToSkip = 1)
   void map_sampleMaterialTypeCSVFile(
-      String fhirSample, String kindValue, String typeValue, String fixingValue
+      String fhirSample, String kindValue, String typeValue, String fixingValue, String preserved
   ) {
     var specimen = new Specimen();
     specimen.getType().getCodingFirstRep()
@@ -43,6 +43,8 @@ class SampleMappingTest {
         findAttributeValue(container, "urn:dktk:dataelement:97:1"));
     assertEquals(Optional.ofNullable(fixingValue),
         findAttributeValue(container, "urn:dktk:dataelement:90:1"));
+    assertEquals(Optional.ofNullable(preserved),
+        findAttributeValue(container, "urn:dktk:dataelement:50:2"));
   }
 
   @Test

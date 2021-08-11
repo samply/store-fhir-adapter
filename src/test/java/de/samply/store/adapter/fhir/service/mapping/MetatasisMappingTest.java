@@ -40,7 +40,7 @@ public class MetatasisMappingTest {
     var container = mapping.map(metastasis);
 
     assertEquals(Optional.ofNullable(dktkExtraction),
-        findAttributeValue(container, "urn:dktk:dataelement:28:1"));
+        findAttributeValue(container, "urn:dktk:dataelement:21:3"));
     assertEquals(Optional.ofNullable(dktkFern),
         findAttributeValue(container, "urn:dktk:dataelement:77:1"));
     assertEquals(Optional.ofNullable(dktkLocation),

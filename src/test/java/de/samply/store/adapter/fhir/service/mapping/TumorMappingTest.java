@@ -37,7 +37,7 @@ public class TumorMappingTest {
     var condition = new Condition();
     condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setCode(FHIR_ICD10)
         .setVersion(FHIR_ICD_O_3);
-    var coding = new Coding().setSystem("urn:oid:2.16.840.1.113883.2.6.60.7.1.1")
+    var coding = new Coding().setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS")
         .setCode(FHIR_ADT_Site);
     condition.getBodySiteFirstRep().addCoding(coding);
 

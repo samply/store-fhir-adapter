@@ -101,6 +101,7 @@ class MappingServiceTest {
     var result = service.map(bundle);
 
     var firstAttribute = result.getPatient().get(0).getAttribute().get(0);
+
     assertEquals("urn:dktk:dataelement:26:4", firstAttribute.getMdrKey());
     assertEquals("10.05.2020", firstAttribute.getValue().getValue());
   }
@@ -176,12 +177,5 @@ class MappingServiceTest {
     observation.getSubject().setReference("Patient/" + PATIENT_ID);
     consumer.accept(observation);
     return new BundleEntryComponent().setResource(observation);
-  }
-
-  private BundleEntryComponent createConditionEntry(Consumer<Condition> consumer) {
-    var condition = new Condition();
-    condition.getSubject().setReference("Patient/" + PATIENT_ID);
-    consumer.accept(condition);
-    return new BundleEntryComponent().setResource(condition);
   }
 }

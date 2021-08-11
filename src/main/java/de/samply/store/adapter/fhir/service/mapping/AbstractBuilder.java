@@ -3,6 +3,7 @@ package de.samply.store.adapter.fhir.service.mapping;
 import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.Entity;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -47,6 +48,10 @@ public class AbstractBuilder<T extends Entity> {
 
   public void addContainer(Container container) {
     entity.getContainer().add(container);
+  }
+
+  public void addContainers(Collection<Container> containers) {
+    entity.getContainer().addAll(containers);
   }
 
   public T build() {

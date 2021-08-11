@@ -1,6 +1,8 @@
 package de.samply.store.adapter.fhir.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.exceptions.PathEngineException;
@@ -12,13 +14,13 @@ import org.hl7.fhir.r4.utils.FHIRPathEngine.IEvaluationContext;
 
 public class MyIEvaluationContext implements IEvaluationContext {
 
-  private final List<Resource> resources;
+  private final Map<String, Resource> resources;
 
   public MyIEvaluationContext(){
-    this(List.of());
+    this(Map.of());
   }
 
-  public MyIEvaluationContext(List<Resource> resources) {
+  public MyIEvaluationContext(Map<String, Resource> resources) {
     Objects.requireNonNull(resources);
     this.resources = resources;
   }
@@ -59,10 +61,7 @@ public class MyIEvaluationContext implements IEvaluationContext {
 
   @Override
   public Base resolveReference(Object appContext, String url) throws FHIRException {
-    return this.resources.stream()
-        .filter(resource -> (resource.getResourceType() + "/" + resource.getId()).equals(url))
-        .findFirst()
-        .orElse(null);
+    return this.resources.getOrDefault(url, null);
   }
 
   @Override

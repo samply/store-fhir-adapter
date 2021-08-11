@@ -1,12 +1,15 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import static de.samply.store.adapter.fhir.service.MappingService.ICD_10_GM;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
 import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_O_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
+import java.util.Date;
+import java.util.Optional;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
@@ -58,6 +61,18 @@ class DiagnosisMappingTest {
   }
 
   @Test
+  void map_onsetAge() {
+    var condition = new Condition();
+    condition.getOnsetAge().setValue(9);
+
+    var container = mapping.map(condition, pa);
+
+    var attribute =  container.getAttribute().stream()
+        .filter(a -> "urn:dktk:dataelement:28:1".equals(a.getMdrKey())).findFirst();
+    assertEquals("9", attribute.get().getValue().getValue());
+  }
+
+  @Test
   void map_localization() {
     var condition = new Condition();
     condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setCode("C12.1");
@@ -67,5 +82,42 @@ class DiagnosisMappingTest {
     var attribute = container.getAttribute().get(0);
     assertEquals("urn:dktk:dataelement:4:2", attribute.getMdrKey());
     assertEquals("C12.1", attribute.getValue().getValue());
+  }
+
+  @Test
+  void map_ICDVersion() {
+    var condition = new Condition();
+    condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setVersion("2014");
+
+    var container = mapping.map(condition, pa);
+
+    var attribute = container.getAttribute().get(0);
+    assertEquals("urn:dktk:dataelement:3:2", attribute.getMdrKey());
+    assertEquals("10 2014 GM", attribute.getValue().getValue());
+  }
+
+  @Test
+  void map_diagnosisYear() {
+    var condition = new Condition();
+    condition.setRecordedDate(new DateTimeType("2010-01-01").getValue());
+
+    var container = mapping.map(condition, pa);
+
+    assertEquals(Optional.of("01.01.2010"),
+        findAttributeValue(container, "urn:dktk:dataelement:83:3"));
+  }
+
+  @Test
+  void map_yearAndAge() {
+    var condition = new Condition();
+    condition.setRecordedDate(new DateTimeType("2010-01-01").getValue());
+    condition.getOnsetAge().setValue(9);
+
+    var container = mapping.map(condition, pa);
+
+    assertEquals(Optional.of("01.01.2010"),
+        findAttributeValue(container, "urn:dktk:dataelement:83:3"));
+    assertEquals(Optional.of("9"),
+        findAttributeValue(container, "urn:dktk:dataelement:28:1"));
   }
 }

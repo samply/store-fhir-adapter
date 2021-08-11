@@ -7,6 +7,7 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.lift2;
 import de.samply.share.model.ccp.Container;
 import java.time.LocalDate;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.function.Function;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -50,26 +51,37 @@ public class DiagnosisMapping {
         CodeType.class, "urn:dktk:dataelement:29:2", PrimitiveType::getValue);
 
     if (condition.hasOnsetAge()) {
-          builder.addAttribute("Condition.onset.value", DecimalType.class, "urn:dktk:dataelement:28:1", PrimitiveType::getValueAsString);
+      builder.addAttribute("Condition.onset.value", DecimalType.class, "urn:dktk:dataelement:28:1",
+          PrimitiveType::getValueAsString);
     }
 
-    if (condition.hasOnsetDateTimeType()) {
+    if (condition.hasRecordedDate()) {
+      builder
+          .addAttributeOptional("Condition.recordedDate", DateTimeType.class,
+              "urn:dktk:dataelement:83:3",
+              DATE_STRING);
+    }
 
-      //TODO: Next ocnology version will enforce datetime
+    //TODO: Next ocnology version will enforce datetime
+    if (condition.hasOnsetDateTimeType()) {
       builder
           .addAttributeOptional("Condition.onset", DateTimeType.class, "urn:dktk:dataelement:83:3",
               DATE_STRING);
 
-      // age at first condition
-      builder
-          .addAttributeOptional("Condition.onset", DateTimeType.class, "urn:dktk:dataelement:28:1",
-              onsetDateTime -> lift2(DiagnosisMapping::calcAgeValue)
-                  .apply(LOCAL_DATE.apply(pa.getBirthDateElement()),
-                      LOCAL_DATE.apply(onsetDateTime)));
+        // age at first condition
+        builder
+            .addAttributeOptional("Condition.onset", DateTimeType.class,
+                "urn:dktk:dataelement:28:1",
+                onsetDateTime -> lift2(DiagnosisMapping::calcAgeValue)
+                    .apply(LOCAL_DATE.apply(pa.getBirthDateElement()),
+                        LOCAL_DATE.apply(onsetDateTime)));
     }
 
     builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').code",
         CodeType.class, "urn:dktk:dataelement:4:2", PrimitiveType::getValue);
+
+    builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
+        StringType.class, "urn:dktk:dataelement:3:2", s -> "10 " + s + " GM");
 
     return builder.build();
   }
