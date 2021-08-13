@@ -21,12 +21,12 @@ public class ConditionContainer {
   private final List<ClinicalImpression> clinicalImpressions = new ArrayList<>();
 
   //Contains all Histology objects from the Conditions evidence. The Histology has then a ref to the Gradings.
+
   private List<Observation> histologyObservations = new ArrayList<>();
   //Contains all Metastasis obejcts have a encounter which points to the condition. They have TMN Components through refs
   private List<Observation> metastasisObservations = new ArrayList<>();
   //Contians all Tmn objects from the Conditions stage.
   private List<Observation> tnmObservations = new ArrayList<>();
-
   private List<Procedure> procedureList = new ArrayList<>();
 
   private List<MedicationStatement> medicationStatementList = new ArrayList<>();
@@ -37,6 +37,10 @@ public class ConditionContainer {
 
   public void addClinicalImpression(ClinicalImpression clinicalImpression) {
     clinicalImpressions.add(clinicalImpression);
+  }
+
+  public List<Observation> getHistologyObservations() {
+    return histologyObservations;
   }
 
   public void addHistology(Observation histology) {

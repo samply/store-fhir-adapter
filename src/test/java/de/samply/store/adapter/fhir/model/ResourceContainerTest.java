@@ -7,6 +7,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Specimen;
 import org.junit.jupiter.api.Test;
 
 class ResourceContainerTest {
@@ -85,6 +86,43 @@ class ResourceContainerTest {
     assertTrue(container.getPatientContainers().stream().findFirst().get().getVitalState().isPresent());
     assertEquals(observation, container.getPatientContainers().stream().findFirst().get().getVitalState().get());
     assertEquals(observation, container.getResources().get("Observation/v123"));
+  }
+
+  @Test
+  void testSpecimenBundle() {
+    Bundle bundle = new Bundle();
+    Specimen specimen = new Specimen();
+    specimen.setId("S123");
+    specimen.setSubject(new Reference("Patient/123"));
+    bundle.addEntry().setResource(specimen);
+
+    var container = ResourceContainer.fromBundle(bundle);
+
+    assertTrue(container.getPatientContainers().stream().findFirst().isPresent());
+    assertEquals(specimen, container.getPatientContainers().stream().findFirst().get().getSpecimenList().get(0));
+    assertEquals(specimen, container.getResources().get("Specimen/S123"));
+  }
+
+  @Test
+  void testHistology() {
+    Bundle bundle = new Bundle();
+    Patient patient = new Patient();
+    patient.setId("123");
+    bundle.addEntry().setResource(patient);
+    Observation histology = new Observation();
+    histology.setId("H123");
+    histology.setSubject(new Reference("Patient/123"));
+    bundle.addEntry().setResource(histology);
+    Condition condition = new Condition();
+    condition.setId("c123");
+    condition.setSubject(new Reference("Patient/123"));
+    condition.getEvidenceFirstRep().getDetailFirstRep().setReference("Observation/H123");
+    bundle.addEntry().setResource(condition);
+
+    var container = ResourceContainer.fromBundle(bundle);
+
+    assertEquals(histology, container.getPatientContainers().stream().findFirst().get().getConditionContainerList().get(0).getHistologyObservations().get(0));
+    assertEquals(histology, container.getResources().get("Observation/H123"));
   }
 
 }

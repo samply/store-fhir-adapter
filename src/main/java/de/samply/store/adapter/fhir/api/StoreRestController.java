@@ -53,7 +53,7 @@ public class StoreRestController {
    * @param pageSize        the number of patients per page
    * @param version         the application version
    */
-  public StoreRestController(FhirDownloadService downloadService, MappingService mappingService,
+  public StoreRestController(FhirDownloadService downloadService,  MappingService mappingService,
       ResultStore resultStore, @Value("${app.store.page-size}") int pageSize,
       @Value("${app.version}") String version,
       @Value("${app.base-url}") String baseUrl) {
