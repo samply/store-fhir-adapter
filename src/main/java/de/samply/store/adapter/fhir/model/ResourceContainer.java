@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.Specimen;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourceContainer {
@@ -76,6 +77,11 @@ public class ResourceContainer {
               // case "21908-9", "21902-2" -> resourceCondition.addTNM(observation);
             }
           }
+        }
+        case Specimen -> {
+          Specimen specimen = (Specimen) resource;
+          resourceContainer.getPatientContainer(specimen.getSubject().getReference())
+              .addSpecimen(specimen);
         }
 
       }

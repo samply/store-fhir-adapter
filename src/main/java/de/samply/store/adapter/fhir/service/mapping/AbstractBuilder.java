@@ -6,6 +6,7 @@ import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.Resource;
 
@@ -44,6 +45,13 @@ public class AbstractBuilder<T extends Entity> {
         .flatMap(toString)
         .map(v -> Util.createAttribute(mdrKey, v))
         .ifPresent(a -> entity.getAttribute().add(a));
+  }
+
+  public <S extends IBase> void addContainer(String path, Class<S> type,
+      Function<? super S, Container> toContainer) {
+    addContainers(fhirPathR4.evaluate(resource, path, type)
+        .stream().map(toContainer)
+        .collect(Collectors.toList()));
   }
 
   public void addContainer(Container container) {
