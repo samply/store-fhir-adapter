@@ -6,9 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.model.ResourceContainer;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
+import de.samply.store.adapter.fhir.service.mapping.HistologyMapping;
+import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
 import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
+import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
 import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.TNMMapping;
+import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -88,14 +93,17 @@ public class IntTest {
     condition.setSubject(new Reference("Patient/123"));
     condition.getOnsetAge().setValue(59);
     condition.setRecordedDate(new DateTimeType("2014-05-06").getValue());
-    condition.getStageFirstRep().getAssessmentFirstRep().setReference("Observation/2014-05-06-d1e182");
-    condition.getEvidenceFirstRep().getDetailFirstRep().setReference("Observation/2014-05-06-d1e166");
+    condition.getStageFirstRep().getAssessmentFirstRep()
+        .setReference("Observation/2014-05-06-d1e182");
+    condition.getEvidenceFirstRep().getDetailFirstRep()
+        .setReference("Observation/2014-05-06-d1e166");
     bundle.addEntry().setResource(condition);
 
     Encounter encounter = new Encounter();
     encounter.setId("C123");
     encounter.setSubject(new Reference("Patient/123"));
-    encounter.setDiagnosis(List.of(new DiagnosisComponent().setCondition(new Reference("Condition/0000001490"))));
+    encounter.setDiagnosis(
+        List.of(new DiagnosisComponent().setCondition(new Reference("Condition/0000001490"))));
     bundle.addEntry().setResource(encounter);
 
     Observation histo1 = new Observation();
@@ -172,14 +180,17 @@ public class IntTest {
     medicationStatement.addExtension(
         "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-StellungZurOp",
         new CodeableConcept().getCodingFirstRep()
-            .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTStellungOPCS").setCode("A"));
+            .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTStellungOPCS")
+            .setCode("A"));
     medicationStatement.addExtension(
         "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-SYSTIntention",
         new CodeableConcept().getCodingFirstRep()
-            .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTIntentionCS").setCode("K"));
-   // medicationStatement.setMedication(new CodeableConcept().getCodingFirstRep().setCode("Epirubicin Taxotere Cyclophosphamid")); //This is text?
+            .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTIntentionCS")
+            .setCode("K"));
+    // medicationStatement.setMedication(new CodeableConcept().getCodingFirstRep().setCode("Epirubicin Taxotere Cyclophosphamid")); //This is text?
     medicationStatement.setSubject(new Reference("Patient/123"));
-    medicationStatement.setEffective(new Period().setStartElement(new DateTimeType("2017-03-15")).setEndElement(new DateTimeType("2017-07-30")));
+    medicationStatement.setEffective(new Period().setStartElement(new DateTimeType("2017-03-15"))
+        .setEndElement(new DateTimeType("2017-07-30")));
     medicationStatement.setReasonReference(List.of(new Reference("Condition/0000001490")));
     bundle.addEntry().setResource(medicationStatement);
 
@@ -192,12 +203,13 @@ public class IntTest {
     FhirPathR4 fhirPath = new FhirPathR4(fhirContext,
         new MyIEvaluationContext(resourceContainer.getResources()));
     QueryResultMapping queryResultMapping = new QueryResultMapping(new PatientMapping(fhirPath,
-        new DiagnosisMapping(fhirPath), new SampleMapping(fhirPath)));
+        new DiagnosisMapping(fhirPath, new TumorMapping(fhirPath, new HistologyMapping(fhirPath),
+            new MetastasisMapping(fhirPath),
+            new ProgressMapping(fhirPath), new TNMMapping(fhirPath))),
+            new SampleMapping(fhirPath)));
 
     var result = queryResultMapping.map(new ArrayList<>(resourceContainer.getPatientContainers()));
 
     assertEquals(result.getPatient().get(0).getId(), "123");
-    assertEquals(Optional.of("M"),
-        findAttributeValue(result.getPatient().get(0).getContainer().get(0), "urn:dktk:dataelement:1:3"));
   }
 }

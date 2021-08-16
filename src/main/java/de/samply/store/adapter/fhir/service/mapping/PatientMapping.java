@@ -48,8 +48,8 @@ public class PatientMapping {
         "Observation.effective",
         DateTimeType.class, "urn:dktk:dataelement:48:3", DATE_STRING));
 
-    patientBuilder.addContainers(patientContainer.getConditionContainerList().stream()
-        .map(c -> diagnosisMapping.map(c.getCondition(), patient))
+    patientBuilder.addContainers(patientContainer.getConditionContainers().stream()
+        .map(c -> diagnosisMapping.map(c, patient))
         .collect(Collectors.toList()));
 
     patientBuilder.addContainers(patientContainer.getSpecimenList().stream()

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
@@ -15,7 +16,6 @@ import org.hl7.fhir.r4.model.Specimen;
 import org.jetbrains.annotations.NotNull;
 
 public class ResourceContainer {
-
 
   public Collection<PatientContainer> getPatientContainers() {
     return patientContainers.values();
@@ -61,95 +61,35 @@ public class ResourceContainer {
         case Condition -> {
           Condition condition = (Condition) resource;
           resourceContainer.getPatientContainer(condition.getSubject().getReference())
-              .addCondition(new ConditionContainer(condition));
+              .getConditionContainer("Condition/" + condition.getId()).setCondition(condition);
         }
         case Observation -> {
           Observation observation = (Observation) resource;
 
           var code = findFirstLonicCode(observation.getCode());
-          if (code.isPresent()) {
-            switch (code.get()) {
-              case "75186-7" -> {
-                resourceContainer.getPatientContainer(observation.getSubject().getReference()).setVitalState(observation);
-              }
-              // case "21907-1" -> resourceCondition.addMetastasis(observation);
-              // case "59847-4" -> resourceCondition.addHistology(observation);
-              // case "21908-9", "21902-2" -> resourceCondition.addTNM(observation);
+            if (code.equals(Optional.of("75186-7"))) {
+              resourceContainer.getPatientContainer(observation.getSubject().getReference())
+                  .setVitalState(observation);
             }
-          }
         }
         case Specimen -> {
           Specimen specimen = (Specimen) resource;
           resourceContainer.getPatientContainer(specimen.getSubject().getReference())
               .addSpecimen(specimen);
         }
-
+        case ClinicalImpression -> {
+          var clinicalImpression = (ClinicalImpression) entry.getResource();
+          resourceContainer.getPatientContainer(clinicalImpression.getSubject().getReference())
+              .getConditionContainer(clinicalImpression.getProblemFirstRep().getReference())
+              .getClinicalImpressionContainer("ClinicalImpression" + clinicalImpression.getId())
+              .setClinicalImpression(clinicalImpression);
+        }
       }
       resourceContainer.resources.put(
           resource.getResourceType() + "/" + resource.getIdElement().getIdPart(),
           resource);
     }
-
     return resourceContainer;
-
-/*
-      (entry.getResource().getResourceType().equals(ResourceType.Patient)) {
-      }
-
-
-
-        for (Bundle.BundleEntryComponent entry2 : bundle.getEntry()) {
-          if (entry2.getResource().getResourceType().equals(ResourceType.Specimen)) {
-            var specimen = (Specimen) entry.getResource();
-            if (specimen.getSubject().getId().equals(patient.getId())) {
-              paR.addSpecimen(specimen);
-            }
-          } else if (entry2.getResource().getResourceType().equals(ResourceType.Condition)) {
-
-            if (condition.getSubject().getId().equals(patient.getId())) {
-                List<String> evidenceIds = condition.getEvidence().stream().map(conditionEvidenceComponent -> conditionEvidenceComponent.getId());
-                List<>
-              for (Bundle.BundleEntryComponent entry3 : bundle.getEntry()) {
-                if (entry3.getResource().equals(ResourceType.Observation)) {
-                  var observation = (Observation) entry3.getResource();
-
-
-                } else if (entry3.getResource().equals(ResourceType.Procedure)) {
-                  Procedure procedure = (Procedure) entry3.getResource();
-                  if (procedure.getReasonReferenceFirstRep().getId().equals(condition.getId())) {
-                    resourceCondition.addProcedure(procedure);
-                  }
-                } else if (entry3.getResource().equals(ResourceType.MedicationStatement)) {
-                  MedicationStatement medicationStatement = (MedicationStatement) entry3.getResource();
-
-                  if (medicationStatement.getReasonReferenceFirstRep().getId()
-                      .equals(condition.getId())) {
-                    resourceCondition.addMedicationStatement(medicationStatement);
-                  }
-                } else if (entry3.getResource().equals(ResourceType.ClinicalImpression)) {
-                  ClinicalImpression clinicalImpression = (ClinicalImpression) entry3.getResource();
-                  if(clinicalImpression.getProblemFirstRep().getId().equals(condition.getId())) {
-                    resourceCondition.addClinicalImpression(clinicalImpression);
-                  }
-                }
-              }
-            }
-          }
-        }
-        patientResources.add(paR);
-      }
-    }
-          case ClinicalImpression:
-        var clinicalImpression = (ClinicalImpression) entry.getResource();
-        result.get(clinicalImpression.getSubject().getReferenceElement().getIdPart())
-            .add(clinicalImpression);
-        break;
-      case MedicationStatement:
-        var medicationStatement = (MedicationStatement) entry.getResource();
-        result.get(medicationStatement.getSubject().getReferenceElement().getIdPart())
-            .add(medicationStatement);
-    */
-
   }
 
   @NotNull

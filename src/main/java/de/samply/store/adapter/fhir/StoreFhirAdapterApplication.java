@@ -2,12 +2,16 @@ package de.samply.store.adapter.fhir;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
+import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
 import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
 import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping;
 import de.samply.store.adapter.fhir.service.mapping.HistologyMapping;
 import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.TNMMapping;
+import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -31,18 +35,17 @@ public class StoreFhirAdapterApplication {
   }
 
   @Bean
-  public Function<Map<String, Resource>, QueryResultMapping> mappingServiceFactory(FhirContext fhirContext) {
+  public Function<Map<String, Resource>, QueryResultMapping> mappingServiceFactory(
+      FhirContext fhirContext) {
     return resources -> {
       FhirPathR4 fhirPathEngine = new FhirPathR4(fhirContext,
           new MyIEvaluationContext(resources));
-      return new QueryResultMapping(new PatientMapping(fhirPathEngine, new DiagnosisMapping(fhirPathEngine),
+      return new QueryResultMapping(new PatientMapping(fhirPathEngine,
+          new DiagnosisMapping(fhirPathEngine, new TumorMapping(fhirPathEngine, new HistologyMapping(fhirPathEngine),
+               new MetastasisMapping(fhirPathEngine), new ProgressMapping(fhirPathEngine),
+              new TNMMapping(fhirPathEngine))),
           new SampleMapping(fhirPathEngine)));
     };
-  }
-
-  @Bean
-  public Function<FhirPathR4, HistologyMapping> histologyMappingFactory() {
-    return HistologyMapping::new;
   }
 
   @Bean
