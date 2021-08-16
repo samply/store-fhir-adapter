@@ -120,9 +120,11 @@ public class PatientMappingTest {
   void map_oneCondition() {
     PatientContainer patientContainer = createPatientContainer();
     var condition = new Condition();
-    patientContainer.addCondition(new ConditionContainer(condition));
+    var conditionContainer = new ConditionContainer();
+    conditionContainer.setCondition(condition);
+    patientContainer.addCondition(conditionContainer);
     Container diagnosis = new Container();
-    when(diagnosisMapping.map(condition, patientContainer.getPatient())).thenReturn(diagnosis);
+    when(diagnosisMapping.map(conditionContainer, patientContainer.getPatient())).thenReturn(diagnosis);
 
     var result = mapping.map(patientContainer);
 
@@ -133,13 +135,19 @@ public class PatientMappingTest {
   void map_twoConditions() {
     PatientContainer patientContainer = createPatientContainer();
     var condition1 = new Condition();
-    patientContainer.addCondition(new ConditionContainer(condition1));
+    condition1.setId("123");
     var condition2 = new Condition();
-    patientContainer.addCondition(new ConditionContainer(condition2));
+    condition2.setId("456");
+    var conditionContainer1 = new ConditionContainer();
+    conditionContainer1.setCondition(condition1);
+    var conditionContainer2 = new ConditionContainer();
+    conditionContainer2.setCondition(condition2);
+    patientContainer.addCondition(conditionContainer1);
+    patientContainer.addCondition(conditionContainer2);
     Container diagnosis1 = new Container();
     Container diagnosis2 = new Container();
-    when(diagnosisMapping.map(condition1, patientContainer.getPatient())).thenReturn(diagnosis1);
-    when(diagnosisMapping.map(condition2, patientContainer.getPatient())).thenReturn(diagnosis2);
+    when(diagnosisMapping.map(conditionContainer1, patientContainer.getPatient())).thenReturn(diagnosis1);
+    when(diagnosisMapping.map(conditionContainer2, patientContainer.getPatient())).thenReturn(diagnosis2);
 
     var result = mapping.map(patientContainer);
 

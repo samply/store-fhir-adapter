@@ -1,65 +1,36 @@
 package de.samply.store.adapter.fhir.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Procedure;
+import org.jetbrains.annotations.NotNull;
 
 public class ConditionContainer {
+
+  private Condition condition;
+
+  private final Map<String, ClinicalImpressionContainer> clinicalImpressionContainers = new HashMap<>();
 
   public Condition getCondition() {
     return condition;
   }
 
-  private final Condition condition;
-
-  //Contains all Progress objects, which are connected through the problem to Condition
-  // Has Surgery or Radiation or SystemTherarpy
-  private final List<ClinicalImpression> clinicalImpressions = new ArrayList<>();
-
-  //Contains all Histology objects from the Conditions evidence. The Histology has then a ref to the Gradings.
-
-  private List<Observation> histologyObservations = new ArrayList<>();
-  //Contains all Metastasis obejcts have a encounter which points to the condition. They have TMN Components through refs
-  private List<Observation> metastasisObservations = new ArrayList<>();
-  //Contians all Tmn objects from the Conditions stage.
-  private List<Observation> tnmObservations = new ArrayList<>();
-  private List<Procedure> procedureList = new ArrayList<>();
-
-  private List<MedicationStatement> medicationStatementList = new ArrayList<>();
-
-  public ConditionContainer(Condition condition) {
+  @NotNull
+  public void setCondition(Condition condition) {
     this.condition = condition;
   }
 
-  public void addClinicalImpression(ClinicalImpression clinicalImpression) {
-    clinicalImpressions.add(clinicalImpression);
+  @NotNull
+  public ClinicalImpressionContainer getClinicalImpressionContainer(String reference) {
+    return clinicalImpressionContainers.computeIfAbsent(reference, k -> new ClinicalImpressionContainer());
   }
 
-  public List<Observation> getHistologyObservations() {
-    return histologyObservations;
-  }
-
-  public void addHistology(Observation histology) {
-    histologyObservations.add(histology);
-  }
-
-  public void addMedicationStatement(MedicationStatement medicationStatement) {
-    medicationStatementList.add(medicationStatement);
-  }
-
-  public void addMetastasis(Observation meta) {
-    metastasisObservations.add(meta);
-  }
-
-  public void addTNM(Observation tnm) {
-    tnmObservations.add(tnm);
-  }
-
-  public void addProcedure(Procedure procedure) {
-    procedureList.add(procedure);
+  public Collection<ClinicalImpressionContainer> getClinicalImpressionContainers() {
+    return clinicalImpressionContainers.values();
   }
 }
