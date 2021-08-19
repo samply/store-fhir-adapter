@@ -1,7 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import de.samply.share.model.ccp.Container;
@@ -124,7 +123,8 @@ public class PatientMappingTest {
     conditionContainer.setCondition(condition);
     patientContainer.addCondition(conditionContainer);
     Container diagnosis = new Container();
-    when(diagnosisMapping.map(conditionContainer, patientContainer.getPatient())).thenReturn(diagnosis);
+    when(diagnosisMapping.map(conditionContainer, patientContainer.getPatient())).thenReturn(
+        diagnosis);
 
     var result = mapping.map(patientContainer);
 
@@ -146,12 +146,14 @@ public class PatientMappingTest {
     patientContainer.addCondition(conditionContainer2);
     Container diagnosis1 = new Container();
     Container diagnosis2 = new Container();
-    when(diagnosisMapping.map(conditionContainer1, patientContainer.getPatient())).thenReturn(diagnosis1);
-    when(diagnosisMapping.map(conditionContainer2, patientContainer.getPatient())).thenReturn(diagnosis2);
+    when(diagnosisMapping.map(conditionContainer1, patientContainer.getPatient())).thenReturn(
+        diagnosis1);
+    when(diagnosisMapping.map(conditionContainer2, patientContainer.getPatient())).thenReturn(
+        diagnosis2);
 
     var result = mapping.map(patientContainer);
 
-    assertEquals(List.of(diagnosis1,diagnosis2), result.getContainer());
+    assertEquals(List.of(diagnosis1, diagnosis2), result.getContainer());
   }
 
   @Test
@@ -178,7 +180,6 @@ public class PatientMappingTest {
     Container sample2 = new Container();
     when(sampleMapping.map(specimen1)).thenReturn(sample1);
     when(sampleMapping.map(specimen2)).thenReturn(sample2);
-
 
     var result = mapping.map(patientContainer);
 

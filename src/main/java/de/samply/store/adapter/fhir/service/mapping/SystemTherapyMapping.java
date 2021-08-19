@@ -7,9 +7,7 @@ import de.samply.store.adapter.fhir.service.FhirPathR4;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.MedicationStatement;
-import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
-import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**

@@ -23,7 +23,8 @@ public class RadiationTherapyTest {
 
   @BeforeEach
   void setUp() {
-    mapping = new RadiationTherapyMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
+    mapping = new RadiationTherapyMapping(
+        new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
   }
 
 

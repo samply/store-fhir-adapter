@@ -134,4 +134,9 @@ class ResourceContainerTest {
             .stream().findFirst().get().getClinicalImpressionContainers().stream().findFirst().get().getClinicalImpression());
     assertEquals(progress, container.getResources().get("ClinicalImpression/P123"));
   }
+
+  @Test
+  void testRealIds(){
+
+  }
 }

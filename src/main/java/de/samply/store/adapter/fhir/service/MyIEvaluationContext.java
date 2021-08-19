@@ -1,6 +1,5 @@
 package de.samply.store.adapter.fhir.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -16,7 +15,7 @@ public class MyIEvaluationContext implements IEvaluationContext {
 
   private final Map<String, Resource> resources;
 
-  public MyIEvaluationContext(){
+  public MyIEvaluationContext() {
     this(Map.of());
   }
 

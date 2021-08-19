@@ -49,7 +49,7 @@ public class TNMMappingTest {
       var comp = createCompontent(fhirTNMT, "21905-5", observation);
       var code = new CodeableConcept();
       code.getCodingFirstRep().setSystem(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
+              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
           .setCode(fhirPreT);
       comp.getExtensionFirstRep().setUrl(
           "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");
@@ -63,7 +63,7 @@ public class TNMMappingTest {
       var comp = createCompontent(fhirTNMN, "201906-3", observation);
       var code = new CodeableConcept();
       code.getCodingFirstRep().setSystem(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
+              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
           .setCode(fhirPreN);
       comp.getExtensionFirstRep().setUrl(
           "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");
@@ -75,7 +75,7 @@ public class TNMMappingTest {
 
       var code = new CodeableConcept();
       code.getCodingFirstRep().setSystem(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
+              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
           .setCode(fhirPreM);
       comp.getExtensionFirstRep().setUrl(
           "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");

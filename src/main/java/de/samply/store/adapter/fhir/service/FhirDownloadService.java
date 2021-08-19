@@ -2,9 +2,7 @@ package de.samply.store.adapter.fhir.service;
 
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import de.samply.store.adapter.fhir.model.Result;
 import java.util.Objects;
-import java.util.function.Supplier;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
 import org.slf4j.Logger;
@@ -30,7 +28,7 @@ public class FhirDownloadService {
   /**
    * Creates a new {@code FhirDownloadService}.
    *
-   * @param client the HAPI FHIR client
+   * @param client   the HAPI FHIR client
    * @param pageSize the number of patients per page
    */
   public FhirDownloadService(IGenericClient client, @Value("${app.store.page-size}") int pageSize) {

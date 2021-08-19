@@ -38,9 +38,9 @@ class SampleMappingTest {
     var container = mapping.map(specimen);
 
     assertEquals(Optional.ofNullable(kindValue),
-        findAttributeValue(container, "urn:dktk:dataelement:95:2"));
-    assertEquals(Optional.ofNullable(typeValue),
         findAttributeValue(container, "urn:dktk:dataelement:97:1"));
+    assertEquals(Optional.ofNullable(typeValue),
+        findAttributeValue(container, "urn:dktk:dataelement:95:2"));
     assertEquals(Optional.ofNullable(fixingValue),
         findAttributeValue(container, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.ofNullable(preserved),

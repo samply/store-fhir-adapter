@@ -10,14 +10,13 @@ import java.util.Optional;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Specimen;
-import org.jetbrains.annotations.NotNull;
 
 public class PatientContainer {
 
   private Patient patient;
   private Observation vitalState;
   private final Map<String, ConditionContainer> conditionContainers = new HashMap<>();
-  private final List<Specimen> specimenList  = new ArrayList<>();
+  private final List<Specimen> specimenList = new ArrayList<>();
 
   public Patient getPatient() {
     return patient;

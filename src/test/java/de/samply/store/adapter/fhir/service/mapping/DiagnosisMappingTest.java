@@ -104,23 +104,6 @@ class DiagnosisMappingTest {
   }
 
   @Test
-  void map_localization() {
-    var condition = new Condition();
-    condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setCode("C12.1");
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
-    when(fhirPathEngine.evaluateFirst(condition,
-        "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').code",
-        CodeType.class)).thenReturn(Optional.of(new CodeType("C12.1")));
-
-    var container = mapping.map(conditionContainer, patient);
-
-    var attribute = container.getAttribute().get(0);
-    assertEquals("urn:dktk:dataelement:4:2", attribute.getMdrKey());
-    assertEquals("C12.1", attribute.getValue().getValue());
-  }
-
-  @Test
   void map_ICDVersion() {
     var condition = new Condition();
     condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setVersion("2014");

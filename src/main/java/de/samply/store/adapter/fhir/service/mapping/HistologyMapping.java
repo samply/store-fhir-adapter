@@ -9,8 +9,7 @@ import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Patrick Skowronek
- * Outcome:
+ * @author Patrick Skowronek Outcome:
  */
 
 @Component
@@ -35,7 +34,8 @@ public class HistologyMapping {
     builder.addAttribute("Observation.value.coding.where(system = '" + URN + "').version",
         StringType.class, "urn:dktk:dataelement:8:2", PrimitiveType::getValue);
 
-    builder.addAttribute("Observation.hasMember.resolve().value.coding.where(system = '" + SYSTEM + "').code",
+    builder.addAttribute(
+        "Observation.hasMember.resolve().value.coding.where(system = '" + SYSTEM + "').code",
         CodeType.class, "urn:dktk:dataelement:9:2", PrimitiveType::getValue);
 
     return builder.build();

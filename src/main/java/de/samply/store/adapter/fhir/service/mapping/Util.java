@@ -8,7 +8,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.PrimitiveType;
 
 /**
@@ -80,7 +79,8 @@ public class Util {
   /**
    * This function transfomres a DateTimeType to a string wit Format
    */
-  public static final Function<PrimitiveType<?>, Optional<String>> DATE_STRING = lift(FORMAT_LOCAL_DATE)
+  public static final Function<PrimitiveType<?>, Optional<String>> DATE_STRING = lift(
+      FORMAT_LOCAL_DATE)
       .compose(LOCAL_DATE);
 }
 
