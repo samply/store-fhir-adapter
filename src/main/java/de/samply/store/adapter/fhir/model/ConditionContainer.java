@@ -1,14 +1,10 @@
 package de.samply.store.adapter.fhir.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.r4.model.ClinicalImpression;
+import java.util.Objects;
 import org.hl7.fhir.r4.model.Condition;
-import org.hl7.fhir.r4.model.Observation;
-import org.jetbrains.annotations.NotNull;
 
 public class ConditionContainer {
 
@@ -20,14 +16,15 @@ public class ConditionContainer {
     return condition;
   }
 
-  @NotNull
   public void setCondition(Condition condition) {
+    Objects.requireNonNull(condition);
     this.condition = condition;
   }
 
-  @NotNull
   public ClinicalImpressionContainer getClinicalImpressionContainer(String reference) {
-    return clinicalImpressionContainers.computeIfAbsent(reference, k -> new ClinicalImpressionContainer());
+    Objects.requireNonNull(reference);
+    return clinicalImpressionContainers.computeIfAbsent(reference,
+        k -> new ClinicalImpressionContainer());
   }
 
   public Collection<ClinicalImpressionContainer> getClinicalImpressionContainers() {

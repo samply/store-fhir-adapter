@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProgressMapping {
+
   private final FhirPathR4 fhirPathR4;
 
 
@@ -27,32 +28,12 @@ public class ProgressMapping {
 
     var builder = new ContainerBuilder(fhirPathR4, clinicalImpression, "Progress");
 
-    // builder.addAttribute("",
-     //   CodeType.class, "urn:dktk:dataelement:23:3", PrimitiveType::getValue);
-
-    builder.addAttribute("ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '21976-6').value.coding.code",
+    builder.addAttribute(
+        "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '21976-6').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:24:3", PrimitiveType::getValue);
 
     builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
         "urn:dktk:dataelement:25:4", DATE_STRING);
-
-    //  builder.addAttribute("",
-    //     CodeType.class, "urn:dktk:dataelement:33:2", PrimitiveType::getValue);
-
-    //builder.addAttribute("",
-    //   CodeType.class, "urn:dktk:dataelement:34:2", PrimitiveType::getValue);
-
-    // builder.addAttribute("",
-    //   CodeType.class, "urn:dktk:dataelement:36:2", PrimitiveType::getValue);
-
-    // builder.addAttribute("",
-    // CodeType.class, "urn:dktk:dataelement:38:2", PrimitiveType::getValue);
-
-    // builder.addAttribute("",
-    //    CodeType.class, "urn:dktk:dataelement:39:2", PrimitiveType::getValue);
-
-    //builder.addAttribute("",
-    //   CodeType.class, "urn:dktk:dataelement:40:2", PrimitiveType::getValue);
 
     builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
         "urn:dktk:dataelement:43:3", DATE_STRING);
@@ -60,24 +41,20 @@ public class ProgressMapping {
     builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
         "urn:dktk:dataelement:45:3", DATE_STRING);
 
-    //builder.addAttribute("",
-    //   CodeType.class, "urn:dktk:dataelement:69:2", PrimitiveType::getValue);
-
-    //builder.addAttribute("",
-    //   CodeType.class, "urn:dktk:dataelement:70:3", PrimitiveType::getValue);
-
-    builder.addAttribute("ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = 'LA4583-6').value.coding.code",
+    builder.addAttribute(
+        "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = 'LA4583-6').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:72:2", PrimitiveType::getValue);
 
-
-    builder.addAttribute("ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = 'LA4370-8').value.coding.code",
+    builder.addAttribute(
+        "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = 'LA4370-8').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:73:2", PrimitiveType::getValue);
 
-    builder.addAttribute("ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '21907-1').value.coding.code",
+    builder.addAttribute(
+        "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '21907-1').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:74:2", PrimitiveType::getValue);
 
     return builder.build();
   }
 
 
-  }
+}

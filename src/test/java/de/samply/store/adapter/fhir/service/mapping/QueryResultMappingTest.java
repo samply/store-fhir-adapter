@@ -1,13 +1,10 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import de.samply.store.adapter.fhir.model.PatientContainer;
-import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
-import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
 import java.util.List;
 import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeEach;

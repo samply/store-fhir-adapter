@@ -5,18 +5,15 @@ import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import ca.uhn.fhir.context.FhirContext;
+import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.model.ConditionContainer;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.List;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
-import de.samply.share.model.ccp.Container;
-import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Reference;

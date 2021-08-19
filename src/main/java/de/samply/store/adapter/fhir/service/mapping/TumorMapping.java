@@ -71,7 +71,6 @@ public class TumorMapping {
         .map(impression -> progressMapping.map(
             impression.getClinicalImpression())).collect(Collectors.toList()));
 
-
     return builder.build();
   }
 }

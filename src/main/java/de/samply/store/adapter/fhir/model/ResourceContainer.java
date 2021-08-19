@@ -61,16 +61,17 @@ public class ResourceContainer {
         case Condition -> {
           Condition condition = (Condition) resource;
           resourceContainer.getPatientContainer(condition.getSubject().getReference())
-              .getConditionContainer("Condition/" + condition.getId()).setCondition(condition);
+              .getConditionContainer("Condition/" + condition.getIdElement().getIdPart())
+              .setCondition(condition);
         }
         case Observation -> {
           Observation observation = (Observation) resource;
 
           var code = findFirstLonicCode(observation.getCode());
-            if (code.equals(Optional.of("75186-7"))) {
-              resourceContainer.getPatientContainer(observation.getSubject().getReference())
-                  .setVitalState(observation);
-            }
+          if (code.equals(Optional.of("75186-7"))) {
+            resourceContainer.getPatientContainer(observation.getSubject().getReference())
+                .setVitalState(observation);
+          }
         }
         case Specimen -> {
           Specimen specimen = (Specimen) resource;
@@ -81,7 +82,8 @@ public class ResourceContainer {
           var clinicalImpression = (ClinicalImpression) entry.getResource();
           resourceContainer.getPatientContainer(clinicalImpression.getSubject().getReference())
               .getConditionContainer(clinicalImpression.getProblemFirstRep().getReference())
-              .getClinicalImpressionContainer("ClinicalImpression" + clinicalImpression.getId())
+              .getClinicalImpressionContainer(
+                  "ClinicalImpression" + clinicalImpression.getIdElement().getIdPart())
               .setClinicalImpression(clinicalImpression);
         }
       }

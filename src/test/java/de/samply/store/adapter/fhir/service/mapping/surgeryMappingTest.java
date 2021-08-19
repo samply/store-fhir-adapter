@@ -30,15 +30,20 @@ public class surgeryMappingTest {
 
   @ParameterizedTest
   @CsvFileSource(resources = "/surgeryMappings.csv", numLinesToSkip = 1)
-  void map_HistologyObservationCSVFile(String fhirLocalRest, String fhirTotalRest, String dktkLocalRest, String dktkTotalRest
-      ) {
+  void map_HistologyObservationCSVFile(String fhirLocalRest, String fhirTotalRest,
+      String dktkLocalRest, String dktkTotalRest
+  ) {
     Procedure procedure = new Procedure();
     CodeableConcept codeCon = new CodeableConcept();
     Coding codeLocal = new Coding();
-    codeLocal.setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS").setCode(fhirLocalRest);
+    codeLocal.setSystem(
+            "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS")
+        .setCode(fhirLocalRest);
     Coding codeTotal = new Coding();
-    codeTotal.setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS").setCode(fhirTotalRest);
-    codeCon.setCoding(List.of(codeLocal,codeTotal));
+    codeTotal.setSystem(
+            "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS")
+        .setCode(fhirTotalRest);
+    codeCon.setCoding(List.of(codeLocal, codeTotal));
     procedure.setOutcome(codeCon);
 
     var container = mapping.map(procedure);

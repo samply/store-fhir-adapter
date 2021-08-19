@@ -5,7 +5,6 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 import de.samply.share.model.ccp.Patient;
 import de.samply.store.adapter.fhir.model.PatientContainer;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-
 import de.samply.store.adapter.fhir.service.PatientBuilder;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.CodeType;
@@ -22,7 +21,8 @@ public class PatientMapping {
   private DiagnosisMapping diagnosisMapping;
   private SampleMapping sampleMapping;
 
-  public PatientMapping(FhirPathR4 fhirPathEngine, DiagnosisMapping diagnosisMapping, SampleMapping sampleMapping) {
+  public PatientMapping(FhirPathR4 fhirPathEngine, DiagnosisMapping diagnosisMapping,
+      SampleMapping sampleMapping) {
     this.fhirPathEngine = fhirPathEngine;
 
     this.diagnosisMapping = diagnosisMapping;
@@ -35,7 +35,7 @@ public class PatientMapping {
     var patientBuilder = new PatientBuilder(fhirPathEngine, patient);
 
     patientBuilder.addAttribute("Patient.gender", Enumeration.class, "urn:dktk:dataelement:1:3",
-          gen -> mapGenderValue(gen.getValueAsString()));
+        gen -> mapGenderValue(gen.getValueAsString()));
 
     patientBuilder.addAttributeOptional("Patient.birthDate", DateType.class,
         "urn:dktk:dataelement:26:4", DATE_STRING);

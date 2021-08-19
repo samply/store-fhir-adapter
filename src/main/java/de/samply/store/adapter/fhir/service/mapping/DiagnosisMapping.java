@@ -6,8 +6,8 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.lift2;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.model.ConditionContainer;
-import java.time.LocalDate;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.time.LocalDate;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DecimalType;
@@ -46,7 +46,8 @@ public class DiagnosisMapping {
    *
    * @param conditionContainer the Conditioncontainer which holds the condition and other resources
    *                           like the ClinicalImpression
-   * @param pa                 To map the Patient age and in some cases the age on first diagnosis, the patient with birthday is required
+   * @param pa                 To map the Patient age and in some cases the age on first diagnosis,
+   *                           the patient with birthday is required
    * @return the Diagnosis container
    */
   public Container map(ConditionContainer conditionContainer, Patient pa) {
@@ -82,8 +83,6 @@ public class DiagnosisMapping {
                   .apply(LOCAL_DATE.apply(pa.getBirthDateElement()),
                       LOCAL_DATE.apply(onsetDateTime)));
     }
-    builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').code",
-        CodeType.class, "urn:dktk:dataelement:4:2", PrimitiveType::getValue);
 
     builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
         StringType.class, "urn:dktk:dataelement:3:2", s -> "10 " + s + " GM");

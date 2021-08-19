@@ -20,9 +20,13 @@ public class SurgeryMapping {
   public Container map(Procedure procedure) {
     var builder = new ContainerBuilder(fhirPathR4, procedure, "Surgery");
 
-    builder.addAttribute("Procedure.outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS').code", CodeType.class,
+    builder.addAttribute(
+        "Procedure.outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS').code",
+        CodeType.class,
         "urn:dktk:dataelement:19:2", PrimitiveType::getValue);
-    builder.addAttribute("Procedure.outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS').code", CodeType.class,
+    builder.addAttribute(
+        "Procedure.outcome.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS').code",
+        CodeType.class,
         "urn:dktk:dataelement:20:3", PrimitiveType::getValue);
 
     return builder.build();

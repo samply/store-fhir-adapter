@@ -1,6 +1,5 @@
 package de.samply.store.adapter.fhir.service;
 
-import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.share.model.ccp.Patient;
 import de.samply.store.adapter.fhir.service.mapping.AbstractBuilder;

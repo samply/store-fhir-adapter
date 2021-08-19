@@ -29,7 +29,8 @@ public class MetastasisMapping {
     builder.addAttribute("Observation.bodySite.coding.code",
         StringType.class, "urn:dktk:dataelement:98:1", PrimitiveType::getValue);
 
-    builder.addAttributeOptional("Observation.effective", DateTimeType.class, "urn:dktk:dataelement:21:3",
+    builder.addAttributeOptional("Observation.effective", DateTimeType.class,
+        "urn:dktk:dataelement:21:3",
         DATE_STRING);
 
     return builder.build();

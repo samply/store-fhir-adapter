@@ -41,24 +41,28 @@ public class ProgressMappingTest {
     List<ClinicalImpressionFindingComponent> refs;
     refs = new ArrayList<>();
 
-    if(fhirRezidiv != null) {
+    if (fhirRezidiv != null) {
       findings.put("Observation/rez123", createObsevation("LA4583-6", "rez123", fhirRezidiv));
-      refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/rez123")));
+      refs.add(new ClinicalImpressionFindingComponent().setItemReference(
+          new Reference("Observation/rez123")));
     }
 
-    if(fhirReaktion != null) {
+    if (fhirReaktion != null) {
       findings.put("Observation/r123", createObsevation("21976-6", "r123", fhirReaktion));
-      refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/r123")));
+      refs.add(new ClinicalImpressionFindingComponent().setItemReference(
+          new Reference("Observation/r123")));
     }
 
-    if(fhirLymphnode != null) {
+    if (fhirLymphnode != null) {
       findings.put("Observation/lym123", createObsevation("LA4370-8", "lym123", fhirLymphnode));
-      refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/lym123")));
+      refs.add(new ClinicalImpressionFindingComponent().setItemReference(
+          new Reference("Observation/lym123")));
     }
 
-    if(fhirmetastasis != null) {
+    if (fhirmetastasis != null) {
       findings.put("Observation/meta123", createObsevation("21907-1", "meta123", fhirmetastasis));
-      refs.add(new ClinicalImpressionFindingComponent().setItemReference(new Reference("Observation/meta123")));
+      refs.add(new ClinicalImpressionFindingComponent().setItemReference(
+          new Reference("Observation/meta123")));
     }
 
     clinicalImpression.setFinding(refs);
@@ -82,7 +86,7 @@ public class ProgressMappingTest {
   }
 
   @NotNull
-  private Observation createObsevation(String code,String ref, String fhirCode ) {
+  private Observation createObsevation(String code, String ref, String fhirCode) {
     var ob = new Observation();
     ob.setId(ref);
     ob.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode(code);

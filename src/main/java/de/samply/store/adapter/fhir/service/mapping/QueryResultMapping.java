@@ -2,7 +2,6 @@ package de.samply.store.adapter.fhir.service.mapping;
 
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.store.adapter.fhir.model.PatientContainer;
-import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
