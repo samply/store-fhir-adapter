@@ -46,12 +46,23 @@ public class surgeryMappingTest {
     codeCon.setCoding(List.of(codeLocal, codeTotal));
     procedure.setOutcome(codeCon);
 
-    var container = mapping.map(procedure);
+    var progressContainer = mapping.map(procedure);
+
+    assertEquals("Progress", progressContainer.getDesignation());
+    assertEquals(Optional.ofNullable("true"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:33:2"));
+    assertEquals(Optional.ofNullable("X"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:23:3"));
+    assertEquals(Optional.ofNullable(dktkTotalRest),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:25:4"));
+
+    var surgeryContainer = progressContainer.getContainer().get(0);
+    assertEquals("Surgery", surgeryContainer.getDesignation());
 
     assertEquals(Optional.ofNullable(dktkLocalRest),
-        findAttributeValue(container, "urn:dktk:dataelement:19:2"));
+        findAttributeValue(surgeryContainer, "urn:dktk:dataelement:19:2"));
     assertEquals(Optional.ofNullable(dktkTotalRest),
-        findAttributeValue(container, "urn:dktk:dataelement:20:3"));
+        findAttributeValue(surgeryContainer, "urn:dktk:dataelement:20:3"));
   }
 
 }
