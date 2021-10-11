@@ -36,12 +36,25 @@ public class RadiationTherapyTest {
     period.setEndElement(new DateTimeType("2017-03-16"));
     therapy.setPerformed(period);
 
-    var container = mapping.map(therapy);
+    var progressContainer = mapping.map(therapy);
+
+    assertEquals("Progress", progressContainer.getDesignation());
+    assertEquals(Optional.of("true"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+    assertEquals(Optional.of("K"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:67:2"));
+    assertEquals(Optional.of("A"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:68:3"));
+    assertEquals(Optional.of("16.03.2017"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:25:4"));
+
+    var therapyContainer = progressContainer.getContainer().get(0);
+    assertEquals("RadiationTherapy", therapyContainer.getDesignation());
 
     assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
+        findAttributeValue(therapyContainer, "urn:dktk:dataelement:77:1"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+        findAttributeValue(therapyContainer, "urn:dktk:dataelement:78:1"));
   }
 
   @Test

@@ -35,12 +35,19 @@ public class SystemTherapyTest {
     period.setEndElement(new DateTimeType("2017-03-16"));
     therapy.setEffective(period);
 
-    var container = mapping.map(therapy);
+    var progressContainer = mapping.map(therapy);
+    assertEquals("Progress", progressContainer.getDesignation());
+
+    assertEquals(Optional.of("true"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+
+    var systemContainer = progressContainer.getContainer().get(0);
+    assertEquals("SystemTherapy", systemContainer.getDesignation());
 
     assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:90:1"));
+        findAttributeValue(systemContainer, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:93:1"));
+        findAttributeValue(systemContainer, "urn:dktk:dataelement:93:1"));
   }
 
   @Test
@@ -53,13 +60,20 @@ public class SystemTherapyTest {
     therapy.getMedicationCodeableConcept().getCodingFirstRep()
         .setCode("Epirubicin Taxotere Cyclophosphamid");
 
-    var container = mapping.map(therapy);
+    var progressContainer = mapping.map(therapy);
+    assertEquals("Progress", progressContainer.getDesignation());
+
+    assertEquals(Optional.of("true"),
+        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+
+    var systemContainer = progressContainer.getContainer().get(0);
+    assertEquals("SystemTherapy", systemContainer.getDesignation());
 
     assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:90:1"));
+        findAttributeValue(systemContainer, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:93:1"));
+        findAttributeValue(systemContainer, "urn:dktk:dataelement:93:1"));
     assertEquals(Optional.of("Epirubicin Taxotere Cyclophosphamid"),
-        findAttributeValue(container, "urn:dktk:dataelement:91:1"));
+        findAttributeValue(systemContainer, "urn:dktk:dataelement:91:1"));
   }
 }

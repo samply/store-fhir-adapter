@@ -1,9 +1,10 @@
-FROM gcr.io/distroless/java-debian10:11
+FROM adoptopenjdk:15-jre-hotspot
 
 
-COPY --chown=nonroot:nonroot target/store-fhir-adapter.jar /app/
+COPY target/store-fhir-adapter.jar /app/
 
-USER nonroot
 WORKDIR /app
 
-CMD ["store-fhir-adapter.jar"]
+
+
+CMD ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005", "-jar", "store-fhir-adapter.jar"]
