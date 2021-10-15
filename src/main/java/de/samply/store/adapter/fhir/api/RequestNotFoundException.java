@@ -9,8 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
  * An exception indicating that a request was not found.
  *
  * <p>Will produce a 404 Not Found response.
- *
- * @author Alexander Kiel
  */
 public final class RequestNotFoundException extends ResponseStatusException {
 

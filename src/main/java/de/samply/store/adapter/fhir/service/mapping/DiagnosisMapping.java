@@ -5,21 +5,19 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.LOCAL_DATE;
 import static de.samply.store.adapter.fhir.service.mapping.Util.lift2;
 
 import de.samply.share.model.ccp.Container;
-import de.samply.store.adapter.fhir.model.ConditionContainer;
+import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.time.LocalDate;
+import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DecimalType;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**
- * Mapping of the Diagnosis container.
- *
- * @author Alexander Kiel
+ * Mapping of a FHIR Condition and other resources to MDS Diagnosis.
  */
 @Component
 public class DiagnosisMapping {
@@ -30,28 +28,20 @@ public class DiagnosisMapping {
   private final FhirPathR4 fhirPathR4;
   private final TumorMapping tumorMapping;
 
-  public DiagnosisMapping(FhirPathR4 fhirPathR4,
-      TumorMapping tumorMapping) {
-    this.fhirPathR4 = fhirPathR4;
-    this.tumorMapping = tumorMapping;
-  }
-
-
-  private static String calcAgeValue(LocalDate birthDate, LocalDate firstConditionOnset) {
-    return Integer.toString(birthDate.until(firstConditionOnset).getYears());
+  public DiagnosisMapping(FhirPathR4 fhirPathR4, TumorMapping tumorMapping) {
+    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+    this.tumorMapping = Objects.requireNonNull(tumorMapping);
   }
 
   /**
-   * Maps the Condition resource into a Diagnosis container.
+   * Maps a FHIR Condition and other resources to MDS Diagnosis.
    *
-   * @param conditionContainer the Conditioncontainer which holds the condition and other resources
-   *                           like the ClinicalImpression
-   * @param pa                 To map the Patient age and in some cases the age on first diagnosis,
-   *                           the patient with birthday is required
-   * @return the Diagnosis container
+   * @param node the condition node which holds the Condition and other resources like the
+   *             ClinicalImpression
+   * @return the MDS Diagnosis
    */
-  public Container map(ConditionContainer conditionContainer, Patient pa) {
-    var condition = conditionContainer.getCondition();
+  public Container map(ConditionNode node) {
+    var condition = node.condition();
     var builder = new ContainerBuilder(fhirPathR4, condition, "Diagnosis");
 
     builder.addAttribute("Condition.code.coding.where(system = '" + ICD_10_GM + "').code",
@@ -69,7 +59,7 @@ public class DiagnosisMapping {
               DATE_STRING);
     }
 
-    //TODO: Next ocnology version will enforce datetime
+    //TODO: Next oncology version will enforce datetime
     if (condition.hasOnsetDateTimeType()) {
       builder
           .addAttributeOptional("Condition.onset", DateTimeType.class, "urn:dktk:dataelement:83:3",
@@ -80,16 +70,19 @@ public class DiagnosisMapping {
           .addAttributeOptional("Condition.onset", DateTimeType.class,
               "urn:dktk:dataelement:28:1",
               onsetDateTime -> lift2(DiagnosisMapping::calcAgeValue)
-                  .apply(LOCAL_DATE.apply(pa.getBirthDateElement()),
+                  .apply(LOCAL_DATE.apply(node.patient().getBirthDateElement()),
                       LOCAL_DATE.apply(onsetDateTime)));
     }
 
     builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
         StringType.class, "urn:dktk:dataelement:3:2", s -> "10 " + s + " GM");
 
-    builder.addContainer(tumorMapping.map(conditionContainer));
+    builder.addContainer(tumorMapping.map(node));
 
     return builder.build();
   }
 
+  private static String calcAgeValue(LocalDate birthDate, LocalDate firstConditionOnset) {
+    return Integer.toString(birthDate.until(firstConditionOnset).getYears());
+  }
 }

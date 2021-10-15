@@ -8,8 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
  * An exception indicating that a URL of a page was not found in a result.
  *
  * <p>Will produce a 404 Not Found response.
- *
- * @author Alexander Kiel
  */
 public final class MissingPageUrlException extends ResponseStatusException {
 
@@ -19,7 +17,7 @@ public final class MissingPageUrlException extends ResponseStatusException {
   /**
    * Creates a new {@code MissingPageUrlException}.
    *
-   * @param id the identifier of the request
+   * @param id      the identifier of the request
    * @param pageNum the number of the page that was not found
    */
   public MissingPageUrlException(String id, int pageNum) {

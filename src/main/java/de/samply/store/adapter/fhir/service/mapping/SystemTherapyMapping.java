@@ -4,6 +4,7 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.MedicationStatement;
@@ -11,21 +12,29 @@ import org.hl7.fhir.r4.model.PrimitiveType;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Patrick Skowronek
+ * Mapping of FHIR MedicationStatement to MDS SystemTherapy.
  */
-
 @Component
 public class SystemTherapyMapping {
 
   private final FhirPathR4 fhirPathR4;
 
-
+  /**
+   * Creates a new SystemTherapyMapping.
+   *
+   * @param fhirPathR4 the FHIRPath engine
+   */
   public SystemTherapyMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = fhirPathR4;
+    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
   }
 
+  /**
+   * Maps FHIR MedicationStatement to MDS SystemTherapy.
+   *
+   * @param medicationStatement the FHIR MedicationStatement
+   * @return the MDS SystemTherapy
+   */
   public Container map(MedicationStatement medicationStatement) {
-
     var builder = new ContainerBuilder(fhirPathR4, medicationStatement, "SystemTherapy");
 
     builder.addAttributeOptional("MedicationStatement.effective.start",
@@ -37,9 +46,8 @@ public class SystemTherapyMapping {
     builder.addAttribute("MedicationStatement.medication.coding.code",
         CodeType.class, "urn:dktk:dataelement:91:1", PrimitiveType::getValue);
 
-    //TODO: Add Protocl
+    //TODO: Add Protocol
 
     return builder.build();
   }
-
 }

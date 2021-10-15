@@ -4,6 +4,7 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
@@ -11,15 +12,29 @@ import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapping of FHIR Observation to MDS TNM container.
+ */
 @Component
-public class TNMMapping {
+public class TnmMapping {
 
   private final FhirPathR4 fhirPathR4;
 
-  public TNMMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = fhirPathR4;
+  /**
+   * Creates a new TnmMapping.
+   *
+   * @param fhirPathR4 the FHIRPath engine
+   */
+  public TnmMapping(FhirPathR4 fhirPathR4) {
+    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
   }
 
+  /**
+   * Maps FHIR TNM Observation to MDS TNM container.
+   *
+   * @param tnm the FHIR TNM Observation
+   * @return the MDS TNM container
+   */
   public Container map(Observation tnm) {
     var builder = new ContainerBuilder(fhirPathR4, tnm, "TNM");
 

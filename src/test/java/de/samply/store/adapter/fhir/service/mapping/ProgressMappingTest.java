@@ -4,8 +4,9 @@ import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
+import de.samply.store.adapter.fhir.model.ClinicalImpressionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +18,8 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-
-/**
- * @author Patrick Skowronek
- */
 
 public class ProgressMappingTest {
 
@@ -42,35 +38,35 @@ public class ProgressMappingTest {
     refs = new ArrayList<>();
 
     if (fhirRezidiv != null) {
-      findings.put("Observation/rez123", createObsevation("LA4583-6", "rez123", fhirRezidiv));
+      findings.put("Observation/rez123", createObservation("LA4583-6", "rez123", fhirRezidiv));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(
           new Reference("Observation/rez123")));
     }
 
     if (fhirReaktion != null) {
-      findings.put("Observation/r123", createObsevation("21976-6", "r123", fhirReaktion));
+      findings.put("Observation/r123", createObservation("21976-6", "r123", fhirReaktion));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(
           new Reference("Observation/r123")));
     }
 
     if (fhirLymphnode != null) {
-      findings.put("Observation/lym123", createObsevation("LA4370-8", "lym123", fhirLymphnode));
+      findings.put("Observation/lym123", createObservation("LA4370-8", "lym123", fhirLymphnode));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(
           new Reference("Observation/lym123")));
     }
 
     if (fhirmetastasis != null) {
-      findings.put("Observation/meta123", createObsevation("21907-1", "meta123", fhirmetastasis));
+      findings.put("Observation/meta123", createObservation("21907-1", "meta123", fhirmetastasis));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(
           new Reference("Observation/meta123")));
     }
 
     clinicalImpression.setFinding(refs);
 
-    var mapping = new ProgressMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext(
+    var mapping = new ProgressMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext(
         findings)));
 
-    var container = mapping.map(clinicalImpression);
+    var container = mapping.map(new ClinicalImpressionNode(clinicalImpression));
 
     assertEquals(Optional.ofNullable(dktkDate),
         findAttributeValue(container, "urn:dktk:dataelement:25:4"));
@@ -85,8 +81,7 @@ public class ProgressMappingTest {
 
   }
 
-  @NotNull
-  private Observation createObsevation(String code, String ref, String fhirCode) {
+  private Observation createObservation(String code, String ref, String fhirCode) {
     var ob = new Observation();
     ob.setId(ref);
     ob.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode(code);

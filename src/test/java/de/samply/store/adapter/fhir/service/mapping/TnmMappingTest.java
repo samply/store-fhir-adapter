@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -16,18 +16,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-/**
- * @author Patrick Skowronek
- */
+public class TnmMappingTest {
 
-
-public class TNMMappingTest {
-
-  private TNMMapping mapping;
+  private TnmMapping mapping;
 
   @BeforeEach
   void setUp() {
-    mapping = new TNMMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
+    mapping = new TnmMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext()));
   }
 
   @ParameterizedTest

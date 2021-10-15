@@ -11,15 +11,18 @@ import org.hl7.fhir.r4.model.TypeDetails;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.utils.FHIRPathEngine.IEvaluationContext;
 
-public class MyIEvaluationContext implements IEvaluationContext {
+/**
+ * An evaluation context holding a map of resources that are resolvable through FHIRPath.
+ */
+public class EvaluationContext implements IEvaluationContext {
 
   private final Map<String, Resource> resources;
 
-  public MyIEvaluationContext() {
+  public EvaluationContext() {
     this(Map.of());
   }
 
-  public MyIEvaluationContext(Map<String, Resource> resources) {
+  public EvaluationContext(Map<String, Resource> resources) {
     Objects.requireNonNull(resources);
     this.resources = resources;
   }

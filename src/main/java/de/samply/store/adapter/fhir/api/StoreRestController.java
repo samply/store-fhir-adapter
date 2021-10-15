@@ -28,8 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * The complete REST API of the Store-FHIR-Adapter.
- *
- * @author Alexander Kiel
  */
 @RestController
 @RequestMapping("/rest")
@@ -53,7 +51,7 @@ public class StoreRestController {
    * @param pageSize        the number of patients per page
    * @param version         the application version
    */
-  public StoreRestController(FhirDownloadService downloadService,  MappingService mappingService,
+  public StoreRestController(FhirDownloadService downloadService, MappingService mappingService,
       ResultStore resultStore, @Value("${app.store.page-size}") int pageSize,
       @Value("${app.version}") String version,
       @Value("${app.base-url}") String baseUrl) {
@@ -102,7 +100,7 @@ public class StoreRestController {
   }
 
   private URI createRequestUrl(de.samply.store.adapter.fhir.model.Result result) {
-    return URI.create(baseUrl + "/rest/teiler/requests/" + result.getId());
+    return URI.create(baseUrl + "/rest/teiler/requests/" + result.id());
   }
 
   /**
@@ -120,8 +118,8 @@ public class StoreRestController {
     var result = resultStore.get(id);
     if (result.isPresent()) {
       var stats = new QueryResultStatistic();
-      stats.setNumberOfPages((int) Math.ceil((double) result.get().getTotal() / pageSize));
-      stats.setTotalSize(result.get().getTotal());
+      stats.setNumberOfPages((int) Math.ceil((double) result.get().total() / pageSize));
+      stats.setTotalSize(result.get().total());
       stats.setRequestId(id);
       return stats;
     } else {

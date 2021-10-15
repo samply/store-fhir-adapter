@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
  *
  * <p>Currently, it is sufficient to store results in-memory because they are only needed during
  * one run of pages.
- *
- * @author Alexander Kiel
  */
 @Component
 public class ResultStore {
@@ -53,7 +51,7 @@ public class ResultStore {
   public Result create(Bundle bundle) throws BundleWithoutSelfUrlException {
     var id = resultIdSupplier.get();
     logger.debug("create result with id {}", id);
-    var result = Result.of(id, bundle.getTotal());
+    var result = new Result(id, bundle.getTotal());
     results.put(id, new InternalResult(result, bundle));
     return result;
   }

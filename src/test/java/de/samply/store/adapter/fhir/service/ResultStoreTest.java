@@ -10,14 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * @author Alexander Kiel
- */
 @ExtendWith(MockitoExtension.class)
 class ResultStoreTest {
 
   public static final String RESULT_ID = "id-194129";
-  public static final Result RESULT = Result.of(RESULT_ID, 0);
+  public static final Result RESULT = new Result(RESULT_ID, 0);
 
   private ResultStore store;
 

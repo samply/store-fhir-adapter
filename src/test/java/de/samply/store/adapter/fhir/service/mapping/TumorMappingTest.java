@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import de.samply.share.model.ccp.Container;
-import de.samply.store.adapter.fhir.model.ConditionContainer;
+import de.samply.store.adapter.fhir.model.ClinicalImpressionNode;
+import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,15 +28,11 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * @author Patrick Skowronek
- */
-
 @ExtendWith(MockitoExtension.class)
 public class TumorMappingTest {
 
   private static final String ADT_Site = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
-  private final String url = "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
+  private static final String EXTENSION_FERNMETASTASEN = "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
 
   private TumorMapping mapping;
 
@@ -51,11 +49,12 @@ public class TumorMappingTest {
   private MetastasisMapping metaMapping;
 
   @Mock(lenient = true)
-  private TNMMapping tnmMapping;
+  private TnmMapping tnmMapping;
 
   @BeforeEach
   void setUp() {
-    mapping = new TumorMapping(fhirPathEngine, histologyMapping, metaMapping, progressMapping, tnmMapping);
+    mapping = new TumorMapping(fhirPathEngine, histologyMapping, metaMapping, progressMapping,
+        tnmMapping);
   }
 
   @ParameterizedTest
@@ -64,22 +63,26 @@ public class TumorMappingTest {
       String FHIR_ICD10, String FHIR_ICD_O_3, String FHIR_ADT_Site, String DKTK_ICD10,
       String DKTK_ICD_O_3, String DKTK_site
   ) {
-    ConditionContainer conditionContainer = new ConditionContainer();
+    var patient = new Patient();
     var condition = new Condition();
     condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setCode(FHIR_ICD10)
         .setVersion(FHIR_ICD_O_3);
-    var coding = new Coding().setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS")
+    var coding = new Coding().setSystem(
+            "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS")
         .setCode(FHIR_ADT_Site);
     condition.getBodySiteFirstRep().addCoding(coding);
-    conditionContainer.setCondition(condition);
-    when(fhirPathEngine.evaluateFirst(condition, "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').code",
+    var conditionNode = new ConditionNode(patient, condition);
+    when(fhirPathEngine.evaluateFirst(condition,
+        "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').code",
         CodeType.class)).thenReturn(Optional.of(new CodeType(DKTK_ICD10)));
-    when(fhirPathEngine.evaluateFirst(condition, "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
+    when(fhirPathEngine.evaluateFirst(condition,
+        "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
         StringType.class)).thenReturn(Optional.of(new StringType(DKTK_ICD_O_3)));
-    when(fhirPathEngine.evaluateFirst(condition, "Condition.bodySite.coding.where(system = '" + ADT_Site + "').code",
+    when(fhirPathEngine.evaluateFirst(condition,
+        "Condition.bodySite.coding.where(system = '" + ADT_Site + "').code",
         CodeType.class)).thenReturn(Optional.of(new CodeType(DKTK_site)));
 
-    var container = mapping.map(conditionContainer);
+    var container = mapping.map(conditionNode);
 
     assertEquals(Optional.ofNullable(DKTK_ICD10),
         findAttributeValue(container, "urn:dktk:dataelement:4:2"));
@@ -90,72 +93,77 @@ public class TumorMappingTest {
   }
 
   @Test
-  void map_Histology(){
-    ConditionContainer conditionContainer = new ConditionContainer();
+  void map_Histology() {
+    var patient = new Patient();
     var condition = new Condition();
     condition.setId("C123");
-    conditionContainer.setCondition(condition);
     condition.getEvidenceFirstRep().getDetailFirstRep().setReference("123");
-    var histoContainer = new Container();
-    Observation observation = new Observation();
-    when(fhirPathEngine.evaluate(condition, "Condition.evidence.detail.resolve()", Observation.class)).thenReturn(
+    var conditionNode = new ConditionNode(patient, condition);
+    var observation = new Observation();
+    var histologyContainer = new Container();
+    when(fhirPathEngine.evaluate(condition, "Condition.evidence.detail.resolve()",
+        Observation.class)).thenReturn(
         List.of(observation));
-    when(histologyMapping.map(observation)).thenReturn(histoContainer);
+    when(histologyMapping.map(observation)).thenReturn(histologyContainer);
 
-    var container = mapping.map(conditionContainer);
+    var container = mapping.map(conditionNode);
 
-    assertEquals(List.of(histoContainer), container.getContainer());
+    assertEquals(List.of(histologyContainer), container.getContainer());
   }
 
   @Test
-  void map_Metastasis(){
-    ConditionContainer conditionContainer = new ConditionContainer();
+  void map_Metastasis() {
+    var patient = new Patient();
     var condition = new Condition();
     condition.setId("C123");
-    conditionContainer.setCondition(condition);
     condition.getStageFirstRep().getAssessmentFirstRep().setReference("123");
+    var conditionNodeBuilder = new ConditionNode(patient, condition);
+    var observation = new Observation();
     var metastasisContainer = new Container();
-    Observation observation = new Observation();
-    when(fhirPathEngine.evaluate(condition, "Condition.stage.assessment.resolve()", Observation.class)).thenReturn(
+    when(fhirPathEngine.evaluate(condition, "Condition.stage.assessment.resolve()",
+        Observation.class)).thenReturn(
         List.of(observation));
     when(metaMapping.map(observation)).thenReturn(metastasisContainer);
 
-    var container = mapping.map(conditionContainer);
+    var container = mapping.map(conditionNodeBuilder);
 
     assertEquals(List.of(metastasisContainer), container.getContainer());
   }
 
   @Test
-  void map_TNM(){
-    ConditionContainer conditionContainer = new ConditionContainer();
+  void map_TNM() {
+    var patient = new Patient();
     var condition = new Condition();
     condition.setId("C123");
-    conditionContainer.setCondition(condition);
-    condition.getExtension().add(new Extension().setUrl(url).setValue(new Reference("Condition/C123")));
+    condition.getExtension()
+        .add(new Extension().setUrl(EXTENSION_FERNMETASTASEN)
+            .setValue(new Reference("Condition/C123")));
+    var conditionNode = new ConditionNode(patient, condition);
+    var observation = new Observation();
     var tnmContainer = new Container();
-    Observation observation = new Observation();
-    when(fhirPathEngine.evaluate(condition, "Condition.extension.where(url = '" + url + "').value.resolve()", Observation.class)).thenReturn(
+    when(fhirPathEngine.evaluate(condition,
+        "Condition.extension.where(url = '" + EXTENSION_FERNMETASTASEN + "').value.resolve()",
+        Observation.class)).thenReturn(
         List.of(observation));
     when(tnmMapping.map(observation)).thenReturn(tnmContainer);
 
-    var container = mapping.map(conditionContainer);
+    var container = mapping.map(conditionNode);
 
     assertEquals(List.of(tnmContainer), container.getContainer());
   }
 
   @Test
-  void map_clinicalImpression(){
-    ConditionContainer conditionContainer = new ConditionContainer();
+  void map_clinicalImpression() {
+    var patient = new Patient();
     var condition = new Condition();
     condition.setId("C123");
-    conditionContainer.setCondition(condition);
     condition.getEvidenceFirstRep().getDetailFirstRep().setReference("123");
+    var clinicalImpressionNode = new ClinicalImpressionNode(new ClinicalImpression());
+    var conditionNode = new ConditionNode(patient, condition, List.of(clinicalImpressionNode));
     var progressContainer = new Container();
-    ClinicalImpression progress = new ClinicalImpression();
-    conditionContainer.getClinicalImpressionContainer("Condition/C123").setClinicalImpression(progress);
-    when(progressMapping.map(progress)).thenReturn(progressContainer);
+    when(progressMapping.map(clinicalImpressionNode)).thenReturn(progressContainer);
 
-    var container = mapping.map(conditionContainer);
+    var container = mapping.map(conditionNode);
 
     assertEquals(List.of(progressContainer), container.getContainer());
   }

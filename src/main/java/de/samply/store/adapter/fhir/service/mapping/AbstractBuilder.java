@@ -4,22 +4,34 @@ import de.samply.share.model.ccp.Container;
 import de.samply.share.model.ccp.Entity;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.Resource;
 
+/**
+ * Base class of a builder of CCP entities.
+ *
+ * @param <T> the type of the entity being build
+ */
 public class AbstractBuilder<T extends Entity> {
 
   protected final FhirPathR4 fhirPathR4;
   protected final T entity;
   protected final Resource resource;
 
+  /**
+   * Creates a new builder.
+   *
+   * @param fhirPathR4 the FHIRPath engine
+   * @param entity     the initial entity being build
+   * @param resource   the FHIR resource used to query by FHIRPath
+   */
   public AbstractBuilder(FhirPathR4 fhirPathR4, T entity, Resource resource) {
-    this.fhirPathR4 = fhirPathR4;
-    this.entity = entity;
-    this.resource = resource;
+    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+    this.entity = Objects.requireNonNull(entity);
+    this.resource = Objects.requireNonNull(resource);
   }
 
   public <S extends IBase> void addAttribute(String path, Class<S> type, String mdrKey,
@@ -33,14 +45,29 @@ public class AbstractBuilder<T extends Entity> {
     addAttributeOptional(resource, path, type, mdrKey, v -> Optional.of(toString.apply(v)));
   }
 
+  public void addAttribute(String mdrKey, String value) {
+    entity.getAttribute().add(Util.createAttribute(mdrKey, value));
+  }
+
   public <S extends IBase> void addAttributeOptional(String path, Class<S> type, String mdrKey,
       Function<? super S, Optional<String>> toString) {
     addAttributeOptional(resource, path, type, mdrKey, toString);
   }
 
+  /**
+   * Adds an attribute to the entity managed by this builder if the {@code path} and {@code
+   * toString} function returns a value.
+   *
+   * @param resource the resource to use as base for the FHIRPath evaluation
+   * @param path     the FHIRPath
+   * @param type     the class of the type of the FHIRPath return value
+   * @param mdrKey   the MDR key to use for the attribute
+   * @param toString a function from the FHIRPath return value to a string that will be the value of
+   *                 the attribute
+   * @param <S>      the type of the FHIRPath return value
+   */
   public <S extends IBase> void addAttributeOptional(Resource resource, String path, Class<S> type,
-      String mdrKey,
-      Function<? super S, Optional<String>> toString) {
+      String mdrKey, Function<? super S, Optional<String>> toString) {
     fhirPathR4.evaluateFirst(resource, path, type)
         .flatMap(toString)
         .map(v -> Util.createAttribute(mdrKey, v))
@@ -49,9 +76,7 @@ public class AbstractBuilder<T extends Entity> {
 
   public <S extends IBase> void addContainer(String path, Class<S> type,
       Function<? super S, Container> toContainer) {
-    addContainers(fhirPathR4.evaluate(resource, path, type)
-        .stream().map(toContainer)
-        .collect(Collectors.toList()));
+    addContainers(fhirPathR4.evaluate(resource, path, type).stream().map(toContainer).toList());
   }
 
   public void addContainer(Container container) {
