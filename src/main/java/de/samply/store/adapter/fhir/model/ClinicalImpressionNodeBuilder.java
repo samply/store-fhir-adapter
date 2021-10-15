@@ -1,8 +1,9 @@
 package de.samply.store.adapter.fhir.model;
 
+import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.ClinicalImpression;
 
-public class ClinicalImpressionContainer {
+class ClinicalImpressionNodeBuilder {
 
   private ClinicalImpression clinicalImpression;
 
@@ -10,7 +11,11 @@ public class ClinicalImpressionContainer {
     return clinicalImpression;
   }
 
-  public void setClinicalImpression(ClinicalImpression clinicalImpression) {
+  void setClinicalImpression(ClinicalImpression clinicalImpression) {
     this.clinicalImpression = clinicalImpression;
+  }
+
+  Stream<ClinicalImpressionNode> build() {
+    return Stream.ofNullable(clinicalImpression).map(ClinicalImpressionNode::new);
   }
 }

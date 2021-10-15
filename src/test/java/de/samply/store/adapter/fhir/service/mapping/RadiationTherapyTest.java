@@ -4,18 +4,14 @@ import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.DateTimeType;
-import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Procedure;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-/**
- * @author Patrick Skowronek
- */
 
 public class RadiationTherapyTest {
 
@@ -24,65 +20,56 @@ public class RadiationTherapyTest {
   @BeforeEach
   void setUp() {
     mapping = new RadiationTherapyMapping(
-        new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
+        new FhirPathR4(FhirContext.forR4(), new EvaluationContext()));
   }
 
-
   @Test
-  void map_performedDate() {
+  void map_withoutDate() {
     var therapy = new Procedure();
-    var period = new Period();
-    period.setStartElement(new DateTimeType("2017-03-15"));
-    period.setEndElement(new DateTimeType("2017-03-16"));
-    therapy.setPerformed(period);
 
-    var progressContainer = mapping.map(therapy);
+    var container = mapping.map(therapy);
 
-    assertEquals("Progress", progressContainer.getDesignation());
+    assertEquals("RadiationTherapy", container.getDesignation());
     assertEquals(Optional.of("true"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+        findAttributeValue(container, "urn:dktk:dataelement:34:2"));
+    assertEquals(Optional.empty(),
+        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
+    assertEquals(Optional.empty(),
+        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+  }
+
+  @Test
+  void map_withStartDate() {
+    var therapy = new Procedure();
+    therapy.getPerformedPeriod().setStartElement(new DateTimeType("2017-03-15"));
+
+    var container = mapping.map(therapy);
+
+    assertEquals(Optional.of("15.03.2017"),
+        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
+    assertEquals(Optional.empty(),
+        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+  }
+
+  @Disabled
+  @Test
+  void map_withBothDates() {
+    var therapy = new Procedure();
+    therapy.getPerformedPeriod()
+        .setStartElement(new DateTimeType("2017-03-15"))
+        .setEndElement(new DateTimeType("2017-03-16"));
+
+    var container = mapping.map(therapy);
+
     assertEquals(Optional.of("K"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:67:2"));
+        findAttributeValue(container, "urn:dktk:dataelement:67:2"));
     assertEquals(Optional.of("A"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:68:3"));
+        findAttributeValue(container, "urn:dktk:dataelement:68:3"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:25:4"));
-
-    var therapyContainer = progressContainer.getContainer().get(0);
-    assertEquals("RadiationTherapy", therapyContainer.getDesignation());
-
-    assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(therapyContainer, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(therapyContainer, "urn:dktk:dataelement:78:1"));
-  }
-
-  @Test
-  void map_dateNotSet() {
-    var therapy = new Procedure();
-
-    var container = mapping.map(therapy);
-
-    assertEquals(Optional.empty(),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.empty(),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
-  }
-
-  @Test
-  void map_startDate() {
-    var therapy = new Procedure();
-    var period = new Period();
-    period.setStartElement(new DateTimeType("2017-03-15"));
-    therapy.setPerformed(period);
-
-    var container = mapping.map(therapy);
-
+        findAttributeValue(container, "urn:dktk:dataelement:25:4"));
     assertEquals(Optional.of("15.03.2017"),
         findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.empty(),
+    assertEquals(Optional.of("16.03.2017"),
         findAttributeValue(container, "urn:dktk:dataelement:78:1"));
   }
-
-
 }

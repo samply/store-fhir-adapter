@@ -12,8 +12,6 @@ import org.hl7.fhir.r4.model.PrimitiveType;
 
 /**
  * Mapping Utilities.
- *
- * @author Alexander Kiel
  */
 public class Util {
 
@@ -33,13 +31,10 @@ public class Util {
     return attribute;
   }
 
-  /**
-   * Formates a given date string
-   */
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
   /**
-   * Parses a given string, result may be optional if it matches the parse criteria
+   * Parses a given string as local date. Returns {@link Optional#empty() empty} on parsing errors.
    */
   public static final Function<String, Optional<LocalDate>> PARSE_LOCAL_DATE = s -> {
     try {
@@ -48,39 +43,29 @@ public class Util {
       return Optional.empty();
     }
   };
-  /**
-   * Parses a given string, result may be optional if it matches the parse criteria
-   */
+
   public static final Function<PrimitiveType<?>, Optional<LocalDate>> LOCAL_DATE = dateTime ->
       dateTime.getValueAsString().length() < 10 ? Optional.empty()
           : PARSE_LOCAL_DATE.apply(dateTime.getValueAsString().substring(0, 10));
 
   /**
-   * This function lift's a given function which is a -> b
-   * <p>
-   * That means when the parameter a is optional and result b is then optional too
+   * Lifts {@code f} into the Optional monad.
    */
   private static <A, B> Function<Optional<A>, Optional<B>> lift(Function<A, B> f) {
     return a -> a.map(f);
   }
 
   /**
-   * This function lift's a given function which is a,b -> c
-   * <p>
-   * That means when one of the parameters is optional and result c is then optional
+   * Lifts {@code f}, a 2-arity function into the Optional monad.
    */
   public static <A, B, C> BiFunction<Optional<A>, Optional<B>, Optional<C>> lift2(
       BiFunction<A, B, C> f) {
-    return (oA, oB) -> oA.flatMap(a -> oB.map(b -> f.apply(a, b)));
+    return (optionalA, optionalB) -> optionalA.flatMap(a -> optionalB.map(b -> f.apply(a, b)));
   }
 
   private static final Function<LocalDate, String> FORMAT_LOCAL_DATE = localDate -> localDate
       .format(DATE_FORMATTER);
-  /**
-   * This function transfomres a DateTimeType to a string wit Format
-   */
-  public static final Function<PrimitiveType<?>, Optional<String>> DATE_STRING = lift(
-      FORMAT_LOCAL_DATE)
-      .compose(LOCAL_DATE);
-}
 
+  public static final Function<PrimitiveType<?>, Optional<String>> DATE_STRING =
+      lift(FORMAT_LOCAL_DATE).compose(LOCAL_DATE);
+}

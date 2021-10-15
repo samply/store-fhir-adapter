@@ -13,14 +13,23 @@ import org.hl7.fhir.r4.model.Base;
 import org.hl7.fhir.r4.utils.FHIRPathEngine;
 import org.hl7.fhir.r4.utils.FHIRPathEngine.IEvaluationContext;
 
+/**
+ * A FHIRPath engine.
+ */
 public class FhirPathR4 implements IFhirPath {
 
-  private FHIRPathEngine myEngine;
+  private final FHIRPathEngine myEngine;
 
-  public FhirPathR4(FhirContext theCtx, IEvaluationContext HostService) {
-    IValidationSupport validationSupport = theCtx.getValidationSupport();
-    myEngine = new FHIRPathEngine(new HapiWorkerContext(theCtx, validationSupport));
-    myEngine.setHostServices(HostService);
+  /**
+   * Creates a new FHIRPath engine.
+   *
+   * @param context the FHIR context
+   * @param evaluationContext the evaluation context
+   */
+  public FhirPathR4(FhirContext context, IEvaluationContext evaluationContext) {
+    IValidationSupport validationSupport = context.getValidationSupport();
+    myEngine = new FHIRPathEngine(new HapiWorkerContext(context, validationSupport));
+    myEngine.setHostServices(evaluationContext);
   }
 
   @SuppressWarnings("unchecked")

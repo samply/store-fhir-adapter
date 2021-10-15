@@ -21,9 +21,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- * @author Alexander Kiel
- */
 @ExtendWith(MockitoExtension.class)
 class StoreRestControllerTest {
 
@@ -64,7 +61,7 @@ class StoreRestControllerTest {
   void createRequest() throws Exception {
     var page0 = new Bundle();
     when(downloadService.runQuery()).thenReturn(page0);
-    when(resultStore.create(page0)).thenReturn(Result.of(RESULT_ID, TOTAL));
+    when(resultStore.create(page0)).thenReturn(new Result(RESULT_ID, TOTAL));
 
     var responseEntity = controller.createRequest(true, "<foo></foo>");
 
@@ -74,7 +71,7 @@ class StoreRestControllerTest {
 
   @Test
   void getStats() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
 
     var stats = controller.getStats(RESULT_ID);
 
@@ -94,7 +91,7 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_Page0IsReturned() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
     var page0 = new Bundle();
     when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(page0);
@@ -108,7 +105,7 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_Page1UrlIsSaved() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
     var page0 = new Bundle();
     page0.getLinkOrCreate("next").setUrl(PAGE_1_URL);
@@ -122,7 +119,7 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_Page1IsReturned() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
     var page1 = new Bundle();
     when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(page1);
@@ -136,9 +133,10 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_Page2IsReturned() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     //noinspection unchecked
-    when(resultStore.getPageUrl(RESULT_ID, 2)).thenReturn(Optional.empty(), Optional.of(PAGE_2_URL));
+    when(resultStore.getPageUrl(RESULT_ID, 2)).thenReturn(Optional.empty(),
+        Optional.of(PAGE_2_URL));
     when(resultStore.getMaxPageNum(RESULT_ID)).thenReturn(Optional.of(1));
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
     var page1 = new Bundle();
@@ -166,7 +164,7 @@ class StoreRestControllerTest {
 
   @Test
   void getResult_MissingPageUrl() {
-    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(Result.of(RESULT_ID, TOTAL)));
+    when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.empty());
     when(resultStore.getMaxPageNum(RESULT_ID)).thenReturn(Optional.of(0));
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));

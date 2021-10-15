@@ -5,17 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-
-/**
- * @author Patrick Skowronek
- */
 
 public class MetatasisMappingTest {
 
@@ -24,7 +20,7 @@ public class MetatasisMappingTest {
   @BeforeEach
   void setUp() {
     mapping = new MetastasisMapping(
-        new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext()));
+        new FhirPathR4(FhirContext.forR4(), new EvaluationContext()));
   }
 
   @ParameterizedTest

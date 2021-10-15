@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import de.samply.store.adapter.fhir.service.MyIEvaluationContext;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,13 +13,8 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
-
-/**
- * @author Patrick Skowronek
- */
 
 public class HistologyMappingTest {
 
@@ -30,7 +25,7 @@ public class HistologyMappingTest {
 
     Map<String, Resource> gradings =
         fhirGrading == null ? Map.of() : Map.of("Observation/Test123", createGrading(fhirGrading));
-    var mapping = new HistologyMapping(new FhirPathR4(FhirContext.forR4(), new MyIEvaluationContext(
+    var mapping = new HistologyMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext(
         gradings)));
     var histology = new Observation();
     histology.getValueCodeableConcept().getCodingFirstRep()
@@ -52,7 +47,6 @@ public class HistologyMappingTest {
 
   }
 
-  @NotNull
   private Observation createGrading(String fhirGrading) {
     var grading = new Observation();
     grading.setId(new IdType("Test123"));

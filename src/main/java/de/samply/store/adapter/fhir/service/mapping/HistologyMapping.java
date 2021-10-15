@@ -2,6 +2,7 @@ package de.samply.store.adapter.fhir.service.mapping;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
@@ -9,33 +10,42 @@ import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**
- * @author Patrick Skowronek Outcome:
+ * Mapping of FHIR Observation to MDS Histology.
  */
-
 @Component
 public class HistologyMapping {
 
-  private static final String URN = "urn:oid:2.16.840.1.113883.6.43.1";
-  private final String SYSTEM = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GradingCS";
+  private static final String ICD_O_3 = "urn:oid:2.16.840.1.113883.6.43.1";
+  private static final String GRADING = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GradingCS";
 
   private final FhirPathR4 fhirPathR4;
 
+  /**
+   * Creates a new TnmMapping.
+   *
+   * @param fhirPathR4 the FHIRPath engine
+   */
   public HistologyMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = fhirPathR4;
+    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
   }
 
+  /**
+   * Maps FHIR histology Observation to MDS Histology.
+   *
+   * @param histology the FHIR histology Observation
+   * @return the MDS Histology
+   */
   public Container map(Observation histology) {
-
     var builder = new ContainerBuilder(fhirPathR4, histology, "Histology");
 
-    builder.addAttribute("Observation.value.coding.where(system = '" + URN + "').code",
+    builder.addAttribute("Observation.value.coding.where(system = '" + ICD_O_3 + "').code",
         CodeType.class, "urn:dktk:dataelement:7:2", PrimitiveType::getValue);
 
-    builder.addAttribute("Observation.value.coding.where(system = '" + URN + "').version",
+    builder.addAttribute("Observation.value.coding.where(system = '" + ICD_O_3 + "').version",
         StringType.class, "urn:dktk:dataelement:8:2", PrimitiveType::getValue);
 
     builder.addAttribute(
-        "Observation.hasMember.resolve().value.coding.where(system = '" + SYSTEM + "').code",
+        "Observation.hasMember.resolve().value.coding.where(system = '" + GRADING + "').code",
         CodeType.class, "urn:dktk:dataelement:9:2", PrimitiveType::getValue);
 
     return builder.build();

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import de.samply.share.model.ccp.Container;
-import de.samply.store.adapter.fhir.model.ConditionContainer;
+import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.List;
 import java.util.Optional;
@@ -23,9 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-/**
- * @author Alexander Kiel
- */
 @ExtendWith(MockitoExtension.class)
 class DiagnosisMappingTest {
 
@@ -53,13 +50,12 @@ class DiagnosisMappingTest {
   void map_conditionCode() {
     var condition = new Condition();
     condition.getCode().getCodingFirstRep().setSystem(ICD_10_GM).setCode("G24.1");
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
+    var conditionNode = new ConditionNode(patient, condition);
     when(fhirPathEngine.evaluateFirst(condition,
         "Condition.code.coding.where(system = '" + ICD_10_GM + "').code",
         CodeType.class)).thenReturn(Optional.of(new CodeType("G24.1")));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     var attribute = container.getAttribute().get(0);
     assertEquals("urn:dktk:dataelement:29:2", attribute.getMdrKey());
@@ -70,50 +66,47 @@ class DiagnosisMappingTest {
   void map_conditionDate() {
     var condition = new Condition();
     condition.setOnset(new DateTimeType("2010-01-01T01:02:03+02:00"));
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
+    var conditionNode = new ConditionNode(patient, condition);
     when(fhirPathEngine.evaluateFirst(condition,
         "Condition.onset",
         DateTimeType.class)).thenReturn(Optional.of(new DateTimeType("2010-01-01T01:02:03+02:00")));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     var attribute = container.getAttribute().stream()
         .filter(a -> "urn:dktk:dataelement:83:3".equals(a.getMdrKey())).findFirst();
-    assertEquals("01.01.2010", attribute.get().getValue().getValue());
+    assertEquals("01.01.2010", attribute.orElseThrow().getValue().getValue());
     attribute = container.getAttribute().stream()
         .filter(a -> "urn:dktk:dataelement:28:1".equals(a.getMdrKey())).findFirst();
-    assertEquals("10", attribute.get().getValue().getValue());
+    assertEquals("10", attribute.orElseThrow().getValue().getValue());
   }
 
   @Test
   void map_onsetAge() {
     var condition = new Condition();
     condition.getOnsetAge().setValue(9);
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
+    var conditionNode = new ConditionNode(patient, condition);
     when(fhirPathEngine.evaluateFirst(condition,
         "Condition.onset.value",
         DecimalType.class)).thenReturn(Optional.of(new DecimalType(9)));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     var attribute = container.getAttribute().stream()
         .filter(a -> "urn:dktk:dataelement:28:1".equals(a.getMdrKey())).findFirst();
-    assertEquals("9", attribute.get().getValue().getValue());
+    assertEquals("9", attribute.orElseThrow().getValue().getValue());
   }
 
   @Test
   void map_ICDVersion() {
     var condition = new Condition();
     condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setVersion("2014");
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
+    var conditionNode = new ConditionNode(patient, condition);
     when(fhirPathEngine.evaluateFirst(condition,
         "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
         StringType.class)).thenReturn(Optional.of(new StringType("2014")));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     var attribute = container.getAttribute().get(0);
     assertEquals("urn:dktk:dataelement:3:2", attribute.getMdrKey());
@@ -124,13 +117,11 @@ class DiagnosisMappingTest {
   void map_diagnosisYear() {
     var condition = new Condition();
     condition.setRecordedDate(new DateTimeType("2010-01-01").getValue());
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
-    when(fhirPathEngine.evaluateFirst(condition,
-        "Condition.recordedDate",
-        DateTimeType.class)).thenReturn(Optional.of(new DateTimeType("2010-01-01")));
+    var conditionNode = new ConditionNode(patient, condition);
+    when(fhirPathEngine.evaluateFirst(condition, "Condition.recordedDate", DateTimeType.class))
+        .thenReturn(Optional.of(new DateTimeType("2010-01-01")));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     assertEquals(Optional.of("01.01.2010"),
         findAttributeValue(container, "urn:dktk:dataelement:83:3"));
@@ -141,16 +132,13 @@ class DiagnosisMappingTest {
     var condition = new Condition();
     condition.setRecordedDate(new DateTimeType("2010-01-01").getValue());
     condition.getOnsetAge().setValue(9);
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
-    when(fhirPathEngine.evaluateFirst(condition,
-        "Condition.recordedDate",
-        DateTimeType.class)).thenReturn(Optional.of(new DateTimeType("2010-01-01")));
-    when(fhirPathEngine.evaluateFirst(condition,
-        "Condition.onset.value",
-        DecimalType.class)).thenReturn(Optional.of(new DecimalType(9)));
+    var conditionNode = new ConditionNode(patient, condition);
+    when(fhirPathEngine.evaluateFirst(condition, "Condition.recordedDate", DateTimeType.class))
+        .thenReturn(Optional.of(new DateTimeType("2010-01-01")));
+    when(fhirPathEngine.evaluateFirst(condition, "Condition.onset.value", DecimalType.class))
+        .thenReturn(Optional.of(new DecimalType(9)));
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     assertEquals(Optional.of("01.01.2010"),
         findAttributeValue(container, "urn:dktk:dataelement:83:3"));
@@ -161,14 +149,12 @@ class DiagnosisMappingTest {
   @Test
   void map_tumor() {
     var condition = new Condition();
-    var conditionContainer = new ConditionContainer();
-    conditionContainer.setCondition(condition);
+    var conditionNode = new ConditionNode(patient, condition);
     Container tumor = new Container();
-    when(tumorMapping.map(conditionContainer)).thenReturn(tumor);
+    when(tumorMapping.map(conditionNode)).thenReturn(tumor);
 
-    var container = mapping.map(conditionContainer, patient);
+    var container = mapping.map(conditionNode);
 
     assertEquals(List.of(tumor), container.getContainer());
   }
-
 }

@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
  * The FHIR backend.
  *
  * <p>It can {@link #runQuery() run queries} and {@link #fetchPage(String) fetch individual pages}.
- *
- * @author Alexander Kiel
  */
 @Service
 public class FhirDownloadService {

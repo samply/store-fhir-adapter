@@ -1,7 +1,7 @@
 package de.samply.store.adapter.fhir.service;
 
 import de.samply.share.model.ccp.QueryResult;
-import de.samply.store.adapter.fhir.model.ResourceContainer;
+import de.samply.store.adapter.fhir.model.RootNodeBuilder;
 import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
 import java.util.Map;
 import java.util.function.Function;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * A service for the mapping of FHIR resources to {@link QueryResult QueryResults}.
- *
- * @author Alexander Kiel
  */
 @Service
 public class MappingService {
@@ -30,8 +28,7 @@ public class MappingService {
    * @return the mapped {@code QueryResult}
    */
   public QueryResult map(Bundle bundle) {
-    var resourceContainer = ResourceContainer.fromBundle(bundle);
-    return mappingServiceFactory.apply(resourceContainer.getResources())
-        .map(resourceContainer.getPatientContainers());
+    var rootNode = RootNodeBuilder.fromBundle(bundle);
+    return mappingServiceFactory.apply(rootNode.resources()).map(rootNode.patients());
   }
 }
