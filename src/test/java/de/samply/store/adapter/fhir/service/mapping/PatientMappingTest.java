@@ -1,21 +1,21 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
+import static org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import ca.uhn.fhir.context.FhirContext;
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.model.PatientNode;
+import de.samply.store.adapter.fhir.service.EvaluationContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.List;
 import java.util.Optional;
-import org.hl7.fhir.r4.model.CodeType;
+import java.util.function.Consumer;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
-import org.hl7.fhir.r4.model.Enumeration;
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Enumerations.AdministrativeGenderEnumFactory;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Specimen;
@@ -30,11 +30,12 @@ public class PatientMappingTest {
 
   private static final String PATIENT_ID = "123";
   private static final String LOINC = "http://loinc.org";
-  private static final Enumeration<AdministrativeGender> MALE = new AdministrativeGenderEnumFactory().fromType(
-      new CodeType("male"));
+  private static final String PSEUDONYM_ART_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
+  private static final String VITAL_STATE_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 
-  @Mock(lenient = true)
-  private FhirPathR4 fhirPathEngine;
+  private final FhirContext fhirContext = FhirContext.forR4();
 
   @Mock
   private DiagnosisMapping diagnosisMapping;
@@ -46,7 +47,8 @@ public class PatientMappingTest {
 
   @BeforeEach
   void setUp() {
-    mapping = new PatientMapping(fhirPathEngine, diagnosisMapping, sampleMapping);
+    mapping = new PatientMapping(new FhirPathR4(fhirContext, new EvaluationContext()),
+        diagnosisMapping, sampleMapping);
   }
 
   @Test
@@ -58,9 +60,7 @@ public class PatientMappingTest {
 
   @Test
   void map_genderMale() {
-    var node = createPatientNode();
-    when(fhirPathEngine.evaluateFirst(node.patient(), "Patient.gender", Enumeration.class))
-        .thenReturn(Optional.of(MALE));
+    var node = createPatientNode(p -> p.setGender(MALE));
 
     var result = mapping.map(node);
 
@@ -71,9 +71,7 @@ public class PatientMappingTest {
 
   @Test
   void map_birthDate() {
-    var node = createPatientNode();
-    when(fhirPathEngine.evaluateFirst(node.patient(), "Patient.birthDate",
-        DateType.class)).thenReturn(Optional.of(new DateType("2020-05-10")));
+    var node = createPatientNode(p -> p.setBirthDateElement(new DateType("2020-05-10")));
 
     var result = mapping.map(node);
 
@@ -84,12 +82,10 @@ public class PatientMappingTest {
 
   @Test
   void map_vitalStatus() {
-    Observation vital = new Observation();
+    var vital = new Observation();
     vital.getCode().getCodingFirstRep().setSystem(LOINC).setCode("75186-7");
+    vital.getValueCodeableConcept().getCodingFirstRep().setSystem(VITAL_STATE_CS).setCode("lebend");
     var node = createPatientNode(vital);
-    when(fhirPathEngine.evaluateFirst(vital,
-        "Observation.value.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS').code",
-        CodeType.class)).thenReturn(Optional.of(new CodeType("lebend")));
 
     var result = mapping.map(node);
 
@@ -100,11 +96,10 @@ public class PatientMappingTest {
 
   @Test
   void map_vitalStatusDate() {
-    Observation vital = new Observation();
+    var vital = new Observation();
     vital.getCode().getCodingFirstRep().setSystem(LOINC).setCode("75186-7");
+    vital.setEffective(new DateTimeType("2027-10-02"));
     var node = createPatientNode(vital);
-    when(fhirPathEngine.evaluateFirst(vital, "Observation.effective",
-        DateTimeType.class)).thenReturn(Optional.of(new DateTimeType("2027-10-02")));
 
     var result = mapping.map(node);
 
@@ -115,13 +110,11 @@ public class PatientMappingTest {
 
   @Test
   void map_oneCondition() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
+    var patient = createPatient();
     var condition = new Condition();
     condition.setId("123");
     var conditionNode = new ConditionNode(patient, condition);
-    var node = new PatientNode(patient, Optional.empty(), List.of(conditionNode),
-        List.of());
+    var node = new PatientNode(patient, Optional.empty(), List.of(conditionNode), List.of());
     var diagnosis = new Container();
     when(diagnosisMapping.map(conditionNode)).thenReturn(diagnosis);
 
@@ -132,8 +125,7 @@ public class PatientMappingTest {
 
   @Test
   void map_twoConditions() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
+    var patient = createPatient();
     var condition1 = new Condition();
     condition1.setId("123");
     var condition2 = new Condition();
@@ -154,11 +146,10 @@ public class PatientMappingTest {
 
   @Test
   void map_oneSample() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
+    var patient = createPatient();
     var specimen = new Specimen();
     var node = new PatientNode(patient, Optional.empty(), List.of(), List.of(specimen));
-    Container sample = new Container();
+    var sample = new Container();
     when(sampleMapping.map(specimen)).thenReturn(sample);
 
     var result = mapping.map(node);
@@ -168,13 +159,12 @@ public class PatientMappingTest {
 
   @Test
   void map_twoSample() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
+    var patient = createPatient();
     var specimen1 = new Specimen();
     var specimen2 = new Specimen();
     var node = new PatientNode(patient, Optional.empty(), List.of(), List.of(specimen1, specimen2));
-    Container sample1 = new Container();
-    Container sample2 = new Container();
+    var sample1 = new Container();
+    var sample2 = new Container();
     when(sampleMapping.map(specimen1)).thenReturn(sample1);
     when(sampleMapping.map(specimen2)).thenReturn(sample2);
 
@@ -184,14 +174,24 @@ public class PatientMappingTest {
   }
 
   private static PatientNode createPatientNode() {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
+    return new PatientNode(createPatient());
+  }
+
+  private static PatientNode createPatientNode(Consumer<Patient> patientBuilder) {
+    Patient patient = createPatient();
+    patientBuilder.accept(patient);
     return new PatientNode(patient);
   }
 
+  private static Patient createPatient() {
+    var patient = new Patient();
+    patient.getIdentifierFirstRep().getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS)
+        .setCode("Lokal");
+    patient.getIdentifierFirstRep().setValue(PATIENT_ID);
+    return patient;
+  }
+
   private static PatientNode createPatientNode(Observation vitalState) {
-    Patient patient = new Patient();
-    patient.setId(PATIENT_ID);
-    return new PatientNode(patient, vitalState);
+    return new PatientNode(createPatient(), vitalState);
   }
 }

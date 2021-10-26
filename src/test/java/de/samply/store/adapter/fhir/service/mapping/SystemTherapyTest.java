@@ -16,12 +16,13 @@ import org.junit.jupiter.api.Test;
 
 public class SystemTherapyTest {
 
+  private final FhirContext fhirContext = FhirContext.forR4();
+
   private SystemTherapyMapping mapping;
 
   @BeforeEach
   void setUp() {
-    mapping = new SystemTherapyMapping(new FhirPathR4(
-        FhirContext.forR4(), new EvaluationContext()));
+    mapping = new SystemTherapyMapping(new FhirPathR4(fhirContext, new EvaluationContext()));
   }
 
   @Disabled

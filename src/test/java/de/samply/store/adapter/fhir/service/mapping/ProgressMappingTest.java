@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.model.ClinicalImpressionNode;
-import de.samply.store.adapter.fhir.service.FhirPathR4;
 import de.samply.store.adapter.fhir.service.EvaluationContext;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +22,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class ProgressMappingTest {
+
+  private final FhirContext fhirContext = FhirContext.forR4();
 
   @ParameterizedTest
   @CsvFileSource(resources = "/progressMappings.csv", numLinesToSkip = 1)
@@ -63,7 +65,7 @@ public class ProgressMappingTest {
 
     clinicalImpression.setFinding(refs);
 
-    var mapping = new ProgressMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext(
+    var mapping = new ProgressMapping(new FhirPathR4(fhirContext, new EvaluationContext(
         findings)));
 
     var container = mapping.map(new ClinicalImpressionNode(clinicalImpression));

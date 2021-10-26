@@ -18,11 +18,13 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class SurgeryMappingTest {
 
+  private final FhirContext fhirContext = FhirContext.forR4();
+
   private SurgeryMapping mapping;
 
   @BeforeEach
   void setUp() {
-    mapping = new SurgeryMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext()));
+    mapping = new SurgeryMapping(new FhirPathR4(fhirContext, new EvaluationContext()));
   }
 
   @Disabled

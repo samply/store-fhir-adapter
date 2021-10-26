@@ -87,7 +87,7 @@ public class StoreRestController {
       @RequestParam(name = "statisticsOnly", required = false, defaultValue = "false")
           boolean statisticsOnly,
       @RequestBody String query) {
-    logger.debug("create request statisticsOnly = {}", statisticsOnly);
+    logger.debug("create request statisticsOnly={}, query={}", statisticsOnly, query);
 
     var bundle = downloadService.runQuery();
     try {

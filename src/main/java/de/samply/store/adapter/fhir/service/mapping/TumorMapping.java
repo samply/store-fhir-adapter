@@ -29,11 +29,11 @@ public class TumorMapping {
   /**
    * Creates a new TumorMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
-   * @param histologyMapping histology mapping
+   * @param fhirPathR4        the FHIRPath engine
+   * @param histologyMapping  histology mapping
    * @param metastasisMapping metastasis mapping
-   * @param progressMapping progress mapping
-   * @param tnmMapping TNM mapping
+   * @param progressMapping   progress mapping
+   * @param tnmMapping        TNM mapping
    */
   public TumorMapping(FhirPathR4 fhirPathR4,
       HistologyMapping histologyMapping,

@@ -35,41 +35,42 @@ import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Specimen;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class IntegrationTest {
 
-  private FhirContext fhirContext;
+  private static final String PSEUDONYM_ART_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
+  private static final String VITAL_STATE_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 
-  @BeforeEach
-  void setUp() {
-    fhirContext = FhirContext.forR4();
-  }
+  private final FhirContext fhirContext = FhirContext.forR4();
 
   private RootNode buildRootNode() {
     var bundle = new Bundle();
 
     var patient = new Patient();
-    patient.setBirthDateElement(new DateType("1995-01-01"));
+    patient.setId("211712");
+    patient.getIdentifierFirstRep().getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS)
+        .setCode("Lokal");
     patient.setGender(AdministrativeGender.MALE);
-    patient.setId("123");
+    patient.getIdentifierFirstRep().setValue("123");
+    patient.setBirthDateElement(new DateType("1995-01-01"));
     bundle.addEntry().setResource(patient);
 
     var vital = new Observation();
     vital.setId("0001807807");
     String loinc = "http://loinc.org";
     vital.getCode().getCodingFirstRep().setSystem(loinc).setCode("75186-7");
-    vital.getSubject().setReference("Patient/123");
-    vital.getValueCodeableConcept().getCodingFirstRep()
-        .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS").setCode("lebend");
+    vital.getSubject().setReference("Patient/211712");
+    vital.getValueCodeableConcept().getCodingFirstRep().setSystem(VITAL_STATE_CS).setCode("lebend");
     bundle.addEntry().setResource(vital);
 
     var spec1 = new Specimen();
     spec1.setId("bioid1a");
     spec1.getType().getCodingFirstRep()
         .setSystem("https://fhir.bbmri.de/CodeSystem/SampleMaterialType").setCode("blood-plasma");
-    spec1.getSubject().setReference("Patient/123");
+    spec1.getSubject().setReference("Patient/211712");
     spec1.getCollection().setCollected(new DateTimeType("2017-12-23"));
     bundle.addEntry().setResource(spec1);
 
@@ -77,7 +78,7 @@ public class IntegrationTest {
     spec2.setId("bioid1b");
     spec2.getType().getCodingFirstRep()
         .setSystem("https://fhir.bbmri.de/CodeSystem/SampleMaterialType").setCode("whole-blood");
-    spec2.getSubject().setReference("Patient/123");
+    spec2.getSubject().setReference("Patient/211712");
     spec2.getCollection().setCollected(new DateTimeType("2017-12-22"));
     bundle.addEntry().setResource(spec2);
 
@@ -90,7 +91,7 @@ public class IntegrationTest {
     condition.getBodySiteFirstRep().addCoding(
         new Coding().setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS")
             .setCode("T"));
-    condition.getSubject().setReference("Patient/123");
+    condition.getSubject().setReference("Patient/211712");
     condition.getOnsetAge().setValue(59);
     condition.setRecordedDate(new DateTimeType("2014-05-06").getValue());
     condition.getStageFirstRep().getAssessmentFirstRep()
@@ -104,7 +105,7 @@ public class IntegrationTest {
 
     var encounter = new Encounter();
     encounter.setId("C123");
-    encounter.getSubject().setReference("Patient/123");
+    encounter.getSubject().setReference("Patient/211712");
     encounter.setDiagnosis(
         List.of(new DiagnosisComponent().setCondition(new Reference("Condition/0000001490"))));
     bundle.addEntry().setResource(encounter);
@@ -114,27 +115,27 @@ public class IntegrationTest {
     histo1.getCode().getCodingFirstRep().setSystem(loinc).setCode("59847-4");
     histo1.getValueCodeableConcept().getCodingFirstRep()
         .setSystem("urn:oid:2.16.840.1.113883.6.43.1").setVersion("32").setCode("8140/3");
-    histo1.getSubject().setReference("Patient/123");
+    histo1.getSubject().setReference("Patient/211712");
     histo1.getHasMemberFirstRep().setReference("Observation/d1e166");
     bundle.addEntry().setResource(histo1);
 
     var grading = new Observation();
     grading.setId("d1e166");
     grading.getCode().getCodingFirstRep().setSystem(loinc).setCode("59542-1");
-    grading.getSubject().setReference("Patient/123");
+    grading.getSubject().setReference("Patient/211712");
     grading.getValueCodeableConcept().getCodingFirstRep()
         .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GradingCS").setCode("3");
     bundle.addEntry().setResource(grading);
 
     var clinicalImpression = new ClinicalImpression();
     clinicalImpression.setId("d1e166");
-    clinicalImpression.getSubject().setReference("Patient/123");
+    clinicalImpression.getSubject().setReference("Patient/211712");
     clinicalImpression.setProblem(List.of(new Reference("Condition/0000001490")));
 
     var metastatis = new Observation();
     metastatis.setId("M1712");
     metastatis.getCode().getCodingFirstRep().setSystem(loinc).setCode("21907-1");
-    metastatis.getSubject().setReference("Patient/123");
+    metastatis.getSubject().setReference("Patient/211712");
     metastatis.setEffective(new DateTimeType("1996-03-23T08:42:24+01:00"));
     metastatis.getValueCodeableConcept().getCodingFirstRep()
         .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/JNUCS").setCode("J");
@@ -145,7 +146,7 @@ public class IntegrationTest {
 
     var tmn = new Observation();
     tmn.setId("2014-05-06-d1e182");
-    tmn.getSubject().setReference("Patient/123");
+    tmn.getSubject().setReference("Patient/211712");
     tmn.getCode().getCodingFirstRep().setSystem(loinc).setCode("21908-9");
     tmn.setEffective(new DateTimeType("2014-05-05"));
     tmn.getValueCodeableConcept().getCodingFirstRep()
@@ -169,7 +170,7 @@ public class IntegrationTest {
         .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTTherapieartCS").setCode("OP");
     surgery.getCode().getCodingFirstRep().setSystem("http://fhir.de/CodeSystem/dimdi/ops")
         .setCode("5-604.41");
-    surgery.getSubject().setReference("Patient/123");
+    surgery.getSubject().setReference("Patient/211712");
     surgery.setReasonReference(List.of(new Reference("Condition/0000001490")));
     surgery.getOutcome().getCodingFirstRep().setSystem(
             "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS")
@@ -191,7 +192,7 @@ public class IntegrationTest {
         new CodeableConcept().getCodingFirstRep()
             .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SYSTIntentionCS")
             .setCode("K"));
-    medicationStatement.getSubject().setReference("Patient/123");
+    medicationStatement.getSubject().setReference("Patient/211712");
     medicationStatement.setEffective(new Period().setStartElement(new DateTimeType("2017-03-15"))
         .setEndElement(new DateTimeType("2017-07-30")));
     medicationStatement.setReasonReference(List.of(new Reference("Condition/0000001490")));

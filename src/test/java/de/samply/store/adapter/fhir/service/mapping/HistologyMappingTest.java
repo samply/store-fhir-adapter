@@ -4,8 +4,8 @@ import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
-import de.samply.store.adapter.fhir.service.FhirPathR4;
 import de.samply.store.adapter.fhir.service.EvaluationContext;
+import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +18,8 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class HistologyMappingTest {
 
+  private final FhirContext fhirContext = FhirContext.forR4();
+
   @ParameterizedTest
   @CsvFileSource(resources = "/histologyMappings.csv", numLinesToSkip = 1)
   void map_HistologyObservationCSVFile(String fhirMorphologie, String fhirICD_O, String fhirGrading,
@@ -25,7 +27,7 @@ public class HistologyMappingTest {
 
     Map<String, Resource> gradings =
         fhirGrading == null ? Map.of() : Map.of("Observation/Test123", createGrading(fhirGrading));
-    var mapping = new HistologyMapping(new FhirPathR4(FhirContext.forR4(), new EvaluationContext(
+    var mapping = new HistologyMapping(new FhirPathR4(fhirContext, new EvaluationContext(
         gradings)));
     var histology = new Observation();
     histology.getValueCodeableConcept().getCodingFirstRep()

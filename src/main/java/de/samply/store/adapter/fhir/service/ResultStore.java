@@ -2,7 +2,6 @@ package de.samply.store.adapter.fhir.service;
 
 import static java.util.Comparator.naturalOrder;
 
-import de.samply.store.adapter.fhir.api.StoreRestController;
 import de.samply.store.adapter.fhir.model.Result;
 import java.util.Map;
 import java.util.Objects;
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResultStore {
 
-  private static final Logger logger = LoggerFactory.getLogger(StoreRestController.class);
+  private static final Logger logger = LoggerFactory.getLogger(ResultStore.class);
 
   private final Supplier<String> resultIdSupplier;
   private final Map<String, InternalResult> results;
@@ -50,7 +49,7 @@ public class ResultStore {
    */
   public Result create(Bundle bundle) throws BundleWithoutSelfUrlException {
     var id = resultIdSupplier.get();
-    logger.debug("create result with id {}", id);
+    logger.debug("create result id={}", id);
     var result = new Result(id, bundle.getTotal());
     results.put(id, new InternalResult(result, bundle));
     return result;

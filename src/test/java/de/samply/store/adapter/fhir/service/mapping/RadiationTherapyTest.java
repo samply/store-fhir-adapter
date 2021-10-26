@@ -15,12 +15,13 @@ import org.junit.jupiter.api.Test;
 
 public class RadiationTherapyTest {
 
+  private final FhirContext fhirContext = FhirContext.forR4();
+
   private RadiationTherapyMapping mapping;
 
   @BeforeEach
   void setUp() {
-    mapping = new RadiationTherapyMapping(
-        new FhirPathR4(FhirContext.forR4(), new EvaluationContext()));
+    mapping = new RadiationTherapyMapping(new FhirPathR4(fhirContext, new EvaluationContext()));
   }
 
   @Test
