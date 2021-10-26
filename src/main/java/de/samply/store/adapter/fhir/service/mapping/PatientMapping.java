@@ -20,6 +20,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientMapping {
 
+  private static final String VITAL_STATE_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
+
   private final FhirPathR4 fhirPathEngine;
   private final DiagnosisMapping diagnosisMapping;
   private final SampleMapping sampleMapping;
@@ -56,7 +59,7 @@ public class PatientMapping {
         "urn:dktk:dataelement:26:4", DATE_STRING);
 
     patientNode.vitalState().ifPresent(vital -> patientBuilder.addAttribute(vital,
-        "Observation.value.coding.where(system = 'http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS').code",
+        "Observation.value.coding.where(system = '" + VITAL_STATE_CS + "').code",
         CodeType.class, "urn:dktk:dataelement:53:3", PrimitiveType::getValue));
 
     patientNode.vitalState().ifPresent(vital -> patientBuilder.addAttributeOptional(vital,
