@@ -42,7 +42,7 @@ public class AbstractBuilder<T extends Entity> {
   public <S extends IBase> void addAttribute(Resource resource, String path, Class<S> type,
       String mdrKey,
       Function<? super S, String> toString) {
-    addAttributeOptional(resource, path, type, mdrKey, v -> Optional.of(toString.apply(v)));
+    addAttributeOptional(resource, path, type, mdrKey, v -> Optional.ofNullable(toString.apply(v)));
   }
 
   public void addAttribute(String mdrKey, String value) {

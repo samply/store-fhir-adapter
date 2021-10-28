@@ -45,7 +45,8 @@ public class Util {
   };
 
   public static final Function<PrimitiveType<?>, Optional<LocalDate>> LOCAL_DATE = dateTime ->
-      dateTime.getValueAsString().length() < 10 ? Optional.empty()
+      dateTime.getValueAsString() == null || dateTime.getValueAsString().length() < 10
+          ? Optional.empty()
           : PARSE_LOCAL_DATE.apply(dateTime.getValueAsString().substring(0, 10));
 
   /**
