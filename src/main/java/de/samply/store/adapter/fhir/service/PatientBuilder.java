@@ -12,9 +12,10 @@ public class PatientBuilder extends AbstractBuilder<Patient> {
 
   private static final String PSEUDONYM_ART_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
-  private static final String ID_PATH =
+  private static final String LOCAL_ID_PATH =
       "Patient.identifier.where(type.coding.where(system= \"" + PSEUDONYM_ART_CS
-          + "\").exists()).value";
+          + "\" and code=\"Lokal\").exists()).value";
+
 
   /**
    * Creates a new Patient builder.
@@ -24,7 +25,7 @@ public class PatientBuilder extends AbstractBuilder<Patient> {
    */
   public PatientBuilder(FhirPathR4 fhirPathEngine, org.hl7.fhir.r4.model.Patient patient) {
     super(fhirPathEngine, new ObjectFactory().createPatient(), patient);
-    fhirPathEngine.evaluateFirst(patient, ID_PATH, StringType.class)
+    fhirPathEngine.evaluateFirst(patient, LOCAL_ID_PATH, StringType.class)
         .ifPresent(id -> entity.setId(id.getValue()));
   }
 }

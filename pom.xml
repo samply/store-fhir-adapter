@@ -80,7 +80,7 @@
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-      <version>3.0.2</version>
+      <version>3.0.4</version>
     </dependency>
 
     <dependency>
@@ -110,6 +110,8 @@
         <filtering>true</filtering>
         <includes>
           <include>application.yml</include>
+          <include>**/*.json</include>
+          <include>**/*.cql</include>
         </includes>
       </resource>
     </resources>

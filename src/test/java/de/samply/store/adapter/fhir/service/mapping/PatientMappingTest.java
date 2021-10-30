@@ -28,7 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class PatientMappingTest {
 
-  private static final String PATIENT_ID = "123";
+  private static final String LOCAL_ID = "201158";
+  private static final String GLOBAL_ID = "201117";
   private static final String LOINC = "http://loinc.org";
   private static final String PSEUDONYM_ART_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
@@ -52,10 +53,19 @@ public class PatientMappingTest {
   }
 
   @Test
-  void map_withEmptyPatient() {
+  void map_emptyPatient() {
     var result = mapping.map(createPatientNode());
 
-    assertEquals(PATIENT_ID, result.getId());
+    assertEquals(LOCAL_ID, result.getId());
+  }
+
+  @Test
+  void map_globalId() {
+    var result = mapping.map(createPatientNode(p -> setIdentifier(p, "Global", GLOBAL_ID)));
+
+    var firstAttribute = result.getAttribute().get(0);
+    assertEquals("urn:dktk:dataelement:54:1", firstAttribute.getMdrKey());
+    assertEquals(GLOBAL_ID, firstAttribute.getValue().getValue());
   }
 
   @Test
@@ -185,10 +195,14 @@ public class PatientMappingTest {
 
   private static Patient createPatient() {
     var patient = new Patient();
-    patient.getIdentifierFirstRep().getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS)
-        .setCode("Lokal");
-    patient.getIdentifierFirstRep().setValue(PATIENT_ID);
+    setIdentifier(patient, "Lokal", LOCAL_ID);
     return patient;
+  }
+
+  private static void setIdentifier(Patient patient, String type, String value) {
+    var localId = patient.addIdentifier();
+    localId.getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS).setCode(type);
+    localId.setValue(value);
   }
 
   private static PatientNode createPatientNode(Observation vitalState) {

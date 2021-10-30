@@ -89,14 +89,10 @@ public class StoreRestController {
       @RequestBody String query) {
     logger.debug("create request statisticsOnly={}, query={}", statisticsOnly, query);
 
-    var bundle = downloadService.runQuery();
-    try {
-      var result = resultStore.create(bundle);
-      return ResponseEntity.created(createRequestUrl(result)).body(null);
-    } catch (BundleWithoutSelfUrlException e) {
-      return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-          .body("The bundle returned by the FHIR Server has no self link URL.");
-    }
+    return downloadService.runQuery()
+        .flatMap(resultStore::create)
+        .map(result -> ResponseEntity.created(createRequestUrl(result)).body(null))
+        .orElseGet(msg -> ResponseEntity.status(INTERNAL_SERVER_ERROR).body(msg));
   }
 
   private URI createRequestUrl(de.samply.store.adapter.fhir.model.Result result) {
