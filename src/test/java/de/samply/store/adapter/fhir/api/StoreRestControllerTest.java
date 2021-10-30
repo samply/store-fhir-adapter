@@ -12,6 +12,7 @@ import de.samply.store.adapter.fhir.model.Result;
 import de.samply.store.adapter.fhir.service.FhirDownloadService;
 import de.samply.store.adapter.fhir.service.MappingService;
 import de.samply.store.adapter.fhir.service.ResultStore;
+import de.samply.store.adapter.fhir.util.Either;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,10 +59,10 @@ class StoreRestControllerTest {
   }
 
   @Test
-  void createRequest() throws Exception {
+  void createRequest() {
     var page0 = new Bundle();
-    when(downloadService.runQuery()).thenReturn(page0);
-    when(resultStore.create(page0)).thenReturn(new Result(RESULT_ID, TOTAL));
+    when(downloadService.runQuery()).thenReturn(Either.right(page0));
+    when(resultStore.create(page0)).thenReturn(Either.right(new Result(RESULT_ID, TOTAL)));
 
     var responseEntity = controller.createRequest(true, "<foo></foo>");
 

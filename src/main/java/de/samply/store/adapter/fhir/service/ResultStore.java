@@ -3,6 +3,7 @@ package de.samply.store.adapter.fhir.service;
 import static java.util.Comparator.naturalOrder;
 
 import de.samply.store.adapter.fhir.model.Result;
+import de.samply.store.adapter.fhir.util.Either;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,15 +45,19 @@ public class ResultStore {
    * Creates a {@code Result}.
    *
    * @param bundle the bundle to extract the total, self and optional next link URL's.
-   * @return the result
-   * @throws BundleWithoutSelfUrlException if the bundle has no self link URL
+   * @return either the result or an error if the bundle has no self link URL
    */
-  public Result create(Bundle bundle) throws BundleWithoutSelfUrlException {
+  public Either<String, Result> create(Bundle bundle) {
     var id = resultIdSupplier.get();
     logger.debug("create result id={}", id);
-    var result = new Result(id, bundle.getTotal());
-    results.put(id, new InternalResult(result, bundle));
-    return result;
+    var selfUrl = bundle.getLinkOrCreate("self").getUrl();
+    if (selfUrl == null) {
+      return Either.left("the bundle has not self link URL");
+    } else {
+      var result = new Result(id, bundle.getTotal());
+      results.put(id, InternalResult.create(result, bundle));
+      return Either.right(result);
+    }
   }
 
   public Optional<String> getPageUrl(String resultId, int pageNum) {
@@ -67,23 +72,16 @@ public class ResultStore {
     getInternal(resultId).ifPresent(r -> r.pageUrls.putIfAbsent(pageNum, pageUrl));
   }
 
-  private static final class InternalResult {
+  private static final record InternalResult(Result result, Map<Integer, String> pageUrls) {
 
-    private final Result result;
-    private final Map<Integer, String> pageUrls;
-
-    private InternalResult(Result result, Bundle bundle) throws BundleWithoutSelfUrlException {
-      this.result = result;
-      pageUrls = new ConcurrentHashMap<>();
-      var selfUrl = bundle.getLinkOrCreate("self").getUrl();
-      if (selfUrl == null) {
-        throw new BundleWithoutSelfUrlException();
-      }
-      pageUrls.put(0, selfUrl);
+    private static InternalResult create(Result result, Bundle bundle) {
+      var pageUrls = new ConcurrentHashMap<Integer, String>();
+      pageUrls.put(0, bundle.getLinkOrCreate("self").getUrl());
       var nextUrl = bundle.getLinkOrCreate("next").getUrl();
       if (nextUrl != null) {
         pageUrls.put(1, nextUrl);
       }
+      return new InternalResult(result, pageUrls);
     }
   }
 }

@@ -12,6 +12,7 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PatientMapping {
 
+  private static final String PSEUDONYM_ART_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
+  private static final String GLOBAL_ID_PATH =
+      "Patient.identifier.where(type.coding.where(system= \"" + PSEUDONYM_ART_CS
+          + "\" and code=\"Global\").exists()).value";
   private static final String VITAL_STATE_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 
@@ -51,6 +57,9 @@ public class PatientMapping {
   public Patient map(PatientNode patientNode) {
     var patient = patientNode.patient();
     var patientBuilder = new PatientBuilder(fhirPathEngine, patient);
+
+    patientBuilder.addAttribute(GLOBAL_ID_PATH, StringType.class, "urn:dktk:dataelement:54:1",
+        PrimitiveType::getValue);
 
     patientBuilder.addAttribute("Patient.gender", Enumeration.class, "urn:dktk:dataelement:1:3",
         gen -> mapGenderValue(gen.getValueAsString()));

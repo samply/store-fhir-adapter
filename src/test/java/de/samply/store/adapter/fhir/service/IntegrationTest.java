@@ -27,6 +27,7 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.DiagnosisComponent;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
@@ -51,10 +52,10 @@ public class IntegrationTest {
 
     var patient = new Patient();
     patient.setId("211712");
-    patient.getIdentifierFirstRep().getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS)
-        .setCode("Lokal");
+    var localId = patient.addIdentifier();
+    localId.getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS).setCode("Lokal");
+    localId.setValue("123");
     patient.setGender(AdministrativeGender.MALE);
-    patient.getIdentifierFirstRep().setValue("123");
     patient.setBirthDateElement(new DateType("1995-01-01"));
     bundle.addEntry().setResource(patient);
 
