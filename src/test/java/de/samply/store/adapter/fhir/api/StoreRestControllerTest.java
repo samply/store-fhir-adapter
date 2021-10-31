@@ -95,7 +95,7 @@ class StoreRestControllerTest {
     when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
     var page0 = new Bundle();
-    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(page0);
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(Either.right(page0));
     var expectedResult = new QueryResult();
     when(mappingService.map(page0)).thenReturn(expectedResult);
 
@@ -110,7 +110,7 @@ class StoreRestControllerTest {
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
     var page0 = new Bundle();
     page0.getLinkOrCreate("next").setUrl(PAGE_1_URL);
-    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(page0);
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(Either.right(page0));
     when(mappingService.map(page0)).thenReturn(new QueryResult());
 
     controller.getResult(RESULT_ID, 0);
@@ -123,7 +123,7 @@ class StoreRestControllerTest {
     when(resultStore.get(RESULT_ID)).thenReturn(Optional.of(new Result(RESULT_ID, TOTAL)));
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
     var page1 = new Bundle();
-    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(page1);
+    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(Either.right(page1));
     var expectedResult = new QueryResult();
     when(mappingService.map(page1)).thenReturn(expectedResult);
 
@@ -142,9 +142,9 @@ class StoreRestControllerTest {
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.of(PAGE_1_URL));
     var page1 = new Bundle();
     page1.getLinkOrCreate("next").setUrl(PAGE_2_URL);
-    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(page1);
+    when(downloadService.fetchPage(PAGE_1_URL)).thenReturn(Either.right(page1));
     var page2 = new Bundle();
-    when(downloadService.fetchPage(PAGE_2_URL)).thenReturn(page2);
+    when(downloadService.fetchPage(PAGE_2_URL)).thenReturn(Either.right(page2));
     var expectedResult = new QueryResult();
     when(mappingService.map(page2)).thenReturn(expectedResult);
 
@@ -169,7 +169,7 @@ class StoreRestControllerTest {
     when(resultStore.getPageUrl(RESULT_ID, 1)).thenReturn(Optional.empty());
     when(resultStore.getMaxPageNum(RESULT_ID)).thenReturn(Optional.of(0));
     when(resultStore.getPageUrl(RESULT_ID, 0)).thenReturn(Optional.of(PAGE_0_URL));
-    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(new Bundle());
+    when(downloadService.fetchPage(PAGE_0_URL)).thenReturn(Either.right(new Bundle()));
 
     var exception = assertThrows(MissingPageUrlException.class,
         () -> controller.getResult(RESULT_ID, 1));

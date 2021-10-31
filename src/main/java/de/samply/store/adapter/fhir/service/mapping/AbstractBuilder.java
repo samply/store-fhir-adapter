@@ -6,6 +6,7 @@ import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.r4.model.Resource;
@@ -40,8 +41,7 @@ public class AbstractBuilder<T extends Entity> {
   }
 
   public <S extends IBase> void addAttribute(Resource resource, String path, Class<S> type,
-      String mdrKey,
-      Function<? super S, String> toString) {
+      String mdrKey, Function<? super S, String> toString) {
     addAttributeOptional(resource, path, type, mdrKey, v -> Optional.ofNullable(toString.apply(v)));
   }
 
@@ -70,6 +70,40 @@ public class AbstractBuilder<T extends Entity> {
       String mdrKey, Function<? super S, Optional<String>> toString) {
     fhirPathR4.evaluateFirst(resource, path, type)
         .flatMap(toString)
+        .map(v -> Util.createAttribute(mdrKey, v))
+        .ifPresent(a -> entity.getAttribute().add(a));
+  }
+
+  public <S extends IBase> void addAttribute2(String pathA, String pathB, Class<S> type,
+      String mdrKey, BiFunction<? super S, Optional<? extends S>, String> toString) {
+    addAttribute2(resource, pathA, pathB, type, mdrKey, toString);
+  }
+
+  public <S extends IBase> void addAttribute2(Resource resource, String pathA, String pathB,
+      Class<S> type, String mdrKey,
+      BiFunction<? super S, Optional<? extends S>, String> toString) {
+    addAttributeOptional2(resource, pathA, pathB, type, mdrKey,
+        (a, b) -> Optional.ofNullable(toString.apply(a, b)));
+  }
+
+  /**
+   * Adds an attribute to the entity managed by this builder if the {@code pathA} and {@code
+   * toString} function returns a value with the help of the value from {@code pathB}.
+   *
+   * @param resource the resource to use as base for the FHIRPath evaluation
+   * @param pathA    the primary FHIRPath
+   * @param pathB    the secondary FHIRPath
+   * @param type     the class of the type of the FHIRPath return value
+   * @param mdrKey   the MDR key to use for the attribute
+   * @param toString a function from the FHIRPath A return value and optional FHIRPath B return
+   *                 value to a string that will be the value of the attribute
+   * @param <S>      the type of the FHIRPath return value
+   */
+  public <S extends IBase> void addAttributeOptional2(Resource resource, String pathA, String pathB,
+      Class<S> type, String mdrKey,
+      BiFunction<? super S, Optional<? extends S>, Optional<String>> toString) {
+    fhirPathR4.evaluateFirst(resource, pathA, type)
+        .flatMap(a -> toString.apply(a, fhirPathR4.evaluateFirst(resource, pathB, type)))
         .map(v -> Util.createAttribute(mdrKey, v))
         .ifPresent(a -> entity.getAttribute().add(a));
   }

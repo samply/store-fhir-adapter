@@ -63,11 +63,13 @@ public class RootNodeBuilder {
         }
         case ClinicalImpression -> {
           var clinicalImpression = (ClinicalImpression) entry.getResource();
-          builder.getPatientNodeBuilder(clinicalImpression.getSubject().getReference())
-              .getConditionNodeBuilder(clinicalImpression.getProblemFirstRep().getReference())
-              .getClinicalImpressionNodeBuilder(
-                  "ClinicalImpression/" + clinicalImpression.getIdElement().getIdPart())
-              .setClinicalImpression(clinicalImpression);
+          if (clinicalImpression.hasProblem()) {
+            builder.getPatientNodeBuilder(clinicalImpression.getSubject().getReference())
+                .getConditionNodeBuilder(clinicalImpression.getProblemFirstRep().getReference())
+                .getClinicalImpressionNodeBuilder(
+                    "ClinicalImpression/" + clinicalImpression.getIdElement().getIdPart())
+                .setClinicalImpression(clinicalImpression);
+          }
         }
         default -> {
         }

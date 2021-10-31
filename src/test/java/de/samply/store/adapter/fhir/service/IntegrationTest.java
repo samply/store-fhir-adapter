@@ -217,44 +217,44 @@ public class IntegrationTest {
 
     assertEquals(result.getPatient().get(0).getId(), "123");
     assertEquals(result.getPatient().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:1:3")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "M");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:1:3")).toList().get(0)
+        .getValue().getValue(), "M");
     assertEquals(result.getPatient().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:26:4")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "01.01.1995");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:26:4")).toList().get(0)
+        .getValue().getValue(), "01.01.1995");
     assertEquals(result.getPatient().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:53:3")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "lebend");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:53:3")).toList().get(0)
+        .getValue().getValue(), "lebend");
     assertEquals(result.getPatient().get(0).getContainer().size(), 3);
     assertEquals(result.getPatient().get(0).getContainer().get(0).getDesignation(), "Diagnosis");
     assertEquals(result.getPatient().get(0).getContainer().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:29:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "C61");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:29:2")).toList().get(0)
+        .getValue().getValue(), "C61");
     assertEquals(result.getPatient().get(0).getContainer().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:28:1")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "59");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:28:1")).toList().get(0)
+        .getValue().getValue(), "59");
     assertEquals(result.getPatient().get(0).getContainer().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:83:3")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "06.05.2014");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:83:3")).toList().get(0)
+        .getValue().getValue(), "06.05.2014");
     assertEquals(result.getPatient().get(0).getContainer().get(0).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:3:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "10 32 GM");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:3:2")).toList().get(0)
+        .getValue().getValue(), "10 32 GM");
     assertEquals(result.getPatient().get(0).getContainer().get(0).getContainer().size(), 1);
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getDesignation(),
         "Tumor");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getAttribute()
-            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:4:2")).collect(
-                Collectors.toList()).get(0).getValue().getValue(), "C61.9");
+            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:4:2")).toList().get(0)
+            .getValue().getValue(), "C61.9");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getAttribute()
-            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:5:2")).collect(
-                Collectors.toList()).get(0).getValue().getValue(), "32");
+            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:5:2")).toList().get(0)
+            .getValue().getValue(), "32");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getAttribute()
-            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:6:2")).collect(
-                Collectors.toList()).get(0).getValue().getValue(), "T");
+            .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:6:2")).toList().get(0)
+            .getValue().getValue(), "T");
 
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer()
@@ -268,18 +268,15 @@ public class IntegrationTest {
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:7:2"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "8140/3");
+            .toList().get(0).getValue().getValue(), "8140/3");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:8:2"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "32");
+            .toList().get(0).getValue().getValue(), "32");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:9:2"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "3");
+            .toList().get(0).getValue().getValue(), "3");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
             .getDesignation(), "Metastasis");
@@ -289,13 +286,11 @@ public class IntegrationTest {
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:77:1"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "IIC");
+            .toList().get(0).getValue().getValue(), "IIC");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:21:3"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "05.05.2014");
+            .toList().get(0).getValue().getValue(), "05.05.2014");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(2)
             .getDesignation(), "TNM");
@@ -305,41 +300,36 @@ public class IntegrationTest {
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(2)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:2:3"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "23.03.1996");
+            .toList().get(0).getValue().getValue(), "23.03.1996");
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(2)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:89:1"))
-            .collect(
-                Collectors.toList()).get(0).getValue().getValue(), "J");
+            .toList().get(0).getValue().getValue(), "J");
     assertEquals(result.getPatient().get(0).getContainer().get(1).getDesignation(), "Sample");
     assertEquals(result.getPatient().get(0).getContainer().get(1).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:97:1")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "Plasma");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:97:1")).toList().get(0)
+        .getValue().getValue(), "Plasma");
     assertEquals(result.getPatient().get(0).getContainer().get(1).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:50:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "true");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:50:2")).toList().get(0)
+        .getValue().getValue(), "true");
     assertEquals(result.getPatient().get(0).getContainer().get(1).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:95:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "Flüssigprobe");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:95:2")).toList().get(0)
+        .getValue().getValue(), "Flüssigprobe");
     assertEquals(result.getPatient().get(0).getContainer().get(1).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:90:1")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "Kryo/Frisch (FF)");
-    assertEquals(result.getPatient().get(0).getContainer().get(1).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:49:4")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "23.12.2017");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:49:4")).toList().get(0)
+        .getValue().getValue(), "23.12.2017");
     assertEquals(result.getPatient().get(0).getContainer().get(2).getDesignation(), "Sample");
     assertEquals(result.getPatient().get(0).getContainer().get(2).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:97:1")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "Vollblut");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:97:1")).toList().get(0)
+        .getValue().getValue(), "Vollblut");
     assertEquals(result.getPatient().get(0).getContainer().get(2).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:50:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "true");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:50:2")).toList().get(0)
+        .getValue().getValue(), "true");
     assertEquals(result.getPatient().get(0).getContainer().get(2).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:95:2")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "Flüssigprobe");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:95:2")).toList().get(0)
+        .getValue().getValue(), "Flüssigprobe");
     assertEquals(result.getPatient().get(0).getContainer().get(2).getAttribute().stream()
-        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:49:4")).collect(
-            Collectors.toList()).get(0).getValue().getValue(), "22.12.2017");
+        .filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:49:4")).toList().get(0)
+        .getValue().getValue(), "22.12.2017");
   }
 }

@@ -58,7 +58,7 @@ public class ProgressMappingTest {
     }
 
     if (fhirmetastasis != null) {
-      findings.put("Observation/meta123", createObservation("21907-1", "meta123", fhirmetastasis));
+      findings.put("Observation/meta123", createObservation("LA4226-2", "meta123", fhirmetastasis));
       refs.add(new ClinicalImpressionFindingComponent().setItemReference(
           new Reference("Observation/meta123")));
     }

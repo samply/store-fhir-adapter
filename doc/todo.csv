@@ -1,0 +1,8 @@
+Id,Name,Description
+90:1,Fixierungsart,liegt hier am CXX - FHIR Mapping
+4:2,Lokalisation,Condition has no bodySite
+6:2,Seitenlokalisation,Condition has no bodySite
+24:3,Ansprechen im Verlauf,Codes F und O müssen im CXX FHIR Export auf V gemappt werden
+72:2,Lokales/regionäres Rezidiv,Code E muss im CXX FHIR Export auf T gemappt werden
+73:2,Lymphknoten-Rezidiv,Code B muss auf P und E auf T im CXX FHIR Export gemappt werden
+74:2,Fernmetastasen,Code B muss auf P und E auf M im CXX FHIR Export gemappt werden

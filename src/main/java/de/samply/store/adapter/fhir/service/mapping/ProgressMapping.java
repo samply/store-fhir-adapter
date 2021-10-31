@@ -19,15 +19,15 @@ public class ProgressMapping {
 
   private static final String ITEM_REFERENCE = "ClinicalImpression.finding.itemReference.resolve()";
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
 
   /**
    * Creates a new ProgressMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    */
-  public ProgressMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public ProgressMapping(FhirPathR4 fhirPathEngine) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
   /**
@@ -37,7 +37,7 @@ public class ProgressMapping {
    * @return the MDS Progress
    */
   public Container map(ClinicalImpressionNode node) {
-    var builder = new ContainerBuilder(fhirPathR4, node.clinicalImpression(), "Progress");
+    var builder = new ContainerBuilder(fhirPathEngine, node.clinicalImpression(), "Progress");
 
     builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = '21976-6').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:24:3", PrimitiveType::getValue);
@@ -57,7 +57,7 @@ public class ProgressMapping {
     builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = 'LA4370-8').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:73:2", PrimitiveType::getValue);
 
-    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = '21907-1').value.coding.code",
+    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = 'LA4226-2').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:74:2", PrimitiveType::getValue);
 
     return builder.build();

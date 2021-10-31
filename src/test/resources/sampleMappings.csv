@@ -1,35 +1,37 @@
-fhirSample,kindValue,typeValue,fixingValue,preserved
-,,,,false
-whole-blood,Vollblut,Flüssigprobe,,true
-bone-marrow,Knochenmark,,,true
-buffy-coat,buffy-coat,,,true
-dried-whole-blood,dried-whole-blood,,,true
-peripheral-blood-cells-vital,peripheral-blood-cells-vital,,,true
-blood-plasma,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
-plasma-edta,Plasma,Flüssigprobe,,true
-plasma-citrat,Plasma,Flüssigprobe,,true
-plasma-heparin,Plasma,Flüssigprobe,,true
-plasma-cell-free,Plasma,Flüssigprobe,,true
-plasma-other,Plasma,Flüssigprobe,,true
-blood-serum,Serum,Flüssigprobe,,true
-ascites,ascites,,,true
-csf-liquor,Liquor,Flüssigprobe,,true
-saliva,saliva,,,true
-stool-faeces,stool-faeces,,,true
-urine,Urin,Flüssigprobe,,true
-swab,swab,,,true
-liquid-other,Liquor,Flüssigprobe,,true
-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
-tumor-tissue-ffpe,Tumorgewebe,Gewebeprobe,Paraffin (FFPE),true
-normal-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
-other-tissue-ffpe,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
-tumor-tissue-frozen,Tumorgewebe,Gewebeprobe,Kryo/Frisch (FF),true
-normal-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
-other-tissue-frozen,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
-tissue-other,tissue-other,Gewebeprobe,,true
-dna,DNA,,,true
-cf-dna,DNA,,,true
-g-dna,DNA,,,true
-rna,RNA,,,true
-derivative-other,derivative-other,,,true
+bbmriType,cxxCode,dktkProbenart,dktkProbentyp,dktkFixierungsart,preserved
+,,,,,false
+whole-blood,,Vollblut,Flüssigprobe,,true
+bone-marrow,,Knochenmark,,,true
+buffy-coat,,buffy-coat,,,true
+dried-whole-blood,,dried-whole-blood,,,true
+peripheral-blood-cells-vital,,peripheral-blood-cells-vital,,,true
+blood-plasma,,Plasma,Flüssigprobe,,true
+plasma-edta,,Plasma,Flüssigprobe,,true
+plasma-citrat,,Plasma,Flüssigprobe,,true
+plasma-heparin,,Plasma,Flüssigprobe,,true
+plasma-cell-free,,Plasma,Flüssigprobe,,true
+plasma-other,,Plasma,Flüssigprobe,,true
+blood-serum,,Serum,Flüssigprobe,,true
+ascites,,ascites,,,true
+csf-liquor,,Liquor,Flüssigprobe,,true
+saliva,,saliva,,,true
+stool-faeces,,stool-faeces,,,true
+urine,,Urin,Flüssigprobe,,true
+swab,,swab,,,true
+liquid-other,,Liquor,Flüssigprobe,,true
+tissue-ffpe,,tissue-ffpe,Gewebeprobe,Paraffin (FFPE),true
+tumor-tissue-ffpe,,Tumorgewebe,Gewebeprobe,Paraffin (FFPE),true
+normal-tissue-ffpe,,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
+other-tissue-ffpe,,other-tissue-ffpe,Gewebeprobe,Paraffin (FFPE),true
+tissue-frozen,,tissue-frozen,Gewebeprobe,Kryo/Frisch (FF),true
+tumor-tissue-frozen,,Tumorgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+normal-tissue-frozen,,Normalgewebe,Gewebeprobe,Kryo/Frisch (FF),true
+other-tissue-frozen,,other-tissue-frozen,Gewebeprobe,Kryo/Frisch (FF),true
+tissue-other,,tissue-other,Gewebeprobe,,true
+tissue-other,NGW,Normalgewebe,Gewebeprobe,,true
+tissue-other,TGW,Tumorgewebe,Gewebeprobe,,true
+dna,,DNA,,,true
+cf-dna,,DNA,,,true
+g-dna,,DNA,,,true
+rna,,RNA,,,true
+derivative-other,,derivative-other,,,true
