@@ -3,6 +3,7 @@ package de.samply.store.adapter.fhir.util;
 import de.samply.store.adapter.fhir.util.Either.Left;
 import de.samply.store.adapter.fhir.util.Either.Right;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -43,6 +44,11 @@ public sealed interface Either<L, R> permits Left, Right {
     }
   }
 
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  static <L, R> Either<L, R> fromOptional(Optional<? extends R> optional, L left) {
+    return optional.isPresent() ? new Right<>(optional.get()) : new Left<>(left);
+  }
+
   /**
    * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
    *
@@ -57,6 +63,10 @@ public sealed interface Either<L, R> permits Left, Right {
   <U> Either<U, R> mapLeft(Function<? super L, ? extends U> f);
 
   R orElseGet(Function<? super L, ? extends R> f);
+
+  <X extends Throwable> R orElseThrow(Function<? super L, X> f) throws X;
+
+  Either<L, R> orElse(Function<? super L, ? extends Either<L, R>> f);
 
   /**
    * The container of the left value.
@@ -86,6 +96,16 @@ public sealed interface Either<L, R> permits Left, Right {
 
     @Override
     public R orElseGet(Function<? super L, ? extends R> f) {
+      return f.apply(val);
+    }
+
+    @Override
+    public <X extends Throwable> R orElseThrow(Function<? super L, X> f) throws X {
+      throw f.apply(val);
+    }
+
+    @Override
+    public Either<L, R> orElse(Function<? super L, ? extends Either<L, R>> f) {
       return f.apply(val);
     }
   }
@@ -119,6 +139,16 @@ public sealed interface Either<L, R> permits Left, Right {
     @Override
     public R orElseGet(Function<? super L, ? extends R> f) {
       return val;
+    }
+
+    @Override
+    public <X extends Throwable> R orElseThrow(Function<? super L, X> f) throws X {
+      return val;
+    }
+
+    @Override
+    public Either<L, R> orElse(Function<? super L, ? extends Either<L, R>> f) {
+      return this;
     }
   }
 }

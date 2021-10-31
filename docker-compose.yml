@@ -1,14 +1,15 @@
 version: '3.2'
 services:
   blaze:
-    image: "samply/blaze:0.11.0"
+    image: "samply/blaze:fix-parameter-encoding"
     environment:
-      BASE_URL: "http://blaze:8090"
-      SERVER_PORT: "8090"
-      JAVA_TOOL_OPTIONS: "-Xmx2g"
+      BASE_URL: "http://blaze:8080"
+      JAVA_TOOL_OPTIONS: "-Xmx4g"
+      DB_RESOURCE_CACHE_SIZE: "200000"
       LOG_LEVEL: "debug"
     ports:
-      - "8090:8090"
+      - "8090:8080"
+      - "8091:8081"
     volumes:
       - "blaze-data:/app/data"
 
@@ -16,17 +17,16 @@ services:
     build: .
     environment:
       APP_BASE_URL: "http://store-fhir-adapter:8080"
-      APP_STORE_URL: "http://blaze:8090/fhir"
-      APP_STORE_PAGE_SIZE: "10"
+      APP_STORE_URL: "http://blaze:8080/fhir"
+      APP_STORE_PAGE_SIZE: "100"
       JAVA_TOOL_OPTIONS: "-Xmx1g"
     ports:
-      - "8088:8080"
-      - "5005:5005"
+      - "8080:8080"
     depends_on:
       - blaze
 
   connector:
-    image: "samply/share-client:dktk-develop"
+    image: "samply/share-client:dktk-qb-scheduler-all"
     environment:
       POSTGRES_HOST: "connector-db"
       POSTGRES_DB: "samply.connector"
@@ -39,6 +39,7 @@ services:
       PATIENTLIST_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
       PROJECTPSEUDONYMISATION_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
       LOG_LEVEL: "debug"
+      CATALINA_OPTS: "-Xmx2g"
     ports:
       - "8070:8080"
     depends_on:
@@ -52,7 +53,7 @@ services:
       POSTGRES_PASSWORD: "samply"
       POSTGRES_DB: "samply.connector"
     ports:
-      - "5433:5432"
+      - "${CONNECTOR_DB_PORT:-5432}:5432"
     volumes:
       - "connector-db-data:/var/lib/postgresql/data"
 

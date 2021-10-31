@@ -6,13 +6,14 @@ import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
 import de.samply.share.model.ccp.QueryResult;
 import de.samply.share.model.common.QueryResultStatistic;
-import de.samply.store.adapter.fhir.service.BundleWithoutSelfUrlException;
 import de.samply.store.adapter.fhir.service.FhirDownloadService;
 import de.samply.store.adapter.fhir.service.MappingService;
 import de.samply.store.adapter.fhir.service.ResultStore;
+import de.samply.store.adapter.fhir.util.Anomaly;
+import de.samply.store.adapter.fhir.util.Anomaly.NotFound;
+import de.samply.store.adapter.fhir.util.Either;
 import java.net.URI;
 import java.util.Objects;
-import java.util.Optional;
 import org.hl7.fhir.r4.model.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,37 +139,45 @@ public class StoreRestController {
     logger.debug("request result id={}, pageNum={}", id, pageNum);
 
     if (resultStore.get(id).isPresent()) {
-      var queryResult = tryLoadPage(id, pageNum)
+      return fetchPage(id, pageNum)
           .map(mappingService::map)
-          .orElseThrow(() -> new MissingPageUrlException(id, pageNum));
-      queryResult.setId(id);
-      return queryResult;
+          .map(queryResult -> {
+            queryResult.setId(id);
+            return queryResult;
+          })
+          .orElseThrow(anomaly -> {
+            if (anomaly instanceof NotFound) {
+              return new MissingPageUrlException(id, pageNum);
+            } else {
+              return new RuntimeException(anomaly.msg());
+            }
+          });
     } else {
       throw new RequestNotFoundException(id);
     }
   }
 
-  private Optional<Bundle> tryLoadPage(String resultId, int pageNum) {
-    return fetchPage(resultId, pageNum)
-        .or(() -> resultStore.getMaxPageNum(resultId).flatMap(maxPageNum -> {
-          Optional<Bundle> bundle = Optional.empty();
-          while (maxPageNum <= pageNum) {
-            bundle = fetchPage(resultId, maxPageNum);
-            assert bundle.isPresent();
-            var url = bundle.get().getLinkOrCreate("next").getUrl();
-            if (url != null) {
-              maxPageNum++;
-            } else {
-              break;
-            }
+  private Either<Anomaly, Bundle> fetchPage(String resultId, int pageNum) {
+    return fetchPage1(resultId, pageNum)
+        .orElse(anomaly -> {
+          if (anomaly instanceof NotFound) {
+            resultStore.getMaxPageNum(resultId).ifPresent(maxPageNum -> {
+              while (maxPageNum <= pageNum) {
+                fetchPage1(resultId, maxPageNum);
+                maxPageNum++;
+              }
+            });
+            return fetchPage1(resultId, pageNum);
+          } else {
+            return Either.left(anomaly);
           }
-          return bundle;
-        }));
+        });
   }
 
-  private Optional<Bundle> fetchPage(String resultId, int pageNum) {
-    return resultStore.getPageUrl(resultId, pageNum)
-        .map(downloadService::fetchPage)
+  private Either<Anomaly, Bundle> fetchPage1(String resultId, int pageNum) {
+    return Either.<Anomaly, String>fromOptional(resultStore.getPageUrl(resultId, pageNum),
+            new NotFound("page URL not found"))
+        .flatMap(downloadService::fetchPage)
         .map(bundle -> {
           var url = bundle.getLinkOrCreate("next").getUrl();
           if (url != null) {

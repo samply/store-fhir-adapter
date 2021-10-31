@@ -16,6 +16,8 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 class SampleMappingTest {
 
+  private static final String SAMPLE_MATERIAL_TYPE = "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
+
   private final FhirContext fhirContext = FhirContext.forR4();
 
   private SampleMapping mapping;
@@ -28,19 +30,22 @@ class SampleMappingTest {
   @ParameterizedTest
   @CsvFileSource(resources = "/sampleMappings.csv", numLinesToSkip = 1)
   void map_sampleMaterialTypeCSVFile(
-      String fhirSample, String kindValue, String typeValue, String fixingValue, String preserved
+      String bbmriType, String cxxCode, String dktkProbenart, String dktkProbentyp,
+      String dktkFixierungsart, String preserved
   ) {
     var specimen = new Specimen();
-    specimen.getType().getCodingFirstRep()
-        .setSystem("https://fhir.bbmri.de/CodeSystem/SampleMaterialType").setCode(fhirSample);
+    specimen.getType().addCoding().setSystem(SAMPLE_MATERIAL_TYPE).setCode(bbmriType);
+    if (cxxCode != null) {
+      specimen.getType().addCoding().setSystem("urn:centraxx").setCode(cxxCode);
+    }
 
     var container = mapping.map(specimen);
 
-    assertEquals(Optional.ofNullable(kindValue),
+    assertEquals(Optional.ofNullable(dktkProbenart),
         findAttributeValue(container, "urn:dktk:dataelement:97:1"));
-    assertEquals(Optional.ofNullable(typeValue),
+    assertEquals(Optional.ofNullable(dktkProbentyp),
         findAttributeValue(container, "urn:dktk:dataelement:95:2"));
-    assertEquals(Optional.ofNullable(fixingValue),
+    assertEquals(Optional.ofNullable(dktkFixierungsart),
         findAttributeValue(container, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.ofNullable(preserved),
         findAttributeValue(container, "urn:dktk:dataelement:50:2"));

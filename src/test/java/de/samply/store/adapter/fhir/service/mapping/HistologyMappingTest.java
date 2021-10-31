@@ -45,8 +45,6 @@ public class HistologyMappingTest {
         findAttributeValue(container, "urn:dktk:dataelement:8:2"));
     assertEquals(Optional.ofNullable(dktkGrading),
         findAttributeValue(container, "urn:dktk:dataelement:9:2"));
-
-
   }
 
   private Observation createGrading(String fhirGrading) {

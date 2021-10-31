@@ -17,6 +17,8 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FhirService {
+
+  private static final Logger logger = LoggerFactory.getLogger(FhirDownloadService.class);
 
   private final IGenericClient client;
 
@@ -44,6 +48,7 @@ public class FhirService {
    * @return a Right with {@code true} if the resource exists or a Left in case of an error
    */
   public Either<String, Boolean> resourceExists(Class<? extends IBaseResource> type, String uri) {
+    logger.debug("Check whether {} with canonical URI {} exists.", type.getSimpleName(), uri);
     return Either.tryGet(() -> resourceQuery(type, uri).execute())
         .mapLeft(Exception::getMessage)
         .map(bundle -> bundle.getTotal() == 1);

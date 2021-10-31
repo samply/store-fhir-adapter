@@ -18,15 +18,15 @@ public class HistologyMapping {
   private static final String ICD_O_3 = "urn:oid:2.16.840.1.113883.6.43.1";
   private static final String GRADING = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GradingCS";
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
 
   /**
-   * Creates a new TnmMapping.
+   * Creates a new HistologyMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    */
-  public HistologyMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public HistologyMapping(FhirPathR4 fhirPathEngine) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
   /**
@@ -36,7 +36,7 @@ public class HistologyMapping {
    * @return the MDS Histology
    */
   public Container map(Observation histology) {
-    var builder = new ContainerBuilder(fhirPathR4, histology, "Histology");
+    var builder = new ContainerBuilder(fhirPathEngine, histology, "Histology");
 
     builder.addAttribute("Observation.value.coding.where(system = '" + ICD_O_3 + "').code",
         CodeType.class, "urn:dktk:dataelement:7:2", PrimitiveType::getValue);

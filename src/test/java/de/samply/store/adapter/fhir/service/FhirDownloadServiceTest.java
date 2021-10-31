@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import de.samply.store.adapter.fhir.util.Anomaly.Fault;
 import de.samply.store.adapter.fhir.util.Either;
+import java.net.ConnectException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
@@ -83,6 +85,16 @@ class FhirDownloadServiceTest {
 
     var bundle = service.fetchPage(PAGE_URL);
 
-    assertSame(expectedBundle, bundle);
+    assertEquals(Either.right(expectedBundle), bundle);
+  }
+
+  @Test
+  void fetchPage_ConnectException() {
+    when(client.fetchResourceFromUrl(Bundle.class, PAGE_URL))
+        .thenThrow(new RuntimeException("Connection refused"));
+
+    var bundle = service.fetchPage(PAGE_URL);
+
+    assertEquals(Either.left(new Fault("Connection refused")), bundle);
   }
 }

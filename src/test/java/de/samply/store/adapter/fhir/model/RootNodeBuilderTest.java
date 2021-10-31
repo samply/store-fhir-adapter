@@ -130,4 +130,25 @@ class RootNodeBuilderTest {
             .clinicalImpression());
     assertEquals(clinicalImpression, node.resources().get("ClinicalImpression/123"));
   }
+
+  @Test
+  void testClinicalImpressionBundleWithoutProblem() {
+    Patient patient = new Patient();
+    patient.setId("123");
+    ClinicalImpression clinicalImpression = new ClinicalImpression();
+    clinicalImpression.setId("123");
+    clinicalImpression.getSubject().setReference("Patient/123");
+    Condition condition = new Condition();
+    condition.setId("123");
+    condition.getSubject().setReference("Patient/123");
+    Bundle bundle = new Bundle();
+    bundle.addEntry().setResource(patient);
+    bundle.addEntry().setResource(clinicalImpression);
+    bundle.addEntry().setResource(condition);
+
+    var node = RootNodeBuilder.fromBundle(bundle);
+
+    assertTrue(node.patients().get(0).conditions().get(0).clinicalImpressions().isEmpty());
+    assertEquals(clinicalImpression, node.resources().get("ClinicalImpression/123"));
+  }
 }

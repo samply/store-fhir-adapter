@@ -5,6 +5,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import de.samply.store.adapter.fhir.util.Anomaly;
+import de.samply.store.adapter.fhir.util.Anomaly.Fault;
 import de.samply.store.adapter.fhir.util.Either;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,7 @@ public class FhirDownloadService {
   /**
    * Runs a query that selects all patients and returns the corresponding {@link Bundle}.
    *
-   * @return the bundle
+   * @return a Right with the bundle or a Left in case of an error
    */
   public Either<String, Bundle> runQuery() {
     logger.debug("Run query");
@@ -137,10 +139,11 @@ public class FhirDownloadService {
    * Returns the bundle of a page with {@code pageUrl}.
    *
    * @param pageUrl the URL of the page to fetch
-   * @return the bundle of the page with {@code pageUrl}
+   * @return a Right with the bundle or a Left in case of an error
    */
-  public Bundle fetchPage(String pageUrl) {
+  public Either<Anomaly, Bundle> fetchPage(String pageUrl) {
     logger.debug("fetch page pageUrl={}", pageUrl);
-    return client.fetchResourceFromUrl(Bundle.class, pageUrl);
+    return Either.tryGet(() -> client.fetchResourceFromUrl(Bundle.class, pageUrl))
+        .mapLeft(e -> new Fault(e.getMessage()));
   }
 }
