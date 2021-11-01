@@ -48,11 +48,14 @@ public class StoreFhirAdapterApplication {
       FhirContext fhirContext) {
     return resources -> {
       FhirPathR4 fhirPathEngine = new FhirPathR4(fhirContext, new EvaluationContext(resources));
-      return new QueryResultMapping(new PatientMapping(fhirPathEngine,
-          new DiagnosisMapping(fhirPathEngine,
-              new TumorMapping(fhirPathEngine, new HistologyMapping(fhirPathEngine),
-                  new MetastasisMapping(fhirPathEngine), new ProgressMapping(fhirPathEngine),
-                  new TnmMapping(fhirPathEngine))),
+      TnmMapping tnmMapping = new TnmMapping(fhirPathEngine);
+      HistologyMapping histologyMapping = new HistologyMapping(fhirPathEngine);
+      MetastasisMapping metastasisMapping = new MetastasisMapping(fhirPathEngine);
+      ProgressMapping progressMapping = new ProgressMapping(fhirPathEngine, tnmMapping);
+      TumorMapping tumorMapping = new TumorMapping(fhirPathEngine, histologyMapping,
+          metastasisMapping, progressMapping, tnmMapping);
+      DiagnosisMapping diagnosisMapping = new DiagnosisMapping(fhirPathEngine, tumorMapping);
+      return new QueryResultMapping(new PatientMapping(fhirPathEngine, diagnosisMapping,
           new SampleMapping(fhirPathEngine)));
     };
   }

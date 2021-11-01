@@ -16,11 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class TumorMapping {
 
-  private static final String ICD_0_3 = "urn:oid:2.16.840.1.113883.6.43.1";
-  private static final String ADT_Site = "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
-  private static final String EXTENSION_FERNMETASTASEN = "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
+  private static final String ICD_0_3 =
+      "urn:oid:2.16.840.1.113883.6.43.1";
+  private static final String ADT_Site =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
+  private static final String EXTENSION_FERNMETASTASEN =
+      "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
   private final HistologyMapping histologyMapping;
   private final MetastasisMapping metastasisMapping;
   private final ProgressMapping progressMapping;
@@ -29,18 +32,18 @@ public class TumorMapping {
   /**
    * Creates a new TumorMapping.
    *
-   * @param fhirPathR4        the FHIRPath engine
-   * @param histologyMapping  histology mapping
-   * @param metastasisMapping metastasis mapping
-   * @param progressMapping   progress mapping
-   * @param tnmMapping        TNM mapping
+   * @param fhirPathEngine        the FHIRPath engine
+   * @param histologyMapping  the histology mapping
+   * @param metastasisMapping the metastasis mapping
+   * @param progressMapping   the progress mapping
+   * @param tnmMapping        the TNM mapping
    */
-  public TumorMapping(FhirPathR4 fhirPathR4,
+  public TumorMapping(FhirPathR4 fhirPathEngine,
       HistologyMapping histologyMapping,
       MetastasisMapping metastasisMapping,
       ProgressMapping progressMapping,
       TnmMapping tnmMapping) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
     this.histologyMapping = Objects.requireNonNull(histologyMapping);
     this.progressMapping = Objects.requireNonNull(progressMapping);
     this.metastasisMapping = Objects.requireNonNull(metastasisMapping);
@@ -54,7 +57,7 @@ public class TumorMapping {
    * @return the Tumor
    */
   public Container map(ConditionNode node) {
-    var builder = new ContainerBuilder(fhirPathR4, node.condition(), "Tumor");
+    var builder = new ContainerBuilder(fhirPathEngine, node.condition(), "Tumor");
 
     builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_0_3 + "').code",
         CodeType.class, "urn:dktk:dataelement:4:2", PrimitiveType::getValue);

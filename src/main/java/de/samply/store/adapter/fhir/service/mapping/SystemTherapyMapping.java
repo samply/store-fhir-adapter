@@ -17,15 +17,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemTherapyMapping {
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
 
   /**
    * Creates a new SystemTherapyMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    */
-  public SystemTherapyMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public SystemTherapyMapping(FhirPathR4 fhirPathEngine) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
   /**
@@ -35,7 +35,7 @@ public class SystemTherapyMapping {
    * @return the MDS SystemTherapy
    */
   public Container map(MedicationStatement medicationStatement) {
-    var builder = new ContainerBuilder(fhirPathR4, medicationStatement, "SystemTherapy");
+    var builder = new ContainerBuilder(fhirPathEngine, medicationStatement, "SystemTherapy");
 
     builder.addAttributeOptional("MedicationStatement.effective.start",
         DateTimeType.class, "urn:dktk:dataelement:90:1", DATE_STRING);
