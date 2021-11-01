@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -15,7 +15,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class MetatasisMappingTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private MetastasisMapping mapping;
 
@@ -37,12 +37,9 @@ public class MetatasisMappingTest {
 
     var container = mapping.map(metastasis);
 
-    assertEquals(Optional.ofNullable(dktkExtraction),
-        findAttributeValue(container, "urn:dktk:dataelement:21:3"));
-    assertEquals(Optional.ofNullable(dktkFern),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.ofNullable(dktkLocation),
-        findAttributeValue(container, "urn:dktk:dataelement:98:1"));
+    assertEquals(Optional.ofNullable(dktkExtraction), findAttrValue(container, "21:3"));
+    assertEquals(Optional.ofNullable(dktkFern), findAttrValue(container, "77:1"));
+    assertEquals(Optional.ofNullable(dktkLocation), findAttrValue(container, "98:1"));
 
   }
 }

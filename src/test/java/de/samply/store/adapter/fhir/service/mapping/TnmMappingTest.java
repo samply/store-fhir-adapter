@@ -1,12 +1,11 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.EvaluationContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import java.util.ArrayList;
 import java.util.Optional;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -18,13 +17,20 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class TnmMappingTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final String TNMCPU_PRAEFIX_URL =
+      "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix";
+  private static final String TNMCPU_PRAEFIX_TCS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/TNMcpuPraefixTCS";
+
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private TnmMapping mapping;
+  private Observation observation;
 
   @BeforeEach
   void setUp() {
     mapping = new TnmMapping(new FhirPathR4(fhirContext, new EvaluationContext()));
+    observation = new Observation();
   }
 
   @ParameterizedTest
@@ -35,94 +41,70 @@ public class TnmMappingTest {
       String dktkTNMDate, String dktkUICC, String dktkTNMT, String dktkTNMMS, String dktkTNMN,
       String dktkTNMM, String dktkPreT, String dktkPreN, String dktkPreM, String dktkTNMYS,
       String dktkTNMRS, String dktkTNMVersion) {
-    var observation = new Observation();
 
     observation.setEffective(new DateTimeType(fhirTNMDate));
     observation.getValueCodeableConcept().getCodingFirstRep().setVersion(fhirTNMVersion)
         .setCode(fhirUICC);
-    ArrayList<ObservationComponentComponent> compList;
-    compList = new ArrayList<>();
-    if (fhirTNMT != null || fhirPreT != null) {
-      var comp = createCompontent(fhirTNMT, "21905-5", observation);
-      var code = new CodeableConcept();
-      code.getCodingFirstRep().setSystem(
-              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
-          .setCode(fhirPreT);
-      comp.getExtensionFirstRep().setUrl(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");
-      comp.getExtensionFirstRep().setValue(code);
-      compList.add(comp);
-    }
-    if (fhirTNMMS != null || fhirTNMN != null) {
-      compList.add(createCompontent(fhirTNMMS, "42030-7", observation));
-    }
-    if (fhirTNMN != null) {
-      var comp = createCompontent(fhirTNMN, "201906-3", observation);
-      var code = new CodeableConcept();
-      code.getCodingFirstRep().setSystem(
-              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
-          .setCode(fhirPreN);
-      comp.getExtensionFirstRep().setUrl(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");
-      comp.getExtensionFirstRep().setValue(code);
-      compList.add(comp);
-    }
-    if (fhirTNMM != null || fhirPreM != null) {
-      var comp = createCompontent(fhirTNMM, "21907-1", observation);
 
-      var code = new CodeableConcept();
-      code.getCodingFirstRep().setSystem(
-              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix")
-          .setCode(fhirPreM);
-      comp.getExtensionFirstRep().setUrl(
-          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix");
-      comp.getExtensionFirstRep().setValue(code);
-      compList.add(comp);
+    if (fhirTNMT != null || fhirPreT != null) {
+      var comp = createCompontent("21905-5", fhirTNMT);
+      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreT));
+      observation.addComponent(comp);
     }
+
+    if (fhirTNMMS != null || fhirTNMN != null) {
+      observation.addComponent(createCompontent("42030-7", fhirTNMMS));
+    }
+
+    if (fhirTNMN != null || fhirPreN != null) {
+      var comp = createCompontent("201906-3", fhirTNMN);
+      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreN));
+      observation.addComponent(comp);
+    }
+
+    if (fhirTNMM != null || fhirPreM != null) {
+      var comp = createCompontent("21907-1", fhirTNMM);
+      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreM));
+      observation.addComponent(comp);
+    }
+
     if (fhirTNMYS != null) {
-      compList.add(createCompontent(fhirTNMYS, "59479-6", observation));
+      observation.addComponent(createCompontent("59479-6", fhirTNMYS));
     }
+
     if (fhirTNMRS != null) {
-      compList.add(createCompontent(fhirTNMRS, "21983-2", observation));
+      observation.addComponent(createCompontent("21983-2", fhirTNMRS));
     }
-    observation.setComponent(compList);
 
     var container = mapping.map(observation);
 
-    assertEquals(Optional.ofNullable(dktkTNMDate),
-        findAttributeValue(container, "urn:dktk:dataelement:2:3"));
-    assertEquals(Optional.ofNullable(dktkUICC),
-        findAttributeValue(container, "urn:dktk:dataelement:89:1"));
-    assertEquals(Optional.ofNullable(dktkTNMVersion),
-        findAttributeValue(container, "urn:dktk:dataelement:18:2"));
-    assertEquals(Optional.ofNullable(dktkTNMT),
-        findAttributeValue(container, "urn:dktk:dataelement:100:1"));
-    assertEquals(Optional.ofNullable(dktkTNMMS),
-        findAttributeValue(container, "urn:dktk:dataelement:10:2"));
-    assertEquals(Optional.ofNullable(dktkTNMN),
-        findAttributeValue(container, "urn:dktk:dataelement:101:1"));
-    assertEquals(Optional.ofNullable(dktkTNMM),
-        findAttributeValue(container, "urn:dktk:dataelement:99:1"));
-    assertEquals(Optional.ofNullable(dktkPreT),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
-    assertEquals(Optional.ofNullable(dktkPreN),
-        findAttributeValue(container, "urn:dktk:dataelement:79:1"));
-    assertEquals(Optional.ofNullable(dktkPreM),
-        findAttributeValue(container, "urn:dktk:dataelement:80:1"));
-    assertEquals(Optional.ofNullable(dktkTNMYS),
-        findAttributeValue(container, "urn:dktk:dataelement:82:1"));
-    assertEquals(Optional.ofNullable(dktkTNMRS),
-        findAttributeValue(container, "urn:dktk:dataelement:81:1"));
-
+    assertEquals(Optional.ofNullable(dktkTNMDate), findAttrValue(container, "2:3"));
+    assertEquals(Optional.ofNullable(dktkUICC), findAttrValue(container, "89:1"));
+    assertEquals(Optional.ofNullable(dktkTNMVersion), findAttrValue(container, "18:2"));
+    assertEquals(Optional.ofNullable(dktkTNMT), findAttrValue(container, "100:1"));
+    assertEquals(Optional.ofNullable(dktkTNMMS), findAttrValue(container, "10:2"));
+    assertEquals(Optional.ofNullable(dktkTNMN), findAttrValue(container, "101:1"));
+    assertEquals(Optional.ofNullable(dktkTNMM), findAttrValue(container, "99:1"));
+    assertEquals(Optional.ofNullable(dktkPreT), findAttrValue(container, "78:1"));
+    assertEquals(Optional.ofNullable(dktkPreN), findAttrValue(container, "79:1"));
+    assertEquals(Optional.ofNullable(dktkPreM), findAttrValue(container, "80:1"));
+    assertEquals(Optional.ofNullable(dktkTNMYS), findAttrValue(container, "82:1"));
+    assertEquals(Optional.ofNullable(dktkTNMRS), findAttrValue(container, "81:1"));
   }
 
-  private ObservationComponentComponent createCompontent(String fhirValue, String code,
-      Observation observation) {
+  private static ObservationComponentComponent createCompontent(String code, String value) {
     ObservationComponentComponent comp = new ObservationComponentComponent();
     comp.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode(code);
-    comp.getValueCodeableConcept().getCodingFirstRep().setCode(fhirValue);
-
+    comp.getValueCodeableConcept().getCodingFirstRep().setCode(value);
     return comp;
   }
 
+  private CodeableConcept createCpuConcept(String code) {
+    var concept = new CodeableConcept();
+    concept.getCodingFirstRep().setSystem(TNMCPU_PRAEFIX_TCS).setCode(code);
+    return concept;
+  }
 }

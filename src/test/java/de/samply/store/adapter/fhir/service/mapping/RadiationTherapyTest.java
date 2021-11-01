@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 public class RadiationTherapyTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private RadiationTherapyMapping mapping;
 
@@ -31,12 +31,9 @@ public class RadiationTherapyTest {
     var container = mapping.map(therapy);
 
     assertEquals("RadiationTherapy", container.getDesignation());
-    assertEquals(Optional.of("true"),
-        findAttributeValue(container, "urn:dktk:dataelement:34:2"));
-    assertEquals(Optional.empty(),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.empty(),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+    assertEquals(Optional.of("true"), findAttrValue(container, "34:2"));
+    assertEquals(Optional.empty(), findAttrValue(container, "77:1"));
+    assertEquals(Optional.empty(), findAttrValue(container, "78:1"));
   }
 
   @Test
@@ -46,10 +43,8 @@ public class RadiationTherapyTest {
 
     var container = mapping.map(therapy);
 
-    assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.empty(),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+    assertEquals(Optional.of("15.03.2017"), findAttrValue(container, "77:1"));
+    assertEquals(Optional.empty(), findAttrValue(container, "78:1"));
   }
 
   @Disabled
@@ -62,15 +57,10 @@ public class RadiationTherapyTest {
 
     var container = mapping.map(therapy);
 
-    assertEquals(Optional.of("K"),
-        findAttributeValue(container, "urn:dktk:dataelement:67:2"));
-    assertEquals(Optional.of("A"),
-        findAttributeValue(container, "urn:dktk:dataelement:68:3"));
-    assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:25:4"));
-    assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:77:1"));
-    assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(container, "urn:dktk:dataelement:78:1"));
+    assertEquals(Optional.of("K"), findAttrValue(container, "67:2"));
+    assertEquals(Optional.of("A"), findAttrValue(container, "68:3"));
+    assertEquals(Optional.of("16.03.2017"), findAttrValue(container, "25:4"));
+    assertEquals(Optional.of("15.03.2017"), findAttrValue(container, "77:1"));
+    assertEquals(Optional.of("16.03.2017"), findAttrValue(container, "78:1"));
   }
 }

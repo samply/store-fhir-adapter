@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -18,7 +18,7 @@ class SampleMappingTest {
 
   private static final String SAMPLE_MATERIAL_TYPE = "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private SampleMapping mapping;
 
@@ -41,14 +41,10 @@ class SampleMappingTest {
 
     var container = mapping.map(specimen);
 
-    assertEquals(Optional.ofNullable(dktkProbenart),
-        findAttributeValue(container, "urn:dktk:dataelement:97:1"));
-    assertEquals(Optional.ofNullable(dktkProbentyp),
-        findAttributeValue(container, "urn:dktk:dataelement:95:2"));
-    assertEquals(Optional.ofNullable(dktkFixierungsart),
-        findAttributeValue(container, "urn:dktk:dataelement:90:1"));
-    assertEquals(Optional.ofNullable(preserved),
-        findAttributeValue(container, "urn:dktk:dataelement:50:2"));
+    assertEquals(Optional.ofNullable(dktkProbenart), findAttrValue(container, "97:1"));
+    assertEquals(Optional.ofNullable(dktkProbentyp), findAttrValue(container, "95:2"));
+    assertEquals(Optional.ofNullable(dktkFixierungsart), findAttrValue(container, "90:1"));
+    assertEquals(Optional.ofNullable(preserved), findAttrValue(container, "50:2"));
   }
 
   @Test
@@ -58,7 +54,6 @@ class SampleMappingTest {
 
     var container = mapping.map(specimen);
 
-    assertEquals(Optional.of("01.01.2000"),
-        findAttributeValue(container, "urn:dktk:dataelement:49:4"));
+    assertEquals(Optional.of("01.01.2000"), findAttrValue(container, "49:4"));
   }
 }

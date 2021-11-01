@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_O_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -84,12 +84,9 @@ public class TumorMappingTest {
 
     var container = mapping.map(conditionNode);
 
-    assertEquals(Optional.ofNullable(DKTK_ICD10),
-        findAttributeValue(container, "urn:dktk:dataelement:4:2"));
-    assertEquals(Optional.ofNullable(DKTK_ICD_O_3),
-        findAttributeValue(container, "urn:dktk:dataelement:5:2"));
-    assertEquals(Optional.ofNullable(DKTK_site),
-        findAttributeValue(container, "urn:dktk:dataelement:6:2"));
+    assertEquals(Optional.ofNullable(DKTK_ICD10), findAttrValue(container, "4:2"));
+    assertEquals(Optional.ofNullable(DKTK_ICD_O_3), findAttrValue(container, "5:2"));
+    assertEquals(Optional.ofNullable(DKTK_site), findAttrValue(container, "6:2"));
   }
 
   @Test

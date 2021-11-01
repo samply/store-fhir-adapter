@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_O_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -123,8 +123,7 @@ class DiagnosisMappingTest {
 
     var container = mapping.map(conditionNode);
 
-    assertEquals(Optional.of("01.01.2010"),
-        findAttributeValue(container, "urn:dktk:dataelement:83:3"));
+    assertEquals(Optional.of("01.01.2010"), findAttrValue(container, "83:3"));
   }
 
   @Test
@@ -140,10 +139,8 @@ class DiagnosisMappingTest {
 
     var container = mapping.map(conditionNode);
 
-    assertEquals(Optional.of("01.01.2010"),
-        findAttributeValue(container, "urn:dktk:dataelement:83:3"));
-    assertEquals(Optional.of("9"),
-        findAttributeValue(container, "urn:dktk:dataelement:28:1"));
+    assertEquals(Optional.of("01.01.2010"), findAttrValue(container, "83:3"));
+    assertEquals(Optional.of("9"), findAttrValue(container, "28:1"));
   }
 
   @Test

@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class HistologyMappingTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   @ParameterizedTest
   @CsvFileSource(resources = "/histologyMappings.csv", numLinesToSkip = 1)
@@ -39,12 +39,9 @@ public class HistologyMappingTest {
 
     var container = mapping.map(histology);
 
-    assertEquals(Optional.ofNullable(dktkMorphologie),
-        findAttributeValue(container, "urn:dktk:dataelement:7:2"));
-    assertEquals(Optional.ofNullable(dktkICD_O),
-        findAttributeValue(container, "urn:dktk:dataelement:8:2"));
-    assertEquals(Optional.ofNullable(dktkGrading),
-        findAttributeValue(container, "urn:dktk:dataelement:9:2"));
+    assertEquals(Optional.ofNullable(dktkMorphologie), findAttrValue(container, "7:2"));
+    assertEquals(Optional.ofNullable(dktkICD_O), findAttrValue(container, "8:2"));
+    assertEquals(Optional.ofNullable(dktkGrading), findAttrValue(container, "9:2"));
   }
 
   private Observation createGrading(String fhirGrading) {

@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 public class SystemTherapyTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private SystemTherapyMapping mapping;
 
@@ -38,15 +38,15 @@ public class SystemTherapyTest {
     assertEquals("Progress", progressContainer.getDesignation());
 
     assertEquals(Optional.of("true"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+        findAttrValue(progressContainer, "urn:dktk:dataelement:34:2"));
 
     var systemContainer = progressContainer.getContainer().get(0);
     assertEquals("SystemTherapy", systemContainer.getDesignation());
 
     assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(systemContainer, "urn:dktk:dataelement:90:1"));
+        findAttrValue(systemContainer, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(systemContainer, "urn:dktk:dataelement:93:1"));
+        findAttrValue(systemContainer, "urn:dktk:dataelement:93:1"));
   }
 
   @Disabled
@@ -64,16 +64,16 @@ public class SystemTherapyTest {
     assertEquals("Progress", progressContainer.getDesignation());
 
     assertEquals(Optional.of("true"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:34:2"));
+        findAttrValue(progressContainer, "urn:dktk:dataelement:34:2"));
 
     var systemContainer = progressContainer.getContainer().get(0);
     assertEquals("SystemTherapy", systemContainer.getDesignation());
 
     assertEquals(Optional.of("15.03.2017"),
-        findAttributeValue(systemContainer, "urn:dktk:dataelement:90:1"));
+        findAttrValue(systemContainer, "urn:dktk:dataelement:90:1"));
     assertEquals(Optional.of("16.03.2017"),
-        findAttributeValue(systemContainer, "urn:dktk:dataelement:93:1"));
+        findAttrValue(systemContainer, "urn:dktk:dataelement:93:1"));
     assertEquals(Optional.of("Epirubicin Taxotere Cyclophosphamid"),
-        findAttributeValue(systemContainer, "urn:dktk:dataelement:91:1"));
+        findAttrValue(systemContainer, "urn:dktk:dataelement:91:1"));
   }
 }

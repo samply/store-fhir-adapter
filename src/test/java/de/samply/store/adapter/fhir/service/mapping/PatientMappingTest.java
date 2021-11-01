@@ -36,7 +36,7 @@ public class PatientMappingTest {
   private static final String VITAL_STATE_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   @Mock
   private DiagnosisMapping diagnosisMapping;
