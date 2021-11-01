@@ -17,10 +17,13 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class TnmMappingTest {
 
-  private static final String TNMCPU_PRAEFIX_URL =
+  private static final String CPU_PRAEFIX_URL =
       "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-TNMcpuPraefix";
   private static final String TNMCPU_PRAEFIX_TCS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/TNMcpuPraefixTCS";
+
+  private static final String TNM_C = "21908-9";
+  private static final String TNM_P = "21902-2";
 
   private static final FhirContext fhirContext = FhirContext.forR4();
 
@@ -42,13 +45,14 @@ public class TnmMappingTest {
       String dktkTNMM, String dktkPreT, String dktkPreN, String dktkPreM, String dktkTNMYS,
       String dktkTNMRS, String dktkTNMVersion) {
 
+    observation.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode(TNM_C);
     observation.setEffective(new DateTimeType(fhirTNMDate));
     observation.getValueCodeableConcept().getCodingFirstRep().setVersion(fhirTNMVersion)
         .setCode(fhirUICC);
 
     if (fhirTNMT != null || fhirPreT != null) {
       var comp = createCompontent("21905-5", fhirTNMT);
-      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      comp.getExtensionFirstRep().setUrl(CPU_PRAEFIX_URL);
       comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreT));
       observation.addComponent(comp);
     }
@@ -58,15 +62,15 @@ public class TnmMappingTest {
     }
 
     if (fhirTNMN != null || fhirPreN != null) {
-      var comp = createCompontent("201906-3", fhirTNMN);
-      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      var comp = createCompontent("21906-3", fhirTNMN);
+      comp.getExtensionFirstRep().setUrl(CPU_PRAEFIX_URL);
       comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreN));
       observation.addComponent(comp);
     }
 
     if (fhirTNMM != null || fhirPreM != null) {
       var comp = createCompontent("21907-1", fhirTNMM);
-      comp.getExtensionFirstRep().setUrl(TNMCPU_PRAEFIX_URL);
+      comp.getExtensionFirstRep().setUrl(CPU_PRAEFIX_URL);
       comp.getExtensionFirstRep().setValue(createCpuConcept(fhirPreM));
       observation.addComponent(comp);
     }
@@ -84,15 +88,19 @@ public class TnmMappingTest {
     assertEquals(Optional.ofNullable(dktkTNMDate), findAttrValue(container, "2:3"));
     assertEquals(Optional.ofNullable(dktkUICC), findAttrValue(container, "89:1"));
     assertEquals(Optional.ofNullable(dktkTNMVersion), findAttrValue(container, "18:2"));
-    assertEquals(Optional.ofNullable(dktkTNMT), findAttrValue(container, "100:1"));
-    assertEquals(Optional.ofNullable(dktkTNMMS), findAttrValue(container, "10:2"));
-    assertEquals(Optional.ofNullable(dktkTNMN), findAttrValue(container, "101:1"));
-    assertEquals(Optional.ofNullable(dktkTNMM), findAttrValue(container, "99:1"));
+
     assertEquals(Optional.ofNullable(dktkPreT), findAttrValue(container, "78:1"));
+    assertEquals(Optional.ofNullable(dktkTNMT), findAttrValue(container, "100:1"));
+
     assertEquals(Optional.ofNullable(dktkPreN), findAttrValue(container, "79:1"));
+    assertEquals(Optional.ofNullable(dktkTNMN), findAttrValue(container, "101:1"));
+
     assertEquals(Optional.ofNullable(dktkPreM), findAttrValue(container, "80:1"));
+    assertEquals(Optional.ofNullable(dktkTNMM), findAttrValue(container, "99:1"));
+
     assertEquals(Optional.ofNullable(dktkTNMYS), findAttrValue(container, "82:1"));
     assertEquals(Optional.ofNullable(dktkTNMRS), findAttrValue(container, "81:1"));
+    assertEquals(Optional.ofNullable(dktkTNMMS), findAttrValue(container, "10:2"));
   }
 
   private static ObservationComponentComponent createCompontent(String code, String value) {

@@ -21,15 +21,15 @@ public class SampleMapping {
 
   private static final String SAMPLE_MATERIAL_TYPE = "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
 
   /**
    * Creates a new SampleMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    */
-  public SampleMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public SampleMapping(FhirPathR4 fhirPathEngine) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
   /**
@@ -39,7 +39,7 @@ public class SampleMapping {
    * @return the MDS Sample
    */
   public Container map(Specimen specimen) {
-    var builder = new ContainerBuilder(fhirPathR4, specimen, "Sample");
+    var builder = new ContainerBuilder(fhirPathEngine, specimen, "Sample");
 
     builder.addAttribute2(
         "Specimen.type.coding.where(system = '" + SAMPLE_MATERIAL_TYPE + "').code",

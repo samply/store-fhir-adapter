@@ -18,15 +18,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetastasisMapping {
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
 
   /**
    * Creates a new MetastasisMapping.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    */
-  public MetastasisMapping(FhirPathR4 fhirPathR4) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public MetastasisMapping(FhirPathR4 fhirPathEngine) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
   /**
@@ -36,7 +36,7 @@ public class MetastasisMapping {
    * @return the MDS Metastasis
    */
   public Container map(Observation metastasis) {
-    var builder = new ContainerBuilder(fhirPathR4, metastasis, "Metastasis");
+    var builder = new ContainerBuilder(fhirPathEngine, metastasis, "Metastasis");
 
     builder.addAttribute("Observation.value.coding.code",
         CodeType.class, "urn:dktk:dataelement:77:1", PrimitiveType::getValue);

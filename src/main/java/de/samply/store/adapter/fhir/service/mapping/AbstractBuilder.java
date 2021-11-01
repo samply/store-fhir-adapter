@@ -18,19 +18,19 @@ import org.hl7.fhir.r4.model.Resource;
  */
 public class AbstractBuilder<T extends Entity> {
 
-  protected final FhirPathR4 fhirPathR4;
+  protected final FhirPathR4 fhirPathEngine;
   protected final T entity;
   protected final Resource resource;
 
   /**
    * Creates a new builder.
    *
-   * @param fhirPathR4 the FHIRPath engine
+   * @param fhirPathEngine the FHIRPath engine
    * @param entity     the initial entity being build
    * @param resource   the FHIR resource used to query by FHIRPath
    */
-  public AbstractBuilder(FhirPathR4 fhirPathR4, T entity, Resource resource) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  public AbstractBuilder(FhirPathR4 fhirPathEngine, T entity, Resource resource) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
     this.entity = Objects.requireNonNull(entity);
     this.resource = Objects.requireNonNull(resource);
   }
@@ -68,7 +68,7 @@ public class AbstractBuilder<T extends Entity> {
    */
   public <S extends IBase> void addAttributeOptional(Resource resource, String path, Class<S> type,
       String mdrKey, Function<? super S, Optional<String>> toString) {
-    fhirPathR4.evaluateFirst(resource, path, type)
+    fhirPathEngine.evaluateFirst(resource, path, type)
         .flatMap(toString)
         .map(v -> Util.createAttribute(mdrKey, v))
         .ifPresent(a -> entity.getAttribute().add(a));
@@ -102,15 +102,15 @@ public class AbstractBuilder<T extends Entity> {
   public <S extends IBase> void addAttributeOptional2(Resource resource, String pathA, String pathB,
       Class<S> type, String mdrKey,
       BiFunction<? super S, Optional<? extends S>, Optional<String>> toString) {
-    fhirPathR4.evaluateFirst(resource, pathA, type)
-        .flatMap(a -> toString.apply(a, fhirPathR4.evaluateFirst(resource, pathB, type)))
+    fhirPathEngine.evaluateFirst(resource, pathA, type)
+        .flatMap(a -> toString.apply(a, fhirPathEngine.evaluateFirst(resource, pathB, type)))
         .map(v -> Util.createAttribute(mdrKey, v))
         .ifPresent(a -> entity.getAttribute().add(a));
   }
 
   public <S extends IBase> void addContainer(String path, Class<S> type,
       Function<? super S, Container> toContainer) {
-    addContainers(fhirPathR4.evaluate(resource, path, type).stream().map(toContainer).toList());
+    addContainers(fhirPathEngine.evaluate(resource, path, type).stream().map(toContainer).toList());
   }
 
   public void addContainer(Container container) {

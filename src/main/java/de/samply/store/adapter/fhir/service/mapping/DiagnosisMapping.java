@@ -25,11 +25,17 @@ public class DiagnosisMapping {
   public static final String ICD_10_GM = "http://fhir.de/CodeSystem/dimdi/icd-10-gm";
   public static final String ICD_O_3 = "urn:oid:2.16.840.1.113883.6.43.1";
 
-  private final FhirPathR4 fhirPathR4;
+  private final FhirPathR4 fhirPathEngine;
   private final TumorMapping tumorMapping;
 
-  public DiagnosisMapping(FhirPathR4 fhirPathR4, TumorMapping tumorMapping) {
-    this.fhirPathR4 = Objects.requireNonNull(fhirPathR4);
+  /**
+   * Creates a new DiagnosisMapping.
+   *
+   * @param fhirPathEngine the FHIRPath engine
+   * @param tumorMapping   the tumor mapping
+   */
+  public DiagnosisMapping(FhirPathR4 fhirPathEngine, TumorMapping tumorMapping) {
+    this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
     this.tumorMapping = Objects.requireNonNull(tumorMapping);
   }
 
@@ -42,7 +48,7 @@ public class DiagnosisMapping {
    */
   public Container map(ConditionNode node) {
     var condition = node.condition();
-    var builder = new ContainerBuilder(fhirPathR4, condition, "Diagnosis");
+    var builder = new ContainerBuilder(fhirPathEngine, condition, "Diagnosis");
 
     builder.addAttribute("Condition.code.coding.where(system = '" + ICD_10_GM + "').code",
         CodeType.class, "urn:dktk:dataelement:29:2", PrimitiveType::getValue);

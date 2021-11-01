@@ -15,7 +15,6 @@ import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
 import de.samply.store.adapter.fhir.service.mapping.TnmMapping;
 import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -27,7 +26,6 @@ import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Encounter.DiagnosisComponent;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationComponentComponent;
@@ -147,8 +145,8 @@ public class IntegrationTest {
 
     var tmn = new Observation();
     tmn.setId("2014-05-06-d1e182");
-    tmn.getSubject().setReference("Patient/211712");
     tmn.getCode().getCodingFirstRep().setSystem(loinc).setCode("21908-9");
+    tmn.getSubject().setReference("Patient/211712");
     tmn.setEffective(new DateTimeType("2014-05-05"));
     tmn.getValueCodeableConcept().getCodingFirstRep()
         .setSystem("http://dktk.dkfz.de/fhir/onco/core/CodeSystem/UiccstadiumCS").setCode("IIC");
@@ -205,13 +203,18 @@ public class IntegrationTest {
   @Test
   void applicationTest() {
     RootNode rootNode = buildRootNode();
-    FhirPathR4 fhirPath = new FhirPathR4(fhirContext,
+    FhirPathR4 fhirPathEngine = new FhirPathR4(fhirContext,
         new EvaluationContext(rootNode.resources()));
-    QueryResultMapping queryResultMapping = new QueryResultMapping(new PatientMapping(fhirPath,
-        new DiagnosisMapping(fhirPath, new TumorMapping(fhirPath, new HistologyMapping(fhirPath),
-            new MetastasisMapping(fhirPath),
-            new ProgressMapping(fhirPath), new TnmMapping(fhirPath))),
-        new SampleMapping(fhirPath)));
+    TnmMapping tnmMapping = new TnmMapping(fhirPathEngine);
+    HistologyMapping histologyMapping = new HistologyMapping(fhirPathEngine);
+    MetastasisMapping metastasisMapping = new MetastasisMapping(fhirPathEngine);
+    ProgressMapping progressMapping = new ProgressMapping(fhirPathEngine, tnmMapping);
+    TumorMapping tumorMapping = new TumorMapping(fhirPathEngine, histologyMapping,
+        metastasisMapping, progressMapping, tnmMapping);
+    DiagnosisMapping diagnosisMapping = new DiagnosisMapping(fhirPathEngine, tumorMapping);
+    PatientMapping patientMapping = new PatientMapping(fhirPathEngine, diagnosisMapping,
+        new SampleMapping(fhirPathEngine));
+    QueryResultMapping queryResultMapping = new QueryResultMapping(patientMapping);
 
     var result = queryResultMapping.map(rootNode.patients());
 

@@ -42,7 +42,8 @@ public class ProgressMappingTest {
   void setUp() {
     clinicalImpression = new ClinicalImpression();
     findings = new HashMap<>();
-    mapping = new ProgressMapping(new FhirPathR4(fhirContext, new EvaluationContext(findings)));
+    FhirPathR4 fhirPathEngine = new FhirPathR4(fhirContext, new EvaluationContext(findings));
+    mapping = new ProgressMapping(fhirPathEngine, new TnmMapping(fhirPathEngine));
   }
 
   @ParameterizedTest
