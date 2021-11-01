@@ -156,7 +156,8 @@ public class TumorMappingTest {
     condition.setId("C123");
     condition.getEvidenceFirstRep().getDetailFirstRep().setReference("123");
     var clinicalImpressionNode = new ClinicalImpressionNode(new ClinicalImpression());
-    var conditionNode = new ConditionNode(patient, condition, List.of(clinicalImpressionNode));
+    var conditionNode = new ConditionNode(patient, condition, List.of(),
+        List.of(clinicalImpressionNode));
     var progressContainer = new Container();
     when(progressMapping.map(clinicalImpressionNode)).thenReturn(progressContainer);
 

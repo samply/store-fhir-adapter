@@ -13,9 +13,16 @@ import org.junit.jupiter.api.Test;
 
 class RootNodeBuilderTest {
 
+  private static final String PATIENT_ID = "143111";
+  private static final String CONDITION_ID = "143244";
+  private static final String VITAL_STATE_ID = "143307";
+  private static final String SPECIMEN_ID = "143336";
+  private static final String CLINICAL_IMPRESSION_ID = "143743";
+  private static final String HISTOLOGY_ID = "143809";
+
   @Test
   void testEmptyBundle() {
-    Bundle bundle = new Bundle();
+    var bundle = new Bundle();
 
     var node = RootNodeBuilder.fromBundle(bundle);
 
@@ -25,42 +32,42 @@ class RootNodeBuilderTest {
 
   @Test
   void testPatientBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
-    Bundle bundle = new Bundle();
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
 
     var node = RootNodeBuilder.fromBundle(bundle);
 
     assertEquals(patient, node.patients().get(0).patient());
-    assertEquals(patient, node.resources().get("Patient/123"));
+    assertEquals(patient, node.resources().get("Patient/" + PATIENT_ID));
   }
 
   @Test
   void testConditionBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
     Condition condition = new Condition();
-    condition.setId("123");
-    condition.getSubject().setReference("Patient/123");
-    Bundle bundle = new Bundle();
+    condition.setId(CONDITION_ID);
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
     bundle.addEntry().setResource(condition);
 
     var node = RootNodeBuilder.fromBundle(bundle);
 
     assertEquals(condition, node.patients().get(0).conditions().get(0).condition());
-    assertEquals(condition, node.resources().get("Condition/123"));
+    assertEquals(condition, node.resources().get("Condition/" + CONDITION_ID));
   }
 
   @Test
   void testPatientConditionBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
     Condition condition = new Condition();
-    condition.setId("123");
-    condition.getSubject().setReference("Patient/123");
-    Bundle bundle = new Bundle();
+    condition.setId(CONDITION_ID);
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
     bundle.addEntry().setResource(condition);
 
@@ -68,57 +75,80 @@ class RootNodeBuilderTest {
 
     assertEquals(patient, node.patients().get(0).patient());
     assertEquals(condition, node.patients().get(0).conditions().get(0).condition());
-    assertEquals(patient, node.resources().get("Patient/123"));
-    assertEquals(condition, node.resources().get("Condition/123"));
+    assertEquals(patient, node.resources().get("Patient/" + PATIENT_ID));
+    assertEquals(condition, node.resources().get("Condition/" + CONDITION_ID));
   }
 
   @Test
-  void testVitalStatusBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
-    Observation observation = new Observation();
-    observation.setId("123");
-    observation.getSubject().setReference("Patient/123");
-    observation.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode("75186-7");
-    Bundle bundle = new Bundle();
+  void testVitalStateBundle() {
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
+    var vitalState = new Observation();
+    vitalState.setId(VITAL_STATE_ID);
+    vitalState.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode("75186-7");
+    vitalState.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
-    bundle.addEntry().setResource(observation);
+    bundle.addEntry().setResource(vitalState);
 
     var node = RootNodeBuilder.fromBundle(bundle);
 
-    assertEquals(observation, node.patients().get(0).vitalState().orElseThrow());
-    assertEquals(observation, node.resources().get("Observation/123"));
+    assertEquals(vitalState, node.patients().get(0).vitalState().orElseThrow());
+    assertEquals(vitalState, node.resources().get("Observation/" + VITAL_STATE_ID));
+  }
+
+  @Test
+  void testHistologyBundle() {
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
+    Condition condition = new Condition();
+    condition.setId(CONDITION_ID);
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    var histology = new Observation();
+    histology.setId(HISTOLOGY_ID);
+    histology.getCode().getCodingFirstRep().setSystem("http://loinc.org").setCode("59847-4");
+    histology.getSubject().setReference("Patient/" + PATIENT_ID);
+    histology.getFocusFirstRep().setReference("Condition/" + CONDITION_ID);
+    var bundle = new Bundle();
+    bundle.addEntry().setResource(patient);
+    bundle.addEntry().setResource(condition);
+    bundle.addEntry().setResource(histology);
+
+    var node = RootNodeBuilder.fromBundle(bundle);
+
+    assertEquals(histology, node.patients().get(0).conditions().get(0).histologies().get(0));
+    assertEquals(histology, node.resources().get("Observation/" + HISTOLOGY_ID));
   }
 
   @Test
   void testSpecimenBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
     Specimen specimen = new Specimen();
-    specimen.setId("123");
-    specimen.getSubject().setReference("Patient/123");
-    Bundle bundle = new Bundle();
+    specimen.setId(SPECIMEN_ID);
+    specimen.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
     bundle.addEntry().setResource(specimen);
 
     var node = RootNodeBuilder.fromBundle(bundle);
 
     assertEquals(specimen, node.patients().get(0).specimens().get(0));
-    assertEquals(specimen, node.resources().get("Specimen/123"));
+    assertEquals(specimen, node.resources().get("Specimen/" + SPECIMEN_ID));
   }
 
   @Test
   void testClinicalImpressionBundle() {
-    Patient patient = new Patient();
-    patient.setId("123");
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
     ClinicalImpression clinicalImpression = new ClinicalImpression();
-    clinicalImpression.setId("123");
-    clinicalImpression.getSubject().setReference("Patient/123");
-    clinicalImpression.getProblemFirstRep().setReference("Condition/123");
+    clinicalImpression.setId(CLINICAL_IMPRESSION_ID);
+    clinicalImpression.getSubject().setReference("Patient/" + PATIENT_ID);
+    clinicalImpression.getProblemFirstRep().setReference("Condition/" + CONDITION_ID);
     Condition condition = new Condition();
-    condition.setId("123");
-    condition.getSubject().setReference("Patient/123");
-    Bundle bundle = new Bundle();
+    condition.setId(CONDITION_ID);
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
     bundle.addEntry().setResource(clinicalImpression);
     bundle.addEntry().setResource(condition);
@@ -128,20 +158,21 @@ class RootNodeBuilderTest {
     assertEquals(clinicalImpression,
         node.patients().get(0).conditions().get(0).clinicalImpressions().get(0)
             .clinicalImpression());
-    assertEquals(clinicalImpression, node.resources().get("ClinicalImpression/123"));
+    assertEquals(clinicalImpression, node.resources().get(
+        "ClinicalImpression/" + CLINICAL_IMPRESSION_ID));
   }
 
   @Test
   void testClinicalImpressionBundleWithoutProblem() {
-    Patient patient = new Patient();
-    patient.setId("123");
+    var patient = new Patient();
+    patient.setId(PATIENT_ID);
     ClinicalImpression clinicalImpression = new ClinicalImpression();
-    clinicalImpression.setId("123");
-    clinicalImpression.getSubject().setReference("Patient/123");
+    clinicalImpression.setId(CLINICAL_IMPRESSION_ID);
+    clinicalImpression.getSubject().setReference("Patient/" + PATIENT_ID);
     Condition condition = new Condition();
-    condition.setId("123");
-    condition.getSubject().setReference("Patient/123");
-    Bundle bundle = new Bundle();
+    condition.setId(CONDITION_ID);
+    condition.getSubject().setReference("Patient/" + PATIENT_ID);
+    var bundle = new Bundle();
     bundle.addEntry().setResource(patient);
     bundle.addEntry().setResource(clinicalImpression);
     bundle.addEntry().setResource(condition);
@@ -149,6 +180,7 @@ class RootNodeBuilderTest {
     var node = RootNodeBuilder.fromBundle(bundle);
 
     assertTrue(node.patients().get(0).conditions().get(0).clinicalImpressions().isEmpty());
-    assertEquals(clinicalImpression, node.resources().get("ClinicalImpression/123"));
+    assertEquals(clinicalImpression, node.resources().get(
+        "ClinicalImpression/" + CLINICAL_IMPRESSION_ID));
   }
 }

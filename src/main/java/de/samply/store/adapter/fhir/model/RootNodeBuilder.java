@@ -50,11 +50,23 @@ public class RootNodeBuilder {
         }
         case Observation -> {
           Observation observation = (Observation) resource;
-          var code = findFirstLonicCode(observation.getCode());
-          if (code.equals(Optional.of("75186-7"))) {
-            builder.getPatientNodeBuilder(observation.getSubject().getReference())
-                .setVitalState(observation);
-          }
+          findFirstLonicCode(observation.getCode())
+              .ifPresent(code -> {
+                switch (code) {
+                  case "75186-7":
+                    builder.getPatientNodeBuilder(observation.getSubject().getReference())
+                        .setVitalState(observation);
+                    break;
+                  case "59847-4":
+                    if (observation.hasFocus()) {
+                      builder.getPatientNodeBuilder(observation.getSubject().getReference())
+                          .getConditionNodeBuilder(observation.getFocusFirstRep().getReference())
+                          .addHistology(observation);
+                    }
+                    break;
+                  default:
+                }
+              });
         }
         case Specimen -> {
           Specimen specimen = (Specimen) resource;
