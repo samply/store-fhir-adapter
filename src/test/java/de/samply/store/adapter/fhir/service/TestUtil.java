@@ -6,10 +6,12 @@ import java.util.Optional;
 
 public class TestUtil {
 
-  public static Optional<String> findAttributeValue(Container container, String urn) {
+  public static Optional<String> findAttrValue(Container container, String urnSuffix) {
     Objects.requireNonNull(container);
-    Objects.requireNonNull(urn);
-    return container.getAttribute().stream().filter(a -> urn.equals(a.getMdrKey())).findFirst()
-        .map(a -> a.getValue().getValue());
+    Objects.requireNonNull(urnSuffix);
+    return container.getAttribute().stream()
+        .filter(a -> ("urn:dktk:dataelement:" + urnSuffix).equals(a.getMdrKey()))
+        .map(a -> a.getValue().getValue())
+        .findFirst();
   }
 }

@@ -1,6 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
-import static de.samply.store.adapter.fhir.service.TestUtil.findAttributeValue;
+import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class SurgeryMappingTest {
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private SurgeryMapping mapping;
 
@@ -50,19 +50,19 @@ public class SurgeryMappingTest {
 
     assertEquals("Progress", progressContainer.getDesignation());
     assertEquals(Optional.of("true"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:33:2"));
+        findAttrValue(progressContainer, "urn:dktk:dataelement:33:2"));
     assertEquals(Optional.of("X"),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:23:3"));
+        findAttrValue(progressContainer, "urn:dktk:dataelement:23:3"));
     assertEquals(Optional.ofNullable(dktkTotalRest),
-        findAttributeValue(progressContainer, "urn:dktk:dataelement:25:4"));
+        findAttrValue(progressContainer, "urn:dktk:dataelement:25:4"));
 
     var surgeryContainer = progressContainer.getContainer().get(0);
     assertEquals("Surgery", surgeryContainer.getDesignation());
 
     assertEquals(Optional.ofNullable(dktkLocalRest),
-        findAttributeValue(surgeryContainer, "urn:dktk:dataelement:19:2"));
+        findAttrValue(surgeryContainer, "urn:dktk:dataelement:19:2"));
     assertEquals(Optional.ofNullable(dktkTotalRest),
-        findAttributeValue(surgeryContainer, "urn:dktk:dataelement:20:3"));
+        findAttrValue(surgeryContainer, "urn:dktk:dataelement:20:3"));
   }
 
 }

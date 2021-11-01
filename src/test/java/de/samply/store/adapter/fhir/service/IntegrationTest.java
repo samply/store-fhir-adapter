@@ -45,7 +45,7 @@ public class IntegrationTest {
   private static final String VITAL_STATE_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 
-  private final FhirContext fhirContext = FhirContext.forR4();
+  private static final FhirContext fhirContext = FhirContext.forR4();
 
   private RootNode buildRootNode() {
     var bundle = new Bundle();

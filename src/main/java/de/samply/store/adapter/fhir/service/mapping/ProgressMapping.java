@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProgressMapping {
 
-  private static final String ITEM_REFERENCE = "ClinicalImpression.finding.itemReference.resolve()";
+  private static final String PATH_ITEM = "ClinicalImpression.finding.itemReference.resolve()";
 
   private final FhirPathR4 fhirPathEngine;
 
@@ -39,9 +39,6 @@ public class ProgressMapping {
   public Container map(ClinicalImpressionNode node) {
     var builder = new ContainerBuilder(fhirPathEngine, node.clinicalImpression(), "Progress");
 
-    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = '21976-6').value.coding.code",
-        CodeType.class, "urn:dktk:dataelement:24:3", PrimitiveType::getValue);
-
     builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
         "urn:dktk:dataelement:25:4", DATE_STRING);
 
@@ -51,13 +48,22 @@ public class ProgressMapping {
     builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
         "urn:dktk:dataelement:45:3", DATE_STRING);
 
-    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = 'LA4583-6').value.coding.code",
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = '75186-7').value.coding.code",
+        CodeType.class, "urn:dktk:dataelement:53:3", PrimitiveType::getValue);
+
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = '59847-4').value.coding.code",
+        CodeType.class, "urn:dktk:dataelement:7:2", PrimitiveType::getValue);
+
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = '21976-6').value.coding.code",
+        CodeType.class, "urn:dktk:dataelement:24:3", PrimitiveType::getValue);
+
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = 'LA4583-6').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:72:2", PrimitiveType::getValue);
 
-    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = 'LA4370-8').value.coding.code",
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = 'LA4370-8').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:73:2", PrimitiveType::getValue);
 
-    builder.addAttribute(ITEM_REFERENCE + ".where(code.coding.code = 'LA4226-2').value.coding.code",
+    builder.addAttribute(PATH_ITEM + ".where(code.coding.code = 'LA4226-2').value.coding.code",
         CodeType.class, "urn:dktk:dataelement:74:2", PrimitiveType::getValue);
 
     return builder.build();
