@@ -6,10 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import ca.uhn.fhir.context.FhirContext;
 import de.samply.store.adapter.fhir.service.EvaluationContext;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
-import java.util.List;
 import java.util.Optional;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Procedure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -17,6 +14,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
 public class SurgeryMappingTest {
+
+  private static final String LOKALE_BEURTEILUNG_RESIDUALSTATUS_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS";
+  private static final String GESAMTBEURTEILUNG_RESIDUALSTATUS_CS =
+      "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS";
 
   private static final FhirContext fhirContext = FhirContext.forR4();
 
@@ -30,39 +32,20 @@ public class SurgeryMappingTest {
   @Disabled
   @ParameterizedTest
   @CsvFileSource(resources = "/surgeryMappings.csv", numLinesToSkip = 1)
-  void map_HistologyObservationCSVFile(String fhirLocalRest, String fhirTotalRest,
-      String dktkLocalRest, String dktkTotalRest
-  ) {
+  void map_CsvFile(String fhirLocalRest, String fhirTotalRest, String dktkLocalRest,
+      String dktkTotalRest) {
     Procedure procedure = new Procedure();
-    CodeableConcept codeCon = new CodeableConcept();
-    Coding codeLocal = new Coding();
-    codeLocal.setSystem(
-            "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS")
+    procedure.getOutcome().addCoding().setSystem(LOKALE_BEURTEILUNG_RESIDUALSTATUS_CS)
         .setCode(fhirLocalRest);
-    Coding codeTotal = new Coding();
-    codeTotal.setSystem(
-            "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/GesamtbeurteilungResidualstatusCS")
+    procedure.getOutcome().addCoding().setSystem(GESAMTBEURTEILUNG_RESIDUALSTATUS_CS)
         .setCode(fhirTotalRest);
-    codeCon.setCoding(List.of(codeLocal, codeTotal));
-    procedure.setOutcome(codeCon);
 
-    var progressContainer = mapping.map(procedure);
+    var container = mapping.map(procedure);
 
-    assertEquals("Progress", progressContainer.getDesignation());
-    assertEquals(Optional.of("true"),
-        findAttrValue(progressContainer, "urn:dktk:dataelement:33:2"));
-    assertEquals(Optional.of("X"),
-        findAttrValue(progressContainer, "urn:dktk:dataelement:23:3"));
-    assertEquals(Optional.ofNullable(dktkTotalRest),
-        findAttrValue(progressContainer, "urn:dktk:dataelement:25:4"));
-
-    var surgeryContainer = progressContainer.getContainer().get(0);
-    assertEquals("Surgery", surgeryContainer.getDesignation());
-
-    assertEquals(Optional.ofNullable(dktkLocalRest),
-        findAttrValue(surgeryContainer, "urn:dktk:dataelement:19:2"));
-    assertEquals(Optional.ofNullable(dktkTotalRest),
-        findAttrValue(surgeryContainer, "urn:dktk:dataelement:20:3"));
+    assertEquals("Surgery", container.getDesignation());
+    assertEquals(Optional.of("true"), findAttrValue(container, "33:2"));
+    assertEquals(Optional.of("X"), findAttrValue(container, "23:3"));
+    assertEquals(Optional.ofNullable(dktkLocalRest), findAttrValue(container, "19:2"));
+    assertEquals(Optional.ofNullable(dktkTotalRest), findAttrValue(container, "20:3"));
   }
-
 }

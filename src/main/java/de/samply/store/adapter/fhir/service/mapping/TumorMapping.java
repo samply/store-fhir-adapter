@@ -1,12 +1,14 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import de.samply.share.model.ccp.Container;
+import de.samply.share.model.ccp.ObjectFactory;
 import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.StringType;
 import org.springframework.stereotype.Component;
 
@@ -26,25 +28,33 @@ public class TumorMapping {
   private final FhirPathR4 fhirPathEngine;
   private final HistologyMapping histologyMapping;
   private final MetastasisMapping metastasisMapping;
+  private final SurgeryMapping surgeryMapping;
+  private final RadiationTherapyMapping radiationTherapyMapping;
   private final ProgressMapping progressMapping;
   private final TnmMapping tnmMapping;
 
   /**
    * Creates a new TumorMapping.
    *
-   * @param fhirPathEngine        the FHIRPath engine
-   * @param histologyMapping  the histology mapping
-   * @param metastasisMapping the metastasis mapping
-   * @param progressMapping   the progress mapping
-   * @param tnmMapping        the TNM mapping
+   * @param fhirPathEngine          the FHIRPath engine
+   * @param histologyMapping        the histology mapping
+   * @param metastasisMapping       the metastasis mapping
+   * @param surgeryMapping          the surgery mapping
+   * @param radiationTherapyMapping the radiation  therapy mapping
+   * @param progressMapping         the progress mapping
+   * @param tnmMapping              the TNM mapping
    */
   public TumorMapping(FhirPathR4 fhirPathEngine,
       HistologyMapping histologyMapping,
       MetastasisMapping metastasisMapping,
+      SurgeryMapping surgeryMapping,
+      RadiationTherapyMapping radiationTherapyMapping,
       ProgressMapping progressMapping,
       TnmMapping tnmMapping) {
     this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
     this.histologyMapping = Objects.requireNonNull(histologyMapping);
+    this.surgeryMapping = Objects.requireNonNull(surgeryMapping);
+    this.radiationTherapyMapping = Objects.requireNonNull(radiationTherapyMapping);
     this.progressMapping = Objects.requireNonNull(progressMapping);
     this.metastasisMapping = Objects.requireNonNull(metastasisMapping);
     this.tnmMapping = Objects.requireNonNull(tnmMapping);
@@ -79,8 +89,31 @@ public class TumorMapping {
         Observation.class,
         tnmMapping::map);
 
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "OP".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(surgery -> {
+          Container container = mapProcedure(surgery, "Surgery", surgeryMapping);
+          container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", "true"));
+          return container;
+        })
+        .toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "ST".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(radiationTherapy -> mapProcedure(radiationTherapy, "RadiationTherapy",
+            radiationTherapyMapping))
+        .toList());
+
     builder.addContainers(node.clinicalImpressions().stream().map(progressMapping::map).toList());
 
     return builder.build();
+  }
+
+  private Container mapProcedure(Procedure surgery, String type, ProcedureMapping mapping) {
+    Container progress = new ObjectFactory().createContainer();
+    progress.setId("Progress-" + type + "-" + surgery.getIdElement().getIdPart());
+    progress.setDesignation("Progress");
+    progress.getContainer().add(mapping.map(surgery));
+    return progress;
   }
 }

@@ -11,7 +11,9 @@ import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
 import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
 import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
 import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
+import de.samply.store.adapter.fhir.service.mapping.RadiationTherapyMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
 import de.samply.store.adapter.fhir.service.mapping.TnmMapping;
 import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.List;
@@ -208,9 +210,11 @@ public class IntegrationTest {
     TnmMapping tnmMapping = new TnmMapping(fhirPathEngine);
     HistologyMapping histologyMapping = new HistologyMapping(fhirPathEngine);
     MetastasisMapping metastasisMapping = new MetastasisMapping(fhirPathEngine);
+    SurgeryMapping surgeryMapping = new SurgeryMapping(fhirPathEngine);
+    RadiationTherapyMapping radiationTherapyMapping = new RadiationTherapyMapping(fhirPathEngine);
     ProgressMapping progressMapping = new ProgressMapping(fhirPathEngine, tnmMapping);
     TumorMapping tumorMapping = new TumorMapping(fhirPathEngine, histologyMapping,
-        metastasisMapping, progressMapping, tnmMapping);
+        metastasisMapping, surgeryMapping, radiationTherapyMapping, progressMapping, tnmMapping);
     DiagnosisMapping diagnosisMapping = new DiagnosisMapping(fhirPathEngine, tumorMapping);
     PatientMapping patientMapping = new PatientMapping(fhirPathEngine, diagnosisMapping,
         new SampleMapping(fhirPathEngine));
@@ -259,44 +263,44 @@ public class IntegrationTest {
             .stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:6:2")).toList().get(0)
             .getValue().getValue(), "T");
 
-    assertEquals(
+    assertEquals(4,
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer()
-            .size(), 3);
+            .size());
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getDesignation(), "Histology");
-    assertEquals(
+    assertEquals(3,
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
-            .getAttribute().size(), 3);
+            .getAttribute().size());
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:7:2"))
             .toList().get(0).getValue().getValue(), "8140/3");
-    assertEquals(
+    assertEquals("32",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:8:2"))
-            .toList().get(0).getValue().getValue(), "32");
-    assertEquals(
+            .toList().get(0).getValue().getValue());
+    assertEquals("3",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(0)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:9:2"))
-            .toList().get(0).getValue().getValue(), "3");
-    assertEquals(
+            .toList().get(0).getValue().getValue());
+    assertEquals("Metastasis",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
-            .getDesignation(), "Metastasis");
-    assertEquals(
+            .getDesignation());
+    assertEquals(2,
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
-            .getAttribute().size(), 2);
-    assertEquals(
+            .getAttribute().size());
+    assertEquals("IIC",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:77:1"))
-            .toList().get(0).getValue().getValue(), "IIC");
-    assertEquals(
+            .toList().get(0).getValue().getValue());
+    assertEquals("05.05.2014",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(1)
             .getAttribute().stream().filter(a -> a.getMdrKey().equals("urn:dktk:dataelement:21:3"))
-            .toList().get(0).getValue().getValue(), "05.05.2014");
-    assertEquals(
+            .toList().get(0).getValue().getValue());
+    assertEquals("TNM",
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(2)
-            .getDesignation(), "TNM");
+            .getDesignation());
     assertEquals(
         result.getPatient().get(0).getContainer().get(0).getContainer().get(0).getContainer().get(2)
             .getAttribute().size(), 2);

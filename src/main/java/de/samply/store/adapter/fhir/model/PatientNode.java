@@ -2,7 +2,6 @@ package de.samply.store.adapter.fhir.model;
 
 import java.util.List;
 import java.util.Optional;
-import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Specimen;
@@ -19,9 +18,5 @@ public record PatientNode(Patient patient, Optional<Observation> vitalState,
 
   public PatientNode(Patient patient, Observation vitalState) {
     this(patient, Optional.of(vitalState), List.of(), List.of());
-  }
-
-  public PatientNode(Patient patient, Condition condition) {
-    this(patient, Optional.empty(), List.of(new ConditionNode(patient, condition)), List.of());
   }
 }

@@ -43,10 +43,8 @@ public class SystemTherapyTest {
     var systemContainer = progressContainer.getContainer().get(0);
     assertEquals("SystemTherapy", systemContainer.getDesignation());
 
-    assertEquals(Optional.of("15.03.2017"),
-        findAttrValue(systemContainer, "urn:dktk:dataelement:90:1"));
-    assertEquals(Optional.of("16.03.2017"),
-        findAttrValue(systemContainer, "urn:dktk:dataelement:93:1"));
+    assertEquals(Optional.of("15.03.2017"), findAttrValue(systemContainer, "90:1"));
+    assertEquals(Optional.of("16.03.2017"), findAttrValue(systemContainer, "93:1"));
   }
 
   @Disabled
@@ -63,17 +61,14 @@ public class SystemTherapyTest {
     var progressContainer = mapping.map(therapy);
     assertEquals("Progress", progressContainer.getDesignation());
 
-    assertEquals(Optional.of("true"),
-        findAttrValue(progressContainer, "urn:dktk:dataelement:34:2"));
+    assertEquals(Optional.of("true"), findAttrValue(progressContainer, "34:2"));
 
     var systemContainer = progressContainer.getContainer().get(0);
     assertEquals("SystemTherapy", systemContainer.getDesignation());
 
-    assertEquals(Optional.of("15.03.2017"),
-        findAttrValue(systemContainer, "urn:dktk:dataelement:90:1"));
-    assertEquals(Optional.of("16.03.2017"),
-        findAttrValue(systemContainer, "urn:dktk:dataelement:93:1"));
+    assertEquals(Optional.of("15.03.2017"), findAttrValue(systemContainer, "90:1"));
+    assertEquals(Optional.of("16.03.2017"), findAttrValue(systemContainer, "93:1"));
     assertEquals(Optional.of("Epirubicin Taxotere Cyclophosphamid"),
-        findAttrValue(systemContainer, "urn:dktk:dataelement:91:1"));
+        findAttrValue(systemContainer, "91:1"));
   }
 }

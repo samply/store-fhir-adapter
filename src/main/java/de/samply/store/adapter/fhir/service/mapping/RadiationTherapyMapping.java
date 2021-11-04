@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * Mapping of FHIR Procedure to MDS RadiationTherapy.
  */
 @Component
-public class RadiationTherapyMapping {
+public class RadiationTherapyMapping implements ProcedureMapping {
 
   private final FhirPathR4 fhirPathEngine;
 

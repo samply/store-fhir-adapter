@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Procedure;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.Specimen;
 
@@ -67,6 +68,14 @@ public class RootNodeBuilder {
                   default:
                 }
               });
+        }
+        case Procedure -> {
+          Procedure procedure = (Procedure) resource;
+          if (procedure.hasReasonReference()) {
+            builder.getPatientNodeBuilder(procedure.getSubject().getReference())
+                .getConditionNodeBuilder(procedure.getReasonReferenceFirstRep().getReference())
+                .addProcedure(procedure);
+          }
         }
         case Specimen -> {
           Specimen specimen = (Specimen) resource;

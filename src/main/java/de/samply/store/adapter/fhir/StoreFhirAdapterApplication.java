@@ -10,7 +10,9 @@ import de.samply.store.adapter.fhir.service.mapping.MetastasisMapping;
 import de.samply.store.adapter.fhir.service.mapping.PatientMapping;
 import de.samply.store.adapter.fhir.service.mapping.ProgressMapping;
 import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
+import de.samply.store.adapter.fhir.service.mapping.RadiationTherapyMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
+import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
 import de.samply.store.adapter.fhir.service.mapping.TnmMapping;
 import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.Map;
@@ -51,9 +53,11 @@ public class StoreFhirAdapterApplication {
       TnmMapping tnmMapping = new TnmMapping(fhirPathEngine);
       HistologyMapping histologyMapping = new HistologyMapping(fhirPathEngine);
       MetastasisMapping metastasisMapping = new MetastasisMapping(fhirPathEngine);
+      SurgeryMapping surgeryMapping = new SurgeryMapping(fhirPathEngine);
+      RadiationTherapyMapping radiationTherapyMapping = new RadiationTherapyMapping(fhirPathEngine);
       ProgressMapping progressMapping = new ProgressMapping(fhirPathEngine, tnmMapping);
       TumorMapping tumorMapping = new TumorMapping(fhirPathEngine, histologyMapping,
-          metastasisMapping, progressMapping, tnmMapping);
+          metastasisMapping, surgeryMapping, radiationTherapyMapping, progressMapping, tnmMapping);
       DiagnosisMapping diagnosisMapping = new DiagnosisMapping(fhirPathEngine, tumorMapping);
       return new QueryResultMapping(new PatientMapping(fhirPathEngine, diagnosisMapping,
           new SampleMapping(fhirPathEngine)));

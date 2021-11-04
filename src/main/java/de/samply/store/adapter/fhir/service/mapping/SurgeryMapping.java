@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * Mapping of FHIR Procedure to MDS Surgery.
  */
 @Component
-public class SurgeryMapping {
+public class SurgeryMapping implements ProcedureMapping {
 
   private static final String SYSTEM_LOCAL =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS";
@@ -39,15 +39,16 @@ public class SurgeryMapping {
   public Container map(Procedure procedure) {
     var builder = new ContainerBuilder(fhirPathEngine, procedure, "Surgery");
 
-    builder.addAttribute(
-        "Procedure.outcome.coding.where(system = '" + SYSTEM_LOCAL + "').code",
-        CodeType.class,
+    builder.addAttribute(outcomePath(SYSTEM_LOCAL), CodeType.class,
         "urn:dktk:dataelement:19:2", PrimitiveType::getValue);
-    builder.addAttribute(
-        "Procedure.outcome.coding.where(system = '" + SYSTEM_GLOBAL + "').code",
-        CodeType.class,
+    builder.addAttribute(outcomePath(SYSTEM_GLOBAL), CodeType.class,
         "urn:dktk:dataelement:20:3", PrimitiveType::getValue);
+    builder.addAttribute("urn:dktk:dataelement:23:3", "X");
 
     return builder.build();
+  }
+
+  private static String outcomePath(String system) {
+    return "Procedure.outcome.coding.where(system = '" + system + "').code";
   }
 }
