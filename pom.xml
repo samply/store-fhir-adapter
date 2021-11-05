@@ -28,6 +28,8 @@
   <properties>
     <version.maven.plugin.checkstyle>3.1.2</version.maven.plugin.checkstyle>
     <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+    <sonar.organization>samply</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
 
   <dependencyManagement>
