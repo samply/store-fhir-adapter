@@ -88,7 +88,7 @@ public class StoreRestController {
       @RequestParam(name = "statisticsOnly", required = false, defaultValue = "false")
           boolean statisticsOnly,
       @RequestBody String query) {
-    logger.debug("create request statisticsOnly={}, query={}", statisticsOnly, query);
+    logger.debug("create request statisticsOnly={}", statisticsOnly);
 
     return downloadService.runQuery()
         .flatMap(resultStore::create)
