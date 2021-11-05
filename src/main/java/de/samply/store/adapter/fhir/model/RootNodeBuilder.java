@@ -38,41 +38,12 @@ public class RootNodeBuilder {
     for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
       Resource resource = entry.getResource();
       switch (resource.getResourceType()) {
-        case Patient -> {
-          Patient patient = (Patient) resource;
-          builder.getPatientNodeBuilder("Patient/" + patient.getIdElement().getIdPart())
-              .setPatient(patient);
-        }
-        case Condition -> {
-          Condition condition = (Condition) resource;
-          builder.getPatientNodeBuilder(condition.getSubject().getReference())
-              .getConditionNodeBuilder("Condition/" + condition.getIdElement().getIdPart())
-              .setCondition(condition);
-        }
+        case Patient -> builder.addPatient((Patient) resource);
+        case Condition -> builder.addCondition((Condition) resource);
         case Observation -> builder.addObservation((Observation) resource);
-        case Procedure -> {
-          Procedure procedure = (Procedure) resource;
-          if (procedure.hasReasonReference()) {
-            builder.getPatientNodeBuilder(procedure.getSubject().getReference())
-                .getConditionNodeBuilder(procedure.getReasonReferenceFirstRep().getReference())
-                .addProcedure(procedure);
-          }
-        }
-        case Specimen -> {
-          Specimen specimen = (Specimen) resource;
-          builder.getPatientNodeBuilder(specimen.getSubject().getReference())
-              .addSpecimen(specimen);
-        }
-        case ClinicalImpression -> {
-          var clinicalImpression = (ClinicalImpression) entry.getResource();
-          if (clinicalImpression.hasProblem()) {
-            builder.getPatientNodeBuilder(clinicalImpression.getSubject().getReference())
-                .getConditionNodeBuilder(clinicalImpression.getProblemFirstRep().getReference())
-                .getClinicalImpressionNodeBuilder(
-                    "ClinicalImpression/" + clinicalImpression.getIdElement().getIdPart())
-                .setClinicalImpression(clinicalImpression);
-          }
-        }
+        case Procedure -> builder.addProcedure((Procedure) resource);
+        case Specimen -> builder.addSpecimen((Specimen) resource);
+        case ClinicalImpression -> builder.addClinicalImpression((ClinicalImpression) resource);
         default -> {
         }
       }
@@ -81,6 +52,17 @@ public class RootNodeBuilder {
           resource);
     }
     return builder.build();
+  }
+
+  private void addPatient(Patient resource) {
+    getPatientNodeBuilder("Patient/" + resource.getIdElement().getIdPart())
+        .setPatient(resource);
+  }
+
+  private void addCondition(Condition resource) {
+    getPatientNodeBuilder(resource.getSubject().getReference())
+        .getConditionNodeBuilder("Condition/" + resource.getIdElement().getIdPart())
+        .setCondition(resource);
   }
 
   private void addObservation(Observation observation) {
@@ -101,6 +83,29 @@ public class RootNodeBuilder {
             default:
           }
         });
+  }
+
+  private void addProcedure(Procedure resource) {
+    if (resource.hasReasonReference()) {
+      getPatientNodeBuilder(resource.getSubject().getReference())
+          .getConditionNodeBuilder(resource.getReasonReferenceFirstRep().getReference())
+          .addProcedure(resource);
+    }
+  }
+
+  private void addSpecimen(Specimen resource) {
+    getPatientNodeBuilder(resource.getSubject().getReference())
+        .addSpecimen(resource);
+  }
+
+  private void addClinicalImpression(ClinicalImpression clinicalImpression) {
+    if (clinicalImpression.hasProblem()) {
+      getPatientNodeBuilder(clinicalImpression.getSubject().getReference())
+          .getConditionNodeBuilder(clinicalImpression.getProblemFirstRep().getReference())
+          .getClinicalImpressionNodeBuilder(
+              "ClinicalImpression/" + clinicalImpression.getIdElement().getIdPart())
+          .setClinicalImpression(clinicalImpression);
+    }
   }
 
   private RootNode build() {
