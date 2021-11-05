@@ -49,26 +49,7 @@ public class RootNodeBuilder {
               .getConditionNodeBuilder("Condition/" + condition.getIdElement().getIdPart())
               .setCondition(condition);
         }
-        case Observation -> {
-          Observation observation = (Observation) resource;
-          findFirstLonicCode(observation.getCode())
-              .ifPresent(code -> {
-                switch (code) {
-                  case "75186-7":
-                    builder.getPatientNodeBuilder(observation.getSubject().getReference())
-                        .setVitalState(observation);
-                    break;
-                  case "59847-4":
-                    if (observation.hasFocus()) {
-                      builder.getPatientNodeBuilder(observation.getSubject().getReference())
-                          .getConditionNodeBuilder(observation.getFocusFirstRep().getReference())
-                          .addHistology(observation);
-                    }
-                    break;
-                  default:
-                }
-              });
-        }
+        case Observation -> builder.addObservation((Observation) resource);
         case Procedure -> {
           Procedure procedure = (Procedure) resource;
           if (procedure.hasReasonReference()) {
@@ -100,6 +81,26 @@ public class RootNodeBuilder {
           resource);
     }
     return builder.build();
+  }
+
+  private void addObservation(Observation observation) {
+    findFirstLonicCode(observation.getCode())
+        .ifPresent(code -> {
+          switch (code) {
+            case "75186-7":
+              getPatientNodeBuilder(observation.getSubject().getReference())
+                  .setVitalState(observation);
+              break;
+            case "59847-4":
+              if (observation.hasFocus()) {
+                getPatientNodeBuilder(observation.getSubject().getReference())
+                    .getConditionNodeBuilder(observation.getFocusFirstRep().getReference())
+                    .addHistology(observation);
+              }
+              break;
+            default:
+          }
+        });
   }
 
   private RootNode build() {
