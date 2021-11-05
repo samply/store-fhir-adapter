@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-public class SurgeryMappingTest {
+class SurgeryMappingTest {
 
   private static final String LOKALE_BEURTEILUNG_RESIDUALSTATUS_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/LokaleBeurteilungResidualstatusCS";

@@ -84,7 +84,7 @@ public class StoreRestController {
    * @return a 201 created response
    */
   @PostMapping("/teiler/requests")
-  public ResponseEntity<?> createRequest(
+  public ResponseEntity<Object> createRequest(
       @RequestParam(name = "statisticsOnly", required = false, defaultValue = "false")
           boolean statisticsOnly,
       @RequestBody String query) {
@@ -92,7 +92,7 @@ public class StoreRestController {
 
     return downloadService.runQuery()
         .flatMap(resultStore::create)
-        .map(result -> ResponseEntity.created(createRequestUrl(result)).body(null))
+        .map(result -> ResponseEntity.created(createRequestUrl(result)).build())
         .orElseGet(msg -> ResponseEntity.status(INTERNAL_SERVER_ERROR).body(msg));
   }
 

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FhirService {
 
-  private static final Logger logger = LoggerFactory.getLogger(FhirDownloadService.class);
+  private static final Logger logger = LoggerFactory.getLogger(FhirService.class);
 
   private final IGenericClient client;
 

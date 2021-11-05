@@ -17,6 +17,9 @@ public class Util {
 
   private static final ObjectFactory objectFactory = new ObjectFactory();
 
+  private Util() {
+  }
+
   /**
    * Creates an attribute.
    *

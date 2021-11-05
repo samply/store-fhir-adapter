@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-public class MetatasisMappingTest {
+class MetatasisMappingTest {
 
   private static final FhirContext fhirContext = FhirContext.forR4();
 

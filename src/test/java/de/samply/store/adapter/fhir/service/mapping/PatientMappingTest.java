@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class PatientMappingTest {
+class PatientMappingTest {
 
   private static final String LOCAL_ID = "201158";
   private static final String GLOBAL_ID = "201117";

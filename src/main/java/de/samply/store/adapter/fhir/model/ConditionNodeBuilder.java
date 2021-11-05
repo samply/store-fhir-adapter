@@ -42,7 +42,7 @@ class ConditionNodeBuilder {
 
   Stream<ConditionNode> build() {
     return patientNodeBuilder.getPatient().stream().flatMap(patient -> Stream.ofNullable(condition)
-        .map(condition -> new ConditionNode(patient, condition,
+        .map(c -> new ConditionNode(patient, c,
             List.copyOf(histologies),
             List.copyOf(procedures),
             clinicalImpressionContainers.values().stream()

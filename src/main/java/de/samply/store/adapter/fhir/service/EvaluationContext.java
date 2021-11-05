@@ -58,7 +58,7 @@ public class EvaluationContext implements IEvaluationContext {
   @Override
   public List<Base> executeFunction(Object appContext, List<Base> focus, String functionName,
       List<List<Base>> parameters) {
-    return null;
+    return List.of();
   }
 
   @Override

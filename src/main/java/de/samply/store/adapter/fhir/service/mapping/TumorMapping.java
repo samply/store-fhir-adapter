@@ -20,7 +20,7 @@ public class TumorMapping {
 
   private static final String ICD_0_3 =
       "urn:oid:2.16.840.1.113883.6.43.1";
-  private static final String ADT_Site =
+  private static final String ADT_SITE =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
   private static final String EXTENSION_FERNMETASTASEN =
       "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
@@ -69,13 +69,13 @@ public class TumorMapping {
   public Container map(ConditionNode node) {
     var builder = new ContainerBuilder(fhirPathEngine, node.condition(), "Tumor");
 
-    builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_0_3 + "').code",
+    builder.addAttribute(bodySitePath(ICD_0_3),
         CodeType.class, "urn:dktk:dataelement:4:2", PrimitiveType::getValue);
 
     builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_0_3 + "').version",
         StringType.class, "urn:dktk:dataelement:5:2", PrimitiveType::getValue);
 
-    builder.addAttribute("Condition.bodySite.coding.where(system = '" + ADT_Site + "').code",
+    builder.addAttribute(bodySitePath(ADT_SITE),
         CodeType.class, "urn:dktk:dataelement:6:2", PrimitiveType::getValue);
 
     builder.addContainer("Condition.evidence.detail.resolve()", Observation.class,
@@ -107,6 +107,10 @@ public class TumorMapping {
     builder.addContainers(node.clinicalImpressions().stream().map(progressMapping::map).toList());
 
     return builder.build();
+  }
+
+  private static String bodySitePath(String system) {
+    return "Condition.bodySite.coding.where(system = '" + system + "').code";
   }
 
   private Container mapProcedure(Procedure surgery, String type, ProcedureMapping mapping) {

@@ -45,6 +45,7 @@ public class RootNodeBuilder {
         case Specimen -> builder.addSpecimen((Specimen) resource);
         case ClinicalImpression -> builder.addClinicalImpression((ClinicalImpression) resource);
         default -> {
+          // TODO: google style needs this
         }
       }
       builder.resources.put(

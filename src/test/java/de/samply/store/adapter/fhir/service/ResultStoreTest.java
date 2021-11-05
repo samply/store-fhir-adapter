@@ -41,8 +41,4 @@ class ResultStoreTest {
     assertTrue(result.isPresent());
     assertEquals(RESULT, result.get());
   }
-
-  @Test
-  void save() {
-  }
 }

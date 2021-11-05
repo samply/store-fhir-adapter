@@ -19,7 +19,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SampleMapping {
 
-  private static final String SAMPLE_MATERIAL_TYPE = "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
+  private static final String SAMPLE_MATERIAL_TYPE =
+      "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
 
   private final FhirPathR4 fhirPathEngine;
 
@@ -41,30 +42,27 @@ public class SampleMapping {
   public Container map(Specimen specimen) {
     var builder = new ContainerBuilder(fhirPathEngine, specimen, "Sample");
 
-    builder.addAttribute2(
-        "Specimen.type.coding.where(system = '" + SAMPLE_MATERIAL_TYPE + "').code",
-        "Specimen.type.coding.where(system = 'urn:centraxx').code",
+    builder.addAttribute2(typePath(SAMPLE_MATERIAL_TYPE), typePath("urn:centraxx"),
         CodeType.class, "urn:dktk:dataelement:97:1",
         (bbmriType, cxxCode) -> mapProbenart(bbmriType.getCode(), cxxCode.map(CodeType::getCode)));
 
-    builder.addAttribute(
-        "Specimen.type.coding.where(system = '" + SAMPLE_MATERIAL_TYPE + "').code.exists()",
+    builder.addAttribute(typePath(SAMPLE_MATERIAL_TYPE) + ".exists()",
         BooleanType.class, "urn:dktk:dataelement:50:2", PrimitiveType::getValueAsString);
 
-    builder.addAttributeOptional(
-        "Specimen.type.coding.where(system = '" + SAMPLE_MATERIAL_TYPE + "').code",
-        CodeType.class, "urn:dktk:dataelement:95:2",
-        code -> mapProbentyp(code.getCode()));
+    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
+        CodeType.class, "urn:dktk:dataelement:95:2", code -> mapProbentyp(code.getCode()));
 
-    builder.addAttributeOptional(
-        "Specimen.type.coding.where(system = '" + SAMPLE_MATERIAL_TYPE + "').code",
-        CodeType.class, "urn:dktk:dataelement:90:1",
-        code -> mapFixierungsart(code.getCode()));
+    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
+        CodeType.class, "urn:dktk:dataelement:90:1", code -> mapFixierungsart(code.getCode()));
 
     builder.addAttributeOptional("Specimen.collection.collected", DateTimeType.class,
         "urn:dktk:dataelement:49:4", DATE_STRING);
 
     return builder.build();
+  }
+
+  private static String typePath(String system) {
+    return "Specimen.type.coding.where(system = '" + system + "').code";
   }
 
   private static String mapProbenart(String bbmriType, Optional<String> cxxCode) {

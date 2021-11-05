@@ -16,7 +16,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
-public class HistologyMappingTest {
+class HistologyMappingTest {
 
   private static final FhirContext fhirContext = FhirContext.forR4();
 

@@ -23,6 +23,7 @@ public class ProgressMapping {
   private static final String HISTOLOGY = "59847-4";
   private static final String VITAL_STATE = "75186-7";
   private static final String CANCER_OUTCOME_STATE = "21976-6";
+  private static final String EFFECTIVE_PATH = "ClinicalImpression.effective";
 
   private final FhirPathR4 fhirPathEngine;
   private final TnmMapping tnmMapping;
@@ -47,13 +48,13 @@ public class ProgressMapping {
   public Container map(ClinicalImpressionNode node) {
     var builder = new ContainerBuilder(fhirPathEngine, node.clinicalImpression(), "Progress");
 
-    builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
+    builder.addAttributeOptional(EFFECTIVE_PATH, DateTimeType.class,
         "urn:dktk:dataelement:25:4", DATE_STRING);
 
-    builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
+    builder.addAttributeOptional(EFFECTIVE_PATH, DateTimeType.class,
         "urn:dktk:dataelement:43:3", DATE_STRING);
 
-    builder.addAttributeOptional("ClinicalImpression.effective", DateTimeType.class,
+    builder.addAttributeOptional(EFFECTIVE_PATH, DateTimeType.class,
         "urn:dktk:dataelement:45:3", DATE_STRING);
 
     builder.addAttribute(itemValuePath(VITAL_STATE), CodeType.class,
