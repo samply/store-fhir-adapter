@@ -1,7 +1,6 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import static de.samply.store.adapter.fhir.service.TestUtil.findAttrValue;
-import static de.samply.store.adapter.fhir.service.mapping.DiagnosisMapping.ICD_O_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -100,10 +99,10 @@ class DiagnosisMappingTest {
   @Test
   void map_ICDVersion() {
     var condition = new Condition();
-    condition.getBodySiteFirstRep().getCodingFirstRep().setSystem(ICD_O_3).setVersion("2014");
+    condition.getCode().getCodingFirstRep().setSystem(ICD_10_GM).setVersion("2014").setCode("C61");
     var conditionNode = new ConditionNode(patient, condition);
     when(fhirPathEngine.evaluateFirst(condition,
-        "Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
+        "Condition.code.coding.where(system = '" + ICD_10_GM + "').version",
         StringType.class)).thenReturn(Optional.of(new StringType("2014")));
 
     var container = mapping.map(conditionNode);

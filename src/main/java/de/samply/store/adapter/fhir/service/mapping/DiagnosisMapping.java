@@ -58,6 +58,7 @@ public class DiagnosisMapping {
           PrimitiveType::getValueAsString);
     }
 
+    //TODO: use only year
     if (condition.hasRecordedDate()) {
       builder
           .addAttributeOptional("Condition.recordedDate", DateTimeType.class,
@@ -80,7 +81,7 @@ public class DiagnosisMapping {
                       LOCAL_DATE.apply(onsetDateTime)));
     }
 
-    builder.addAttribute("Condition.bodySite.coding.where(system = '" + ICD_O_3 + "').version",
+    builder.addAttribute("Condition.code.coding.where(system = '" + ICD_10_GM + "').version",
         StringType.class, "urn:dktk:dataelement:3:2", s -> "10 " + s + " GM");
 
     builder.addContainer(tumorMapping.map(node));
