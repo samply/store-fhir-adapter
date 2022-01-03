@@ -35,6 +35,9 @@ public class Util {
   }
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static final DateTimeFormatter YEAR_FORMATTER = DateTimeFormatter.ofPattern("yyyy");
+  public static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM.yyyy");
+
 
   /**
    * Parses a given string as local date. Returns {@link Optional#empty() empty} on parsing errors.
@@ -70,6 +73,19 @@ public class Util {
   private static final Function<LocalDate, String> FORMAT_LOCAL_DATE = localDate -> localDate
       .format(DATE_FORMATTER);
 
+  private static final Function<LocalDate, String> FORMAT_LOCAL_YEAR = localDate -> localDate
+      .format(YEAR_FORMATTER);
+
+  private static final Function<LocalDate, String> FORMAT_LOCAL_MONTH = localDate -> localDate
+      .format(MONTH_FORMATTER);
+
   public static final Function<PrimitiveType<?>, Optional<String>> DATE_STRING =
       lift(FORMAT_LOCAL_DATE).compose(LOCAL_DATE);
+
+  public static final Function<PrimitiveType<?>, Optional<String>> MONTH_STRING =
+      lift(FORMAT_LOCAL_MONTH).compose(LOCAL_DATE);
+
+  public static final Function<PrimitiveType<?>, Optional<String>> YEAR_STRING =
+      lift(FORMAT_LOCAL_YEAR).compose(LOCAL_DATE);
+
 }

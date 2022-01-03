@@ -116,7 +116,7 @@ class PatientMappingTest {
 
     var firstAttribute = result.getAttribute().get(0);
     assertEquals("urn:dktk:dataelement:48:3", firstAttribute.getMdrKey());
-    assertEquals("02.10.2027", firstAttribute.getValue().getValue());
+    assertEquals("10.2027", firstAttribute.getValue().getValue());
   }
 
   @Test

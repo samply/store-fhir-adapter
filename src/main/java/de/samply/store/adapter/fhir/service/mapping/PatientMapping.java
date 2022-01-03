@@ -1,6 +1,7 @@
 package de.samply.store.adapter.fhir.service.mapping;
 
 import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
+import static de.samply.store.adapter.fhir.service.mapping.Util.MONTH_STRING;
 
 import de.samply.share.model.ccp.Patient;
 import de.samply.store.adapter.fhir.model.PatientNode;
@@ -71,10 +72,9 @@ public class PatientMapping {
         "Observation.value.coding.where(system = '" + VITAL_STATE_CS + "').code",
         CodeType.class, "urn:dktk:dataelement:53:3", PrimitiveType::getValue));
 
-    //TODO: remove day
     patientNode.vitalState().ifPresent(vital -> patientBuilder.addAttributeOptional(vital,
         "Observation.effective",
-        DateTimeType.class, "urn:dktk:dataelement:48:3", DATE_STRING));
+        DateTimeType.class, "urn:dktk:dataelement:48:3", MONTH_STRING));
 
     patientBuilder.addContainers(patientNode.conditions().stream()
         .map(diagnosisMapping::map)

@@ -122,7 +122,7 @@ class DiagnosisMappingTest {
 
     var container = mapping.map(conditionNode);
 
-    assertEquals(Optional.of("01.01.2010"), findAttrValue(container, "83:3"));
+    assertEquals(Optional.of("2010"), findAttrValue(container, "83:3"));
   }
 
   @Test
@@ -138,7 +138,7 @@ class DiagnosisMappingTest {
 
     var container = mapping.map(conditionNode);
 
-    assertEquals(Optional.of("01.01.2010"), findAttrValue(container, "83:3"));
+    assertEquals(Optional.of("2010"), findAttrValue(container, "83:3"));
     assertEquals(Optional.of("9"), findAttrValue(container, "28:1"));
   }
 

@@ -2,6 +2,7 @@ package de.samply.store.adapter.fhir.service.mapping;
 
 import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 import static de.samply.store.adapter.fhir.service.mapping.Util.LOCAL_DATE;
+import static de.samply.store.adapter.fhir.service.mapping.Util.YEAR_STRING;
 import static de.samply.store.adapter.fhir.service.mapping.Util.lift2;
 
 import de.samply.share.model.ccp.Container;
@@ -58,12 +59,11 @@ public class DiagnosisMapping {
           PrimitiveType::getValueAsString);
     }
 
-    //TODO: use only year
     if (condition.hasRecordedDate()) {
       builder
           .addAttributeOptional("Condition.recordedDate", DateTimeType.class,
               "urn:dktk:dataelement:83:3",
-              DATE_STRING);
+              YEAR_STRING);
     }
 
     //TODO: Next oncology version will enforce datetime
