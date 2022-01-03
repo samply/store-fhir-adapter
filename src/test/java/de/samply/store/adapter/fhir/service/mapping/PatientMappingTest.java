@@ -13,6 +13,7 @@ import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DateType;
@@ -201,7 +202,9 @@ class PatientMappingTest {
 
   private static void setIdentifier(Patient patient, String type, String value) {
     var localId = patient.addIdentifier();
-    localId.getType().getCodingFirstRep().setSystem(PSEUDONYM_ART_CS).setCode(type);
+    CodeableConcept code = new CodeableConcept();
+    code.getCodingFirstRep().setCode(type).setSystem(PSEUDONYM_ART_CS);
+    localId.setType(code);
     localId.setValue(value);
   }
 
