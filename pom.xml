@@ -28,6 +28,7 @@
   <properties>
     <version.maven.plugin.checkstyle>3.1.2</version.maven.plugin.checkstyle>
     <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
+    <hapi.version>5.6.2</hapi.version>
     <sonar.organization>samply</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
@@ -58,19 +59,19 @@
     <dependency>
       <groupId>de.samply</groupId>
       <artifactId>share-dto</artifactId>
-      <version>5.1.0</version>
+      <version>5.3.0</version>
     </dependency>
 
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-client</artifactId>
-      <version>5.5.3</version>
+      <version>${hapi.version}</version>
     </dependency>
 
     <dependency>
       <groupId>ca.uhn.hapi.fhir</groupId>
       <artifactId>hapi-fhir-structures-r4</artifactId>
-      <version>5.5.3</version>
+      <version>${hapi.version}</version>
     </dependency>
 
     <dependency>
@@ -82,7 +83,7 @@
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-      <version>3.0.4</version>
+      <version>3.0.5</version>
     </dependency>
 
     <dependency>

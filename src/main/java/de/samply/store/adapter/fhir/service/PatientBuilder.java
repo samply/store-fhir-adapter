@@ -13,8 +13,8 @@ public class PatientBuilder extends AbstractBuilder<Patient> {
   private static final String PSEUDONYM_ART_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
   private static final String LOCAL_ID_PATH =
-      "Patient.where(identifier.type.coding.where(system= \"" + PSEUDONYM_ART_CS
-          + "\" and code= \"Lokal\" ).exists()).identifier.where(type.coding.code= \"Lokal\" ).value";
+      "Patient.where(identifier.type.coding.where(system= \"" + PSEUDONYM_ART_CS + "\" "
+          + "and code=\"Lokal\").exists()).identifier.where(type.coding.code=\"Lokal\").value";
 
 
   /**
