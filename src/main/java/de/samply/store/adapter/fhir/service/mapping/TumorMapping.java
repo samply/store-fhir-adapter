@@ -147,7 +147,7 @@ public class TumorMapping {
 
     builder.addContainers(node.procedures().stream()
         .filter(procedure -> "IM".equals(procedure.getCategory().getCodingFirstRep().getCode()))
-        .map(ImmunoTherapy -> {
+        .map(immunoTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
           mapProgressFalse(progress, "false", "flase", "flase", "true",
@@ -188,13 +188,13 @@ public class TumorMapping {
     return progress;
   }
 
-  private void mapProgressFalse(Container container, String OP, String Radiation, String Chemo,
-      String Immuno, String Hormone, String boneMarrow, String diverse) {
-    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", OP));
-    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:34:2", Radiation));
-    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:36:2", Chemo));
-    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:38:2", Immuno));
-    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:39:2", Hormone));
+  private void mapProgressFalse(Container container, String operation, String radiation, String chemo,
+      String immuno, String hormone, String boneMarrow, String diverse) {
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", operation));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:34:2", radiation));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:36:2", chemo));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:38:2", immuno));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:39:2", hormone));
     container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:40:2", boneMarrow));
     container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:41:3", diverse));
   }
