@@ -1,24 +1,24 @@
 bbmriType,cxxCode,dktkProbenart,dktkProbentyp,dktkFixierungsart,preserved
 ,,,,,false
-whole-blood,,Vollblut,Flüssigprobe,,true
+whole-blood,,Vollblut,Flüssigprobe,Kryo/Frisch (FF),true
 bone-marrow,,Knochenmark,,,true
 buffy-coat,,buffy-coat,,,true
 dried-whole-blood,,dried-whole-blood,,,true
 peripheral-blood-cells-vital,,peripheral-blood-cells-vital,,,true
-blood-plasma,,Plasma,Flüssigprobe,,true
-plasma-edta,,Plasma,Flüssigprobe,,true
-plasma-citrat,,Plasma,Flüssigprobe,,true
-plasma-heparin,,Plasma,Flüssigprobe,,true
-plasma-cell-free,,Plasma,Flüssigprobe,,true
-plasma-other,,Plasma,Flüssigprobe,,true
-blood-serum,,Serum,Flüssigprobe,,true
+blood-plasma,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-edta,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-citrat,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-heparin,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-cell-free,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+plasma-other,,Plasma,Flüssigprobe,Kryo/Frisch (FF),true
+blood-serum,,Serum,Flüssigprobe,Kryo/Frisch (FF),true
 ascites,,ascites,,,true
-csf-liquor,,Liquor,Flüssigprobe,,true
+csf-liquor,,Liquor,Flüssigprobe,Kryo/Frisch (FF),true
 saliva,,saliva,,,true
 stool-faeces,,stool-faeces,,,true
-urine,,Urin,Flüssigprobe,,true
+urine,,Urin,Flüssigprobe,Kryo/Frisch (FF),true
 swab,,swab,,,true
-liquid-other,,Liquor,Flüssigprobe,,true
+liquid-other,,Liquor,Flüssigprobe,Kryo/Frisch (FF),true
 tissue-ffpe,,tissue-ffpe,Gewebeprobe,Paraffin (FFPE),true
 tumor-tissue-ffpe,,Tumorgewebe,Gewebeprobe,Paraffin (FFPE),true
 normal-tissue-ffpe,,Normalgewebe,Gewebeprobe,Paraffin (FFPE),true
