@@ -39,6 +39,15 @@ public class ProgressMapping {
     this.tnmMapping = Objects.requireNonNull(tnmMapping);
   }
 
+  private static String itemValuePath(String code) {
+    return itemPath(code) + ".value.coding.code";
+  }
+
+  private static String itemPath(String code) {
+    return "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '" + code
+        + "')";
+  }
+
   /**
    * Maps FHIR ClinicalImpression to MDS Progress.
    *
@@ -87,14 +96,5 @@ public class ProgressMapping {
     builder.addAttribute("urn:dktk:dataelement:41:3", "false");
 
     return builder.build();
-  }
-
-  private static String itemValuePath(String code) {
-    return itemPath(code) + ".value.coding.code";
-  }
-
-  private static String itemPath(String code) {
-    return "ClinicalImpression.finding.itemReference.resolve().where(code.coding.code = '" + code
-        + "')";
   }
 }

@@ -61,6 +61,10 @@ public class TumorMapping {
     this.tnmMapping = Objects.requireNonNull(tnmMapping);
   }
 
+  private static String bodySitePath(String system) {
+    return "Condition.bodySite.coding.where(system = '" + system + "').code";
+  }
+
   /**
    * Maps FHIR Condition and related resources to MDS Tumor.
    *
@@ -94,9 +98,10 @@ public class TumorMapping {
         .filter(procedure -> "OP".equals(procedure.getCategory().getCodingFirstRep().getCode()))
         .map(surgery -> {
           Container container = mapProcedure(surgery, "Surgery", surgeryMapping);
-          mapProgressFalse(container, "true", "false", "false", "false", "false", "false", "false");
+          mapProgressFalse(container, "true", "false", "false", "false",
+              "false", "false", "false");
 
-          if( surgery.hasExtension(
+          if (surgery.hasExtension(
               "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-OPIntention")) {
 
             CodeableConcept intention = (CodeableConcept) surgery.getExtensionByUrl(
@@ -114,7 +119,8 @@ public class TumorMapping {
         .map(radiationTherapy -> {
           Container container = mapProcedure(radiationTherapy, "RadiationTherapy",
               radiationTherapyMapping);
-          mapProgressFalse(container, "false", "true", "false", "false", "false", "false", "false");
+          mapProgressFalse(container, "false", "true", "false", "false",
+              "false", "false", "false");
           return container;
         })
         .toList());
@@ -124,7 +130,8 @@ public class TumorMapping {
         .map(chemoTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "true", "false", "false", "false", "false");
+          mapProgressFalse(progress, "false", "flase", "true", "false",
+              "false", "false", "false");
           return progress;
         }).toList());
 
@@ -133,7 +140,8 @@ public class TumorMapping {
         .map(hormoneTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false", "true", "false", "false");
+          mapProgressFalse(progress, "false", "flase", "flase", "false",
+              "true", "false", "false");
           return progress;
         }).toList());
 
@@ -142,7 +150,8 @@ public class TumorMapping {
         .map(ImmunoTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "true", "false", "false", "false");
+          mapProgressFalse(progress, "false", "flase", "flase", "true",
+              "false", "false", "false");
           return progress;
         }).toList());
 
@@ -151,7 +160,8 @@ public class TumorMapping {
         .map(boneMarrowTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false", "false", "true", "false");
+          mapProgressFalse(progress, "false", "flase", "flase", "false",
+              "false", "true", "false");
           return progress;
         }).toList());
 
@@ -160,17 +170,14 @@ public class TumorMapping {
         .map(diverseTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false", "false", "false", "true");
+          mapProgressFalse(progress, "false", "flase", "flase", "false",
+              "false", "false", "true");
           return progress;
         }).toList());
 
     builder.addContainers(node.clinicalImpressions().stream().map(progressMapping::map).toList());
 
     return builder.build();
-  }
-
-  private static String bodySitePath(String system) {
-    return "Condition.bodySite.coding.where(system = '" + system + "').code";
   }
 
   private Container mapProcedure(Procedure surgery, String type, ProcedureMapping mapping) {

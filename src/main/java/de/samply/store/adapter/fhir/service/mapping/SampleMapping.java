@@ -24,12 +24,11 @@ public class SampleMapping {
 
   private static final String SAMPLE_MATERIAL_TYPE =
       "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
-  private final FhirPathR4 fhirPathEngine;
-
   private static final Set<String> CRYO_FRESH_SPECIMENS = new HashSet<>(
       Arrays.asList("whole-blood", "blood-plasma", "plasma-edta", "plasma-citrat", "plasma-heparin",
           "plasma-cell-free", "plasma-other", "urine", "csf-liquor", "blood-serum",
           "liquid-other"));
+  private final FhirPathR4 fhirPathEngine;
 
   /**
    * Creates a new SampleMapping.
@@ -38,34 +37,6 @@ public class SampleMapping {
    */
   public SampleMapping(FhirPathR4 fhirPathEngine) {
     this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
-  }
-
-  /**
-   * Maps FHIR Specimen to MDS Sample.
-   *
-   * @param specimen the FHIR Specimen
-   * @return the MDS Sample
-   */
-  public Container map(Specimen specimen) {
-    var builder = new ContainerBuilder(fhirPathEngine, specimen, "Sample");
-
-    builder.addAttribute2(typePath(SAMPLE_MATERIAL_TYPE), typePath("urn:centraxx"),
-        CodeType.class, "urn:dktk:dataelement:97:1",
-        (bbmriType, cxxCode) -> mapProbenart(bbmriType.getCode(), cxxCode.map(CodeType::getCode)));
-
-    builder.addAttribute(typePath(SAMPLE_MATERIAL_TYPE) + ".exists()",
-        BooleanType.class, "urn:dktk:dataelement:50:2", PrimitiveType::getValueAsString);
-
-    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
-        CodeType.class, "urn:dktk:dataelement:95:2", code -> mapProbentyp(code.getCode()));
-
-    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
-        CodeType.class, "urn:dktk:dataelement:90:1", code -> mapFixierungsart(code.getCode()));
-
-    builder.addAttributeOptional("Specimen.collection.collected", DateTimeType.class,
-        "urn:dktk:dataelement:49:4", DATE_STRING);
-
-    return builder.build();
   }
 
   private static String typePath(String system) {
@@ -119,5 +90,33 @@ public class SampleMapping {
     } else {
       return Optional.empty();
     }
+  }
+
+  /**
+   * Maps FHIR Specimen to MDS Sample.
+   *
+   * @param specimen the FHIR Specimen
+   * @return the MDS Sample
+   */
+  public Container map(Specimen specimen) {
+    var builder = new ContainerBuilder(fhirPathEngine, specimen, "Sample");
+
+    builder.addAttribute2(typePath(SAMPLE_MATERIAL_TYPE), typePath("urn:centraxx"),
+        CodeType.class, "urn:dktk:dataelement:97:1",
+        (bbmriType, cxxCode) -> mapProbenart(bbmriType.getCode(), cxxCode.map(CodeType::getCode)));
+
+    builder.addAttribute(typePath(SAMPLE_MATERIAL_TYPE) + ".exists()",
+        BooleanType.class, "urn:dktk:dataelement:50:2", PrimitiveType::getValueAsString);
+
+    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
+        CodeType.class, "urn:dktk:dataelement:95:2", code -> mapProbentyp(code.getCode()));
+
+    builder.addAttributeOptional(typePath(SAMPLE_MATERIAL_TYPE),
+        CodeType.class, "urn:dktk:dataelement:90:1", code -> mapFixierungsart(code.getCode()));
+
+    builder.addAttributeOptional("Specimen.collection.collected", DateTimeType.class,
+        "urn:dktk:dataelement:49:4", DATE_STRING);
+
+    return builder.build();
   }
 }

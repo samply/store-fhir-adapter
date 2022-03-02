@@ -30,6 +30,10 @@ public class SurgeryMapping implements ProcedureMapping {
     this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
   }
 
+  private static String outcomePath(String system) {
+    return "Procedure.outcome.coding.where(system = '" + system + "').code";
+  }
+
   /**
    * Maps FHIR Procedure to MDS Surgery.
    *
@@ -45,9 +49,5 @@ public class SurgeryMapping implements ProcedureMapping {
         "urn:dktk:dataelement:20:3", PrimitiveType::getValue);
 
     return builder.build();
-  }
-
-  private static String outcomePath(String system) {
-    return "Procedure.outcome.coding.where(system = '" + system + "').code";
   }
 }
