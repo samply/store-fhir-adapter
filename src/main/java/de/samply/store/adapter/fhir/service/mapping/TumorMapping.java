@@ -6,6 +6,7 @@ import de.samply.store.adapter.fhir.model.ConditionNode;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
 import java.util.Objects;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Procedure;
@@ -93,16 +94,75 @@ public class TumorMapping {
         .filter(procedure -> "OP".equals(procedure.getCategory().getCodingFirstRep().getCode()))
         .map(surgery -> {
           Container container = mapProcedure(surgery, "Surgery", surgeryMapping);
-          container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", "true"));
+          mapProgressFalse(container, "true", "false", "false", "false", "false", "false", "false");
+
+          if( surgery.hasExtension(
+              "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-OPIntention")) {
+
+            CodeableConcept intention = (CodeableConcept) surgery.getExtensionByUrl(
+                    "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-OPIntention")
+                .getValue();
+            container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:23:3",
+                intention.getCodingFirstRep().getCode()));
+          }
           return container;
         })
         .toList());
 
     builder.addContainers(node.procedures().stream()
         .filter(procedure -> "ST".equals(procedure.getCategory().getCodingFirstRep().getCode()))
-        .map(radiationTherapy -> mapProcedure(radiationTherapy, "RadiationTherapy",
-            radiationTherapyMapping))
+        .map(radiationTherapy -> {
+          Container container = mapProcedure(radiationTherapy, "RadiationTherapy",
+              radiationTherapyMapping);
+          mapProgressFalse(container, "false", "true", "false", "false", "false", "false", "false");
+          return container;
+        })
         .toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "CH".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(chemoTherapy -> {
+          Container progress = new ObjectFactory().createContainer();
+          progress.setDesignation("Progress");
+          mapProgressFalse(progress, "false", "flase", "true", "false", "false", "false", "false");
+          return progress;
+        }).toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "HO".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(hormoneTherapy -> {
+          Container progress = new ObjectFactory().createContainer();
+          progress.setDesignation("Progress");
+          mapProgressFalse(progress, "false", "flase", "flase", "false", "true", "false", "false");
+          return progress;
+        }).toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "IM".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(ImmunoTherapy -> {
+          Container progress = new ObjectFactory().createContainer();
+          progress.setDesignation("Progress");
+          mapProgressFalse(progress, "false", "flase", "flase", "true", "false", "false", "false");
+          return progress;
+        }).toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "KM".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(boneMarrowTherapy -> {
+          Container progress = new ObjectFactory().createContainer();
+          progress.setDesignation("Progress");
+          mapProgressFalse(progress, "false", "flase", "flase", "false", "false", "true", "false");
+          return progress;
+        }).toList());
+
+    builder.addContainers(node.procedures().stream()
+        .filter(procedure -> "SO".equals(procedure.getCategory().getCodingFirstRep().getCode()))
+        .map(diverseTherapy -> {
+          Container progress = new ObjectFactory().createContainer();
+          progress.setDesignation("Progress");
+          mapProgressFalse(progress, "false", "flase", "flase", "false", "false", "false", "true");
+          return progress;
+        }).toList());
 
     builder.addContainers(node.clinicalImpressions().stream().map(progressMapping::map).toList());
 
@@ -119,5 +179,16 @@ public class TumorMapping {
     progress.setDesignation("Progress");
     progress.getContainer().add(mapping.map(surgery));
     return progress;
+  }
+
+  private void mapProgressFalse(Container container, String OP, String Radiation, String Chemo,
+      String Immuno, String Hormone, String boneMarrow, String diverse) {
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", OP));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:34:2", Radiation));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:36:2", Chemo));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:38:2", Immuno));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:39:2", Hormone));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:40:2", boneMarrow));
+    container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:41:3", diverse));
   }
 }

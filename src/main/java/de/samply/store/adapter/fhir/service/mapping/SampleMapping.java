@@ -4,8 +4,11 @@ import static de.samply.store.adapter.fhir.service.mapping.Util.DATE_STRING;
 
 import de.samply.share.model.ccp.Container;
 import de.samply.store.adapter.fhir.service.FhirPathR4;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.DateTimeType;
@@ -21,8 +24,12 @@ public class SampleMapping {
 
   private static final String SAMPLE_MATERIAL_TYPE =
       "https://fhir.bbmri.de/CodeSystem/SampleMaterialType";
-
   private final FhirPathR4 fhirPathEngine;
+
+  private static final Set<String> CRYO_FRESH_SPECIMENS = new HashSet<>(
+      Arrays.asList("whole-blood", "blood-plasma", "plasma-edta", "plasma-citrat", "plasma-heparin",
+          "plasma-cell-free", "plasma-other", "urine", "csf-liquor", "blood-serum",
+          "liquid-other"));
 
   /**
    * Creates a new SampleMapping.
@@ -107,7 +114,7 @@ public class SampleMapping {
   private static Optional<String> mapFixierungsart(String code) {
     if (code.contains("ffpe")) {
       return Optional.of("Paraffin (FFPE)");
-    } else if (code.contains("frozen")) {
+    } else if (code.contains("frozen") || CRYO_FRESH_SPECIMENS.contains(code)) {
       return Optional.of("Kryo/Frisch (FF)");
     } else {
       return Optional.empty();

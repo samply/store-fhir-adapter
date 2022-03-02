@@ -43,7 +43,6 @@ public class SurgeryMapping implements ProcedureMapping {
         "urn:dktk:dataelement:19:2", PrimitiveType::getValue);
     builder.addAttribute(outcomePath(SYSTEM_GLOBAL), CodeType.class,
         "urn:dktk:dataelement:20:3", PrimitiveType::getValue);
-    builder.addAttribute("urn:dktk:dataelement:23:3", "X");
 
     return builder.build();
   }

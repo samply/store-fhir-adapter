@@ -78,6 +78,14 @@ public class ProgressMapping {
     builder.addContainer(itemPath(TNM_C), Observation.class, tnmMapping::map);
     builder.addContainer(itemPath(TNM_P), Observation.class, tnmMapping::map);
 
+    builder.addAttribute("urn:dktk:dataelement:33:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:34:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:38:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:36:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:39:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:40:2", "false");
+    builder.addAttribute("urn:dktk:dataelement:41:3", "false");
+
     return builder.build();
   }
 
