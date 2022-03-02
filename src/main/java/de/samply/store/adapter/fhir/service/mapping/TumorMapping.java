@@ -188,8 +188,8 @@ public class TumorMapping {
     return progress;
   }
 
-  private void mapProgressFalse(Container container, String operation, String radiation, String chemo,
-      String immuno, String hormone, String boneMarrow, String diverse) {
+  private void mapProgressFalse(Container container, String operation, String radiation,
+      String chemo, String immuno, String hormone, String boneMarrow, String diverse) {
     container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:33:2", operation));
     container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:34:2", radiation));
     container.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:36:2", chemo));
