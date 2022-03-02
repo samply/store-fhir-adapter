@@ -25,8 +25,8 @@ public class PatientMapping {
   private static final String PSEUDONYM_ART_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/PseudonymArtCS";
   private static final String GLOBAL_ID_PATH =
-      "Patient.where(identifier.type.coding.where(system= \"" + PSEUDONYM_ART_CS
-          + "\" and code= \"Global\" ).exists()).identifier.where(type.coding.code= \"Global\" ).value";
+      "Patient.where(identifier.type.coding.where(system= \"" + PSEUDONYM_ART_CS + "\" "
+          + "and code=\"Global\").exists()).identifier.where(type.coding.code=\"Global\").value";
   private static final String VITAL_STATE_CS =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/VitalstatusCS";
 

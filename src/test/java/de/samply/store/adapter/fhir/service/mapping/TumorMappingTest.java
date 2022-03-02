@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class TumorMappingTest {
+class TumorMappingTest {
 
   private static final String ADT_Site =
       "http://dktk.dkfz.de/fhir/onco/core/CodeSystem/SeitenlokalisationCS";
