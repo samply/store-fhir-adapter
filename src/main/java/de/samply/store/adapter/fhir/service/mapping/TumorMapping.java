@@ -26,10 +26,17 @@ public class TumorMapping {
   private static final String EXTENSION_FERNMETASTASEN =
       "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-Fernmetastasen";
 
+  private static final String codeOP =
+          "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-StellungZurOp";
+  private static final String codeInt =
+            "http://dktk.dkfz.de/fhir/StructureDefinition/onco-core-Extension-SYSTIntention";
+
+
   private final FhirPathR4 fhirPathEngine;
   private final HistologyMapping histologyMapping;
   private final MetastasisMapping metastasisMapping;
   private final SurgeryMapping surgeryMapping;
+  private final SystemTherapyMapping systemTherapyMapping;
   private final RadiationTherapyMapping radiationTherapyMapping;
   private final ProgressMapping progressMapping;
   private final TnmMapping tnmMapping;
@@ -49,12 +56,14 @@ public class TumorMapping {
       HistologyMapping histologyMapping,
       MetastasisMapping metastasisMapping,
       SurgeryMapping surgeryMapping,
+      SystemTherapyMapping systemTherapyMapping,
       RadiationTherapyMapping radiationTherapyMapping,
       ProgressMapping progressMapping,
       TnmMapping tnmMapping) {
     this.fhirPathEngine = Objects.requireNonNull(fhirPathEngine);
     this.histologyMapping = Objects.requireNonNull(histologyMapping);
     this.surgeryMapping = Objects.requireNonNull(surgeryMapping);
+    this.systemTherapyMapping = Objects.requireNonNull(systemTherapyMapping);
     this.radiationTherapyMapping = Objects.requireNonNull(radiationTherapyMapping);
     this.progressMapping = Objects.requireNonNull(progressMapping);
     this.metastasisMapping = Objects.requireNonNull(metastasisMapping);
@@ -114,6 +123,46 @@ public class TumorMapping {
         })
         .toList());
 
+    builder.addContainers(node.statements().stream()
+            .map(medicationStatement -> {
+              Container progress = new ObjectFactory().createContainer();
+              progress.setDesignation("Progress");
+
+              CodeableConcept intention = (CodeableConcept)
+                      medicationStatement.getExtensionByUrl(codeInt).getValue();
+              CodeableConcept op = (CodeableConcept)
+                      medicationStatement.getExtensionByUrl(codeOP).getValue();
+
+              progress.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:69:2",
+                      intention.getCodingFirstRep().getCode()));
+              progress.getAttribute().add(Util.createAttribute("urn:dktk:dataelement:70:3",
+                      op.getCodingFirstRep().getCode()));
+
+              progress.getContainer().add(systemTherapyMapping.map(medicationStatement));
+
+              switch (medicationStatement.getCategory().getCodingFirstRep().getCode()) {
+                case "CH" -> mapProgressFalse(progress, "false", "false", "true", "false",
+                            "false", "false", "false");
+                case "HO" -> mapProgressFalse(progress, "false", "false", "false", "false",
+                            "true", "false", "false");
+                case "IM" -> mapProgressFalse(progress, "false", "false", "false", "true",
+                            "false", "false", "false");
+                case "KM" -> mapProgressFalse(progress, "false", "false", "false", "false",
+                            "false", "true", "false");
+                case "OP" -> mapProgressFalse(progress, "true", "false", "false", "false",
+                            "false", "false", "false");
+                case "SO" -> mapProgressFalse(progress, "false", "false", "false", "false",
+                            "false", "false", "true");
+                case "ST" -> mapProgressFalse(progress, "false", "true", "false", "false",
+                            "false", "false", "false");
+                default ->
+                        mapProgressFalse(progress, "false", "false", "false", "false",
+                                "false", "false", "false");
+              }
+              return progress;
+            })
+            .toList());
+
     builder.addContainers(node.procedures().stream()
         .filter(procedure -> "ST".equals(procedure.getCategory().getCodingFirstRep().getCode()))
         .map(radiationTherapy -> {
@@ -130,7 +179,7 @@ public class TumorMapping {
         .map(chemoTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "true", "false",
+          mapProgressFalse(progress, "false", "false", "true", "false",
               "false", "false", "false");
           return progress;
         }).toList());
@@ -140,7 +189,7 @@ public class TumorMapping {
         .map(hormoneTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false",
+          mapProgressFalse(progress, "false", "false", "false", "false",
               "true", "false", "false");
           return progress;
         }).toList());
@@ -150,7 +199,7 @@ public class TumorMapping {
         .map(immunoTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "true",
+          mapProgressFalse(progress, "false", "false", "false", "true",
               "false", "false", "false");
           return progress;
         }).toList());
@@ -160,7 +209,7 @@ public class TumorMapping {
         .map(boneMarrowTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false",
+          mapProgressFalse(progress, "false", "false", "false", "false",
               "false", "true", "false");
           return progress;
         }).toList());
@@ -170,7 +219,7 @@ public class TumorMapping {
         .map(diverseTherapy -> {
           Container progress = new ObjectFactory().createContainer();
           progress.setDesignation("Progress");
-          mapProgressFalse(progress, "false", "flase", "flase", "false",
+          mapProgressFalse(progress, "false", "false", "false", "false",
               "false", "false", "true");
           return progress;
         }).toList());

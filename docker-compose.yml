@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   blaze:
-    image: "samply/blaze:fix-parameter-encoding"
+    image: "samply/blaze:0.17"
     environment:
       BASE_URL: "http://blaze:8080"
       JAVA_TOOL_OPTIONS: "-Xmx4g"
@@ -19,23 +19,25 @@ services:
       APP_BASE_URL: "http://store-fhir-adapter:8080"
       APP_STORE_URL: "http://blaze:8080/fhir"
       APP_STORE_PAGE_SIZE: "100"
-      JAVA_TOOL_OPTIONS: "-Xmx1g"
+      JAVA_TOOL_OPTIONS: "-Xmx1g -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     ports:
       - "8080:8080"
+      - "5005:5005"
     depends_on:
       - blaze
 
   connector:
-    image: "samply/share-client:dktk-qb-scheduler-all"
+    image: "samply/share-client:dktk-7"
     environment:
+      SITE_ID: "STORE2FHIR"
       POSTGRES_HOST: "connector-db"
       POSTGRES_DB: "samply.connector"
       POSTGRES_USER: "samply"
       POSTGRES_PASS: "samply"
       STORE_URL: "http://store-fhir-adapter:8080/"
       MDR_URL: "https://mdr.ccp-it.dktk.dkfz.de/v3/api/mdr"
-      ID_MANAGER_URL: "http://docker.for.mac.host.internal:8180/ID-Manager/"
-      ID_MANAGER_APIKEY: "0Suwrv5Xu7ruIcTzhtfw1eINzGgNJubCjxS1"
+      ID_MANAGER_URL: "http://id-manager:8080/ID-Manager/"
+      ID_MANAGER_APIKEY: "123"
       PATIENTLIST_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
       PROJECTPSEUDONYMISATION_URL: "https://patientlist-test.ccpit.dktk.dkfz.de/mainzelliste"
       LOG_LEVEL: "debug"

@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.ClinicalImpression;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Procedure;
@@ -44,6 +45,7 @@ public class RootNodeBuilder {
         case Procedure -> builder.addProcedure((Procedure) resource);
         case Specimen -> builder.addSpecimen((Specimen) resource);
         case ClinicalImpression -> builder.addClinicalImpression((ClinicalImpression) resource);
+        case MedicationStatement -> builder.addMedicationStatement((MedicationStatement) resource);
         default -> {
           // TODO: google style needs this
         }
@@ -91,6 +93,14 @@ public class RootNodeBuilder {
       getPatientNodeBuilder(resource.getSubject().getReference())
           .getConditionNodeBuilder(resource.getReasonReferenceFirstRep().getReference())
           .addProcedure(resource);
+    }
+  }
+
+  private void addMedicationStatement(MedicationStatement resource) {
+    if (resource.hasReasonReference()) {
+      getPatientNodeBuilder(resource.getSubject().getReference())
+              .getConditionNodeBuilder(resource.getReasonReferenceFirstRep().getReference())
+              .addMedicationStatement(resource);
     }
   }
 

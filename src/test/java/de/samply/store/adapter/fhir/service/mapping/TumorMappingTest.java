@@ -56,6 +56,9 @@ class TumorMappingTest {
   private SurgeryMapping surgeryMapping;
 
   @Mock(lenient = true)
+  private SystemTherapyMapping systemTherapyMapping;
+
+  @Mock(lenient = true)
   private RadiationTherapyMapping radiationTherapyMapping;
 
   @Mock(lenient = true)
@@ -67,7 +70,7 @@ class TumorMappingTest {
   @BeforeEach
   void setUp() {
     mapping = new TumorMapping(fhirPathEngine, histologyMapping, metaMapping, surgeryMapping,
-        radiationTherapyMapping, progressMapping, tnmMapping);
+            systemTherapyMapping, radiationTherapyMapping, progressMapping, tnmMapping);
   }
 
   @ParameterizedTest
@@ -130,7 +133,7 @@ class TumorMappingTest {
     surgery.setId(SURGERY_ID);
     surgery.getCategory().getCodingFirstRep().setCode("OP");
     var conditionNode = new ConditionNode(patient, condition, List.of(), List.of(surgery),
-        List.of());
+            List.of(), List.of());
     var surgeryContainer = new Container();
     when(surgeryMapping.map(surgery)).thenReturn(surgeryContainer);
 
@@ -149,7 +152,7 @@ class TumorMappingTest {
     radiationTherapy.setId(RADIATION_THERAPY_ID);
     radiationTherapy.getCategory().getCodingFirstRep().setCode("ST");
     var conditionNode = new ConditionNode(patient, condition, List.of(), List.of(radiationTherapy),
-        List.of());
+            List.of(), List.of());
     var radiationTherapyContainer = new Container();
     when(radiationTherapyMapping.map(radiationTherapy)).thenReturn(radiationTherapyContainer);
 
@@ -166,7 +169,7 @@ class TumorMappingTest {
     condition.setId(CONDITION_ID);
     var procedure = new Procedure();
     var conditionNode = new ConditionNode(patient, condition, List.of(), List.of(procedure),
-        List.of());
+            List.of(), List.of());
 
     var container = mapping.map(conditionNode);
 
@@ -221,7 +224,7 @@ class TumorMappingTest {
     condition.setId(CONDITION_ID);
     condition.getEvidenceFirstRep().getDetailFirstRep().setReference("123");
     var clinicalImpressionNode = new ClinicalImpressionNode(new ClinicalImpression());
-    var conditionNode = new ConditionNode(patient, condition, List.of(), List.of(),
+    var conditionNode = new ConditionNode(patient, condition, List.of(), List.of(), List.of(),
         List.of(clinicalImpressionNode));
     var progressContainer = new Container();
     when(progressMapping.map(clinicalImpressionNode)).thenReturn(progressContainer);

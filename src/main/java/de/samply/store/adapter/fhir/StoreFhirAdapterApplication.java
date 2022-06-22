@@ -13,6 +13,7 @@ import de.samply.store.adapter.fhir.service.mapping.QueryResultMapping;
 import de.samply.store.adapter.fhir.service.mapping.RadiationTherapyMapping;
 import de.samply.store.adapter.fhir.service.mapping.SampleMapping;
 import de.samply.store.adapter.fhir.service.mapping.SurgeryMapping;
+import de.samply.store.adapter.fhir.service.mapping.SystemTherapyMapping;
 import de.samply.store.adapter.fhir.service.mapping.TnmMapping;
 import de.samply.store.adapter.fhir.service.mapping.TumorMapping;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
 
 /**
  * Main Application Entrypoint.
@@ -54,10 +56,12 @@ public class StoreFhirAdapterApplication {
       HistologyMapping histologyMapping = new HistologyMapping(fhirPathEngine);
       MetastasisMapping metastasisMapping = new MetastasisMapping(fhirPathEngine);
       SurgeryMapping surgeryMapping = new SurgeryMapping(fhirPathEngine);
+      SystemTherapyMapping systemTherapyMapping = new SystemTherapyMapping(fhirPathEngine);
       RadiationTherapyMapping radiationTherapyMapping = new RadiationTherapyMapping(fhirPathEngine);
       ProgressMapping progressMapping = new ProgressMapping(fhirPathEngine, tnmMapping);
       TumorMapping tumorMapping = new TumorMapping(fhirPathEngine, histologyMapping,
-          metastasisMapping, surgeryMapping, radiationTherapyMapping, progressMapping, tnmMapping);
+          metastasisMapping, surgeryMapping, systemTherapyMapping, radiationTherapyMapping,
+              progressMapping, tnmMapping);
       DiagnosisMapping diagnosisMapping = new DiagnosisMapping(fhirPathEngine, tumorMapping);
       return new QueryResultMapping(new PatientMapping(fhirPathEngine, diagnosisMapping,
           new SampleMapping(fhirPathEngine)));

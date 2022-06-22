@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.hl7.fhir.r4.model.Condition;
+import org.hl7.fhir.r4.model.MedicationStatement;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Procedure;
 
@@ -16,6 +17,7 @@ class ConditionNodeBuilder {
   private Condition condition;
   private final List<Observation> histologies = new ArrayList<>();
   private final List<Procedure> procedures = new ArrayList<>();
+  private final List<MedicationStatement> medicationStatements = new ArrayList<>();
   private final Map<String, ClinicalImpressionNodeBuilder> clinicalImpressionContainers =
       new HashMap<>();
 
@@ -29,6 +31,10 @@ class ConditionNodeBuilder {
 
   void addHistology(Observation histology) {
     histologies.add(histology);
+  }
+
+  void addMedicationStatement(MedicationStatement statement) {
+    medicationStatements.add(Objects.requireNonNull(statement));
   }
 
   void addProcedure(Procedure procedure) {
@@ -45,6 +51,7 @@ class ConditionNodeBuilder {
         .map(c -> new ConditionNode(patient, c,
             List.copyOf(histologies),
             List.copyOf(procedures),
+            List.copyOf(medicationStatements),
             clinicalImpressionContainers.values().stream()
                 .flatMap(ClinicalImpressionNodeBuilder::build)
                 .toList())));
