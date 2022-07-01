@@ -41,16 +41,16 @@ public class SystemTherapyMapping {
     var builder = new ContainerBuilder(fhirPathEngine, medicationStatement, "SystemTherapy");
 
     builder.addAttributeOptional("MedicationStatement.effective.start",
-        DateTimeType.class, "urn:dktk:dataelement:90:1", DATE_STRING);
+        DateTimeType.class, "urn:adt:dataelement:90:1", DATE_STRING);
 
     builder.addAttributeOptional("MedicationStatement.effective.end",
-        DateTimeType.class, "urn:dktk:dataelement:93:1", DATE_STRING);
+        DateTimeType.class, "urn:adt:dataelement:93:1", DATE_STRING);
 
     builder.addAttribute("MedicationStatement.medication.text",
-        StringType.class, "urn:dktk:dataelement:91:1", PrimitiveType::getValue);
+        StringType.class, "urn:adt:dataelement:91:1", PrimitiveType::getValue);
 
     builder.addAttribute("MedicationStatement.extension('" + codePro + "').value",
-            StringType.class, "urn:dktk:dataelement:89:1", PrimitiveType::getValue);
+            StringType.class, "urn:adt:dataelement:89:1", PrimitiveType::getValue);
 
     return builder.build();
   }
